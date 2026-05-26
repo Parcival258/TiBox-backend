@@ -10,6 +10,8 @@ export const controllers = {
     Session: () => import('#controllers/auth/session_controller'),
   },
   inventory: {
+    EquipmentAssignments: () => import('#controllers/inventory/equipment_assignments_controller'),
+    EquipmentAttachments: () => import('#controllers/inventory/equipment_attachments_controller'),
     Equipment: () => import('#controllers/inventory/equipment_controller'),
   },
   reports: {

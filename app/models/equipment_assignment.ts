@@ -37,4 +37,9 @@ export default class EquipmentAssignment extends BaseModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @belongsTo(() => User, {
+    foreignKey: 'assignedBy',
+  })
+  declare assigner: BelongsTo<typeof User>
 }

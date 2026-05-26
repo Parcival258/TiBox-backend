@@ -206,19 +206,19 @@ export interface Registry {
       body: {}
       paramsTuple: []
       params: {}
-      query: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/equipment').listEquipmentValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'inventory.equipment.store': {
     methods: ["POST"]
     pattern: '/api/v1/equipment'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/equipment').equipmentValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment').createEquipmentValidator)>>
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#validators/equipment').equipmentValidator)>>
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment').createEquipmentValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['store']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
@@ -239,10 +239,10 @@ export interface Registry {
     methods: ["PUT","PATCH"]
     pattern: '/api/v1/equipment/:id'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/equipment').equipmentValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment').updateEquipmentValidator)>>
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/equipment').equipmentValidator)>>
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment').updateEquipmentValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['update']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
