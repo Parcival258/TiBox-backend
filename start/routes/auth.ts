@@ -1,0 +1,20 @@
+import { middleware } from '#start/kernel'
+import router from '@adonisjs/core/services/router'
+
+const SessionController = () => import('#controllers/auth/session_controller')
+const NewAccountController = () => import('#controllers/auth/new_account_controller')
+const ProfileController = () => import('#controllers/auth/profile_controller')
+
+export default function authRoutes() {
+  router
+    .group(() => {
+      router.post('signup', [NewAccountController, 'store'])
+      router.post('login', [SessionController, 'login'])
+      router.post('logout', [SessionController, 'logout']).use(middleware.auth())
+    })
+    .prefix('auth')
+    .as('auth')
+
+  router.get('me', [SessionController, 'me']).use(middleware.auth())
+  router.get('account/profile', [ProfileController, 'show']).use(middleware.auth())
+}
