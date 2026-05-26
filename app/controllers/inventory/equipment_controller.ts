@@ -1,57 +1,41 @@
-import Equipment from '#models/equipment'
-import { equipmentValidator } from '#validators/equipment'
+import EquipmentService, { EquipmentValidationError } from '#services/inventory/equipment_service'
+import {
+  createEquipmentValidator,
+  listEquipmentValidator,
+  updateEquipmentValidator,
+} from '#validators/equipment'
 import type { HttpContext } from '@adonisjs/core/http'
-import { DateTime } from 'luxon'
 
 export default class EquipmentController {
+  private equipmentService = new EquipmentService()
+
   async index({ request }: HttpContext) {
-    const search = request.input('search')
-    const status = request.input('status')
+    const filters = await request.validateUsing(listEquipmentValidator)
 
-    const query = Equipment.query()
-      .whereNull('deleted_at')
-      .preload('headquarter')
-      .preload('location')
-      .preload('currentResponsible')
-      .orderBy('created_at', 'desc')
-      .limit(50)
-
-    if (status) {
-      query.where('status', status)
-    }
-
-    if (search) {
-      query.where((builder) => {
-        builder
-          .whereILike('internal_code', `%${search}%`)
-          .orWhereILike('serial', `%${search}%`)
-          .orWhereILike('asset_tag', `%${search}%`)
-          .orWhereILike('brand', `%${search}%`)
-          .orWhereILike('model', `%${search}%`)
-      })
-    }
-
-    return query
+    return this.equipmentService.list(filters)
   }
 
   async store({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(equipmentValidator)
-    const equipment = await Equipment.create(payload)
+    const payload = await request.validateUsing(createEquipmentValidator)
 
-    return response.created(equipment)
+    try {
+      const equipment = await this.equipmentService.create(payload)
+
+      return response.created(equipment)
+    } catch (error) {
+      if (error instanceof EquipmentValidationError) {
+        return response.unprocessableEntity({
+          message: error.message,
+          errors: error.errors,
+        })
+      }
+
+      throw error
+    }
   }
 
   async show({ params, response }: HttpContext) {
-    const equipment = await Equipment.query()
-      .where('id', params.id)
-      .whereNull('deleted_at')
-      .preload('headquarter')
-      .preload('location')
-      .preload('currentResponsible')
-      .preload('assignments')
-      .preload('maintenanceSchedules')
-      .preload('maintenanceRecords')
-      .first()
+    const equipment = await this.equipmentService.findDetails(params.id)
 
     if (!equipment) {
       return response.notFound({ message: 'Equipment not found' })
@@ -61,26 +45,34 @@ export default class EquipmentController {
   }
 
   async update({ params, request, response }: HttpContext) {
-    const equipment = await Equipment.query().where('id', params.id).whereNull('deleted_at').first()
-    if (!equipment) {
-      return response.notFound({ message: 'Equipment not found' })
+    const payload = await request.validateUsing(updateEquipmentValidator)
+
+    try {
+      const equipment = await this.equipmentService.update(params.id, payload)
+
+      if (!equipment) {
+        return response.notFound({ message: 'Equipment not found' })
+      }
+
+      return equipment
+    } catch (error) {
+      if (error instanceof EquipmentValidationError) {
+        return response.unprocessableEntity({
+          message: error.message,
+          errors: error.errors,
+        })
+      }
+
+      throw error
     }
-
-    const payload = await request.validateUsing(equipmentValidator)
-    equipment.merge(payload)
-    await equipment.save()
-
-    return equipment
   }
 
   async destroy({ params, response }: HttpContext) {
-    const equipment = await Equipment.query().where('id', params.id).whereNull('deleted_at').first()
+    const equipment = await this.equipmentService.softDelete(params.id)
+
     if (!equipment) {
       return response.notFound({ message: 'Equipment not found' })
     }
-
-    equipment.deletedAt = DateTime.local()
-    await equipment.save()
 
     return response.noContent()
   }

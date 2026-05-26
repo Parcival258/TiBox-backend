@@ -2,7 +2,10 @@ import app from '@adonisjs/core/services/app'
 import env from '#start/env'
 import { defineConfig } from '@adonisjs/cors'
 
-const configuredOrigins = env.get('CORS_ORIGIN')?.split(',').map((origin) => origin.trim())
+const configuredOrigins = env
+  .get('CORS_ORIGIN')
+  ?.split(',')
+  .map((origin) => origin.trim())
 
 /**
  * Configuration options to tweak the CORS policy. The following

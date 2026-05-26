@@ -9,7 +9,13 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
 export type OwnershipType = 'owned' | 'leased'
-export type EquipmentStatus = 'active' | 'inactive' | 'in_maintenance' | 'damaged' | 'retired' | 'lost'
+export type EquipmentStatus =
+  | 'active'
+  | 'inactive'
+  | 'in_maintenance'
+  | 'damaged'
+  | 'retired'
+  | 'lost'
 
 export default class Equipment extends BaseModel {
   @column({ isPrimary: true })

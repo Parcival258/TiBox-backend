@@ -8,7 +8,17 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AccessTokenSchema extends BaseModel {
-  static $columns = ['abilities', 'createdAt', 'expiresAt', 'id', 'lastUsedAt', 'name', 'tokenHash', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'abilities',
+    'createdAt',
+    'expiresAt',
+    'id',
+    'lastUsedAt',
+    'name',
+    'tokenHash',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = AccessTokenSchema.$columns
   @column()
   declare abilities: any
@@ -31,7 +41,17 @@ export class AccessTokenSchema extends BaseModel {
 }
 
 export class AttachmentSchema extends BaseModel {
-  static $columns = ['createdAt', 'entityId', 'entityType', 'fileName', 'filePath', 'id', 'mimeType', 'sizeBytes', 'uploadedBy'] as const
+  static $columns = [
+    'createdAt',
+    'entityId',
+    'entityType',
+    'fileName',
+    'filePath',
+    'id',
+    'mimeType',
+    'sizeBytes',
+    'uploadedBy',
+  ] as const
   $columns = AttachmentSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -54,7 +74,18 @@ export class AttachmentSchema extends BaseModel {
 }
 
 export class AuditLogSchema extends BaseModel {
-  static $columns = ['action', 'createdAt', 'entityId', 'entityType', 'id', 'ipAddress', 'newValues', 'oldValues', 'userAgent', 'userId'] as const
+  static $columns = [
+    'action',
+    'createdAt',
+    'entityId',
+    'entityType',
+    'id',
+    'ipAddress',
+    'newValues',
+    'oldValues',
+    'userAgent',
+    'userId',
+  ] as const
   $columns = AuditLogSchema.$columns
   @column()
   declare action: string
@@ -79,7 +110,33 @@ export class AuditLogSchema extends BaseModel {
 }
 
 export class EquipmentSchema extends BaseModel {
-  static $columns = ['assetTag', 'brand', 'createdAt', 'createdBy', 'currentResponsibleId', 'deletedAt', 'headquarterId', 'id', 'internalCode', 'lastMaintenanceAt', 'leaseContractNumber', 'leaseProvider', 'leaseUntil', 'locationId', 'model', 'nextMaintenanceAt', 'notes', 'ownershipType', 'purchaseDate', 'serial', 'status', 'type', 'updatedAt', 'updatedBy', 'warrantyUntil'] as const
+  static $columns = [
+    'assetTag',
+    'brand',
+    'createdAt',
+    'createdBy',
+    'currentResponsibleId',
+    'deletedAt',
+    'headquarterId',
+    'id',
+    'internalCode',
+    'lastMaintenanceAt',
+    'leaseContractNumber',
+    'leaseProvider',
+    'leaseUntil',
+    'locationId',
+    'model',
+    'nextMaintenanceAt',
+    'notes',
+    'ownershipType',
+    'purchaseDate',
+    'serial',
+    'status',
+    'type',
+    'updatedAt',
+    'updatedBy',
+    'warrantyUntil',
+  ] as const
   $columns = EquipmentSchema.$columns
   @column()
   declare assetTag: string | null
@@ -134,7 +191,17 @@ export class EquipmentSchema extends BaseModel {
 }
 
 export class EquipmentAssignmentSchema extends BaseModel {
-  static $columns = ['assignedAt', 'assignedBy', 'createdAt', 'equipmentId', 'id', 'notes', 'returnedAt', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'assignedAt',
+    'assignedBy',
+    'createdAt',
+    'equipmentId',
+    'id',
+    'notes',
+    'returnedAt',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = EquipmentAssignmentSchema.$columns
   @column.dateTime()
   declare assignedAt: DateTime
@@ -157,7 +224,19 @@ export class EquipmentAssignmentSchema extends BaseModel {
 }
 
 export class FailureReportSchema extends BaseModel {
-  static $columns = ['closedAt', 'createdAt', 'description', 'equipmentId', 'id', 'maintenanceRecordId', 'priority', 'reportedBy', 'status', 'title', 'updatedAt'] as const
+  static $columns = [
+    'closedAt',
+    'createdAt',
+    'description',
+    'equipmentId',
+    'id',
+    'maintenanceRecordId',
+    'priority',
+    'reportedBy',
+    'status',
+    'title',
+    'updatedAt',
+  ] as const
   $columns = FailureReportSchema.$columns
   @column.dateTime()
   declare closedAt: DateTime | null
@@ -184,7 +263,16 @@ export class FailureReportSchema extends BaseModel {
 }
 
 export class HeadquartersSchema extends BaseModel {
-  static $columns = ['address', 'city', 'createdAt', 'description', 'id', 'isActive', 'name', 'updatedAt'] as const
+  static $columns = [
+    'address',
+    'city',
+    'createdAt',
+    'description',
+    'id',
+    'isActive',
+    'name',
+    'updatedAt',
+  ] as const
   $columns = HeadquartersSchema.$columns
   @column()
   declare address: string | null
@@ -205,7 +293,17 @@ export class HeadquartersSchema extends BaseModel {
 }
 
 export class LocationSchema extends BaseModel {
-  static $columns = ['area', 'createdAt', 'description', 'floor', 'headquarterId', 'id', 'isActive', 'office', 'updatedAt'] as const
+  static $columns = [
+    'area',
+    'createdAt',
+    'description',
+    'floor',
+    'headquarterId',
+    'id',
+    'isActive',
+    'office',
+    'updatedAt',
+  ] as const
   $columns = LocationSchema.$columns
   @column()
   declare area: string | null
@@ -228,7 +326,27 @@ export class LocationSchema extends BaseModel {
 }
 
 export class MaintenanceRecordSchema extends BaseModel {
-  static $columns = ['actionsTaken', 'cost', 'createdAt', 'createdBy', 'description', 'diagnosis', 'equipmentId', 'id', 'maintenanceScheduleId', 'maintenanceType', 'nextMaintenanceAt', 'partsReplaced', 'performedAt', 'performedBy', 'priority', 'scheduledDate', 'status', 'updatedAt', 'updatedBy'] as const
+  static $columns = [
+    'actionsTaken',
+    'cost',
+    'createdAt',
+    'createdBy',
+    'description',
+    'diagnosis',
+    'equipmentId',
+    'id',
+    'maintenanceScheduleId',
+    'maintenanceType',
+    'nextMaintenanceAt',
+    'partsReplaced',
+    'performedAt',
+    'performedBy',
+    'priority',
+    'scheduledDate',
+    'status',
+    'updatedAt',
+    'updatedBy',
+  ] as const
   $columns = MaintenanceRecordSchema.$columns
   @column()
   declare actionsTaken: string | null
@@ -271,7 +389,21 @@ export class MaintenanceRecordSchema extends BaseModel {
 }
 
 export class MaintenanceScheduleSchema extends BaseModel {
-  static $columns = ['assignedTechnicianId', 'createdAt', 'createdBy', 'equipmentId', 'frequencyMonths', 'id', 'maintenanceType', 'notes', 'priority', 'scheduledFor', 'status', 'updatedAt', 'updatedBy'] as const
+  static $columns = [
+    'assignedTechnicianId',
+    'createdAt',
+    'createdBy',
+    'equipmentId',
+    'frequencyMonths',
+    'id',
+    'maintenanceType',
+    'notes',
+    'priority',
+    'scheduledFor',
+    'status',
+    'updatedAt',
+    'updatedBy',
+  ] as const
   $columns = MaintenanceScheduleSchema.$columns
   @column()
   declare assignedTechnicianId: string | null
@@ -332,7 +464,15 @@ export class RolePermissionSchema extends BaseModel {
 }
 
 export class RoleSchema extends BaseModel {
-  static $columns = ['createdAt', 'description', 'id', 'isActive', 'name', 'slug', 'updatedAt'] as const
+  static $columns = [
+    'createdAt',
+    'description',
+    'id',
+    'isActive',
+    'name',
+    'slug',
+    'updatedAt',
+  ] as const
   $columns = RoleSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -351,7 +491,21 @@ export class RoleSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'deletedAt', 'department', 'email', 'id', 'isActive', 'jobTitle', 'lastLoginAt', 'name', 'password', 'phone', 'roleId', 'updatedAt'] as const
+  static $columns = [
+    'createdAt',
+    'deletedAt',
+    'department',
+    'email',
+    'id',
+    'isActive',
+    'jobTitle',
+    'lastLoginAt',
+    'name',
+    'password',
+    'phone',
+    'roleId',
+    'updatedAt',
+  ] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

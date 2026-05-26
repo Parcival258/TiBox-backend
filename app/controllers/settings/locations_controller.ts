@@ -1,21 +1,24 @@
-import Location from '#models/location'
+import LocationService from '#services/settings/location_service'
 import { locationValidator } from '#validators/location'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class LocationsController {
+  private locationService = new LocationService()
+
   async index() {
-    return Location.query().preload('headquarter').orderBy('area', 'asc')
+    return this.locationService.list()
   }
 
   async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(locationValidator)
-    const location = await Location.create(payload)
+    const location = await this.locationService.create(payload)
 
     return response.created(location)
   }
 
   async show({ params, response }: HttpContext) {
-    const location = await Location.query().where('id', params.id).preload('headquarter').first()
+    const location = await this.locationService.findDetails(params.id)
+
     if (!location) {
       return response.notFound({ message: 'Location not found' })
     }
@@ -24,14 +27,12 @@ export default class LocationsController {
   }
 
   async update({ params, request, response }: HttpContext) {
-    const location = await Location.find(params.id)
+    const payload = await request.validateUsing(locationValidator)
+    const location = await this.locationService.update(params.id, payload)
+
     if (!location) {
       return response.notFound({ message: 'Location not found' })
     }
-
-    const payload = await request.validateUsing(locationValidator)
-    location.merge(payload)
-    await location.save()
 
     return location
   }

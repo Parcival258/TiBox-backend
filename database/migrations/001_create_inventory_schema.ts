@@ -2,12 +2,7 @@ import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
   async up() {
-    const uuidDefault = this.db.raw('uuid_generate_v4()') as never
-    const createTable = async (tableName: string, callback: (table: any) => void) => {
-      if (!(await this.schema.hasTable(tableName))) {
-        this.schema.createTable(tableName, callback)
-      }
-    }
+    const uuidDefault = this.raw('uuid_generate_v4()')
 
     await this.db.rawQuery('create extension if not exists "uuid-ossp"')
 
@@ -35,7 +30,7 @@ export default class extends BaseSchema {
       end $$;
     `)
 
-    await createTable('roles', (table) => {
+    this.schema.createTable('roles', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.string('name', 120).notNullable()
       table.string('slug', 120).notNullable().unique()
@@ -45,7 +40,7 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
 
-    await createTable('permissions', (table) => {
+    this.schema.createTable('permissions', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.string('name', 150).notNullable()
       table.string('slug', 150).notNullable().unique()
@@ -54,15 +49,20 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
 
-    await createTable('role_permissions', (table) => {
+    this.schema.createTable('role_permissions', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.uuid('role_id').notNullable().references('id').inTable('roles').onDelete('CASCADE')
-      table.uuid('permission_id').notNullable().references('id').inTable('permissions').onDelete('CASCADE')
+      table
+        .uuid('permission_id')
+        .notNullable()
+        .references('id')
+        .inTable('permissions')
+        .onDelete('CASCADE')
       table.timestamp('created_at').notNullable().defaultTo(this.now())
       table.unique(['role_id', 'permission_id'], { indexName: 'uq_role_permission' })
     })
 
-    await createTable('users', (table) => {
+    this.schema.createTable('users', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.uuid('role_id').nullable().references('id').inTable('roles').onDelete('SET NULL')
       table.string('name', 150).notNullable()
@@ -78,7 +78,7 @@ export default class extends BaseSchema {
       table.timestamp('deleted_at').nullable()
     })
 
-    await createTable('headquarters', (table) => {
+    this.schema.createTable('headquarters', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.string('name', 150).notNullable()
       table.string('city', 120).nullable()
@@ -89,9 +89,14 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
 
-    await createTable('locations', (table) => {
+    this.schema.createTable('locations', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
-      table.uuid('headquarter_id').notNullable().references('id').inTable('headquarters').onDelete('CASCADE')
+      table
+        .uuid('headquarter_id')
+        .notNullable()
+        .references('id')
+        .inTable('headquarters')
+        .onDelete('CASCADE')
       table.string('floor', 50).nullable()
       table.string('area', 120).nullable()
       table.string('office', 120).nullable()
@@ -101,7 +106,7 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
 
-    await createTable('equipment', (table) => {
+    this.schema.createTable('equipment', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.string('internal_code', 100).notNullable().unique()
       table.string('asset_tag', 100).nullable().unique()
@@ -111,9 +116,24 @@ export default class extends BaseSchema {
       table.string('model', 120).nullable()
       table.specificType('ownership_type', 'ownership_type_enum').notNullable().defaultTo('owned')
       table.specificType('status', 'equipment_status_enum').notNullable().defaultTo('active')
-      table.uuid('headquarter_id').nullable().references('id').inTable('headquarters').onDelete('SET NULL')
-      table.uuid('location_id').nullable().references('id').inTable('locations').onDelete('SET NULL')
-      table.uuid('current_responsible_id').nullable().references('id').inTable('users').onDelete('SET NULL')
+      table
+        .uuid('headquarter_id')
+        .nullable()
+        .references('id')
+        .inTable('headquarters')
+        .onDelete('SET NULL')
+      table
+        .uuid('location_id')
+        .nullable()
+        .references('id')
+        .inTable('locations')
+        .onDelete('SET NULL')
+      table
+        .uuid('current_responsible_id')
+        .nullable()
+        .references('id')
+        .inTable('users')
+        .onDelete('SET NULL')
       table.date('purchase_date').nullable()
       table.date('warranty_until').nullable()
       table.string('lease_provider', 150).nullable()
@@ -129,9 +149,14 @@ export default class extends BaseSchema {
       table.timestamp('deleted_at').nullable()
     })
 
-    await createTable('equipment_assignments', (table) => {
+    this.schema.createTable('equipment_assignments', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
-      table.uuid('equipment_id').notNullable().references('id').inTable('equipment').onDelete('CASCADE')
+      table
+        .uuid('equipment_id')
+        .notNullable()
+        .references('id')
+        .inTable('equipment')
+        .onDelete('CASCADE')
       table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE')
       table.uuid('assigned_by').nullable().references('id').inTable('users').onDelete('SET NULL')
       table.timestamp('assigned_at').notNullable().defaultTo(this.now())
@@ -141,14 +166,24 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
 
-    await createTable('maintenance_schedules', (table) => {
+    this.schema.createTable('maintenance_schedules', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
-      table.uuid('equipment_id').notNullable().references('id').inTable('equipment').onDelete('CASCADE')
+      table
+        .uuid('equipment_id')
+        .notNullable()
+        .references('id')
+        .inTable('equipment')
+        .onDelete('CASCADE')
       table.specificType('maintenance_type', 'maintenance_type_enum').notNullable()
       table.specificType('status', 'maintenance_status_enum').notNullable().defaultTo('scheduled')
       table.specificType('priority', 'maintenance_priority_enum').notNullable().defaultTo('medium')
       table.date('scheduled_for').notNullable()
-      table.uuid('assigned_technician_id').nullable().references('id').inTable('users').onDelete('SET NULL')
+      table
+        .uuid('assigned_technician_id')
+        .nullable()
+        .references('id')
+        .inTable('users')
+        .onDelete('SET NULL')
       table.integer('frequency_months').nullable()
       table.text('notes').nullable()
       table.uuid('created_by').nullable().references('id').inTable('users').onDelete('SET NULL')
@@ -157,10 +192,20 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
 
-    await createTable('maintenance_records', (table) => {
+    this.schema.createTable('maintenance_records', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
-      table.uuid('equipment_id').notNullable().references('id').inTable('equipment').onDelete('CASCADE')
-      table.uuid('maintenance_schedule_id').nullable().references('id').inTable('maintenance_schedules').onDelete('SET NULL')
+      table
+        .uuid('equipment_id')
+        .notNullable()
+        .references('id')
+        .inTable('equipment')
+        .onDelete('CASCADE')
+      table
+        .uuid('maintenance_schedule_id')
+        .nullable()
+        .references('id')
+        .inTable('maintenance_schedules')
+        .onDelete('SET NULL')
       table.specificType('maintenance_type', 'maintenance_type_enum').notNullable()
       table.specificType('status', 'maintenance_status_enum').notNullable().defaultTo('pending')
       table.specificType('priority', 'maintenance_priority_enum').notNullable().defaultTo('medium')
@@ -179,21 +224,31 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
 
-    await createTable('failure_reports', (table) => {
+    this.schema.createTable('failure_reports', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
-      table.uuid('equipment_id').notNullable().references('id').inTable('equipment').onDelete('CASCADE')
+      table
+        .uuid('equipment_id')
+        .notNullable()
+        .references('id')
+        .inTable('equipment')
+        .onDelete('CASCADE')
       table.uuid('reported_by').nullable().references('id').inTable('users').onDelete('SET NULL')
       table.string('title', 150).notNullable()
       table.text('description').notNullable()
       table.string('status', 50).notNullable().defaultTo('open')
       table.specificType('priority', 'maintenance_priority_enum').notNullable().defaultTo('medium')
-      table.uuid('maintenance_record_id').nullable().references('id').inTable('maintenance_records').onDelete('SET NULL')
+      table
+        .uuid('maintenance_record_id')
+        .nullable()
+        .references('id')
+        .inTable('maintenance_records')
+        .onDelete('SET NULL')
       table.timestamp('created_at').notNullable().defaultTo(this.now())
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
       table.timestamp('closed_at').nullable()
     })
 
-    await createTable('attachments', (table) => {
+    this.schema.createTable('attachments', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.specificType('entity_type', 'attachment_entity_enum').notNullable()
       table.uuid('entity_id').notNullable()
@@ -206,7 +261,7 @@ export default class extends BaseSchema {
       table.check('size_bytes is null or size_bytes >= 0', [], 'chk_attachment_size')
     })
 
-    await createTable('access_tokens', (table) => {
+    this.schema.createTable('access_tokens', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE')
       table.string('name', 150).notNullable()
@@ -218,7 +273,7 @@ export default class extends BaseSchema {
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
 
-    await createTable('audit_logs', (table) => {
+    this.schema.createTable('audit_logs', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.uuid('user_id').nullable().references('id').inTable('users').onDelete('SET NULL')
       table.string('action', 120).notNullable()
@@ -231,7 +286,8 @@ export default class extends BaseSchema {
       table.timestamp('created_at').notNullable().defaultTo(this.now())
     })
 
-    await this.db.rawQuery(`
+    this.defer((db) =>
+      db.rawQuery(`
       create index if not exists idx_users_email on users(email);
       create index if not exists idx_users_role_id on users(role_id);
       create index if not exists idx_locations_headquarter_id on locations(headquarter_id);
@@ -264,6 +320,7 @@ export default class extends BaseSchema {
       create index if not exists idx_audit_logs_action on audit_logs(action);
       create index if not exists idx_audit_logs_created_at on audit_logs(created_at);
     `)
+    )
   }
 
   async down() {
