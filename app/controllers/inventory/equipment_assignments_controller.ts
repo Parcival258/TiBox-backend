@@ -30,6 +30,7 @@ export default class EquipmentAssignmentsController {
       const assignment = await this.assignmentService.assign(params.equipment_id, {
         ...payload,
         assignedBy,
+        audit: this.auditContext({ auth, request }),
       })
 
       return response.created(assignment)
@@ -42,17 +43,28 @@ export default class EquipmentAssignmentsController {
     }
   }
 
-  async returnCurrent({ params, request, response }: HttpContext) {
+  async returnCurrent({ auth, params, request, response }: HttpContext) {
     const payload = await request.validateUsing(returnEquipmentValidator)
 
     try {
-      return await this.assignmentService.returnCurrent(params.equipment_id, payload)
+      return await this.assignmentService.returnCurrent(params.equipment_id, {
+        ...payload,
+        audit: this.auditContext({ auth, request }),
+      })
     } catch (error) {
       if (error instanceof EquipmentAssignmentError) {
         return response.status(error.status).send({ message: error.message })
       }
 
       throw error
+    }
+  }
+
+  private auditContext({ auth, request }: Pick<HttpContext, 'auth' | 'request'>) {
+    return {
+      userId: auth.isAuthenticated ? auth.getUserOrFail().id : null,
+      ipAddress: request.ip(),
+      userAgent: request.header('user-agent') ?? null,
     }
   }
 }

@@ -2,6 +2,7 @@ import Equipment from '#models/equipment'
 import Headquarter from '#models/headquarter'
 import Location from '#models/location'
 import User from '#models/user'
+import AuditService, { type AuditContext } from '#services/audit/audit_service'
 import { DateTime } from 'luxon'
 
 type EquipmentPayload = Partial<Equipment>
@@ -47,6 +48,8 @@ export class EquipmentValidationError extends Error {
 }
 
 export default class EquipmentService {
+  private auditService = new AuditService()
+
   list(filters: ListEquipmentFilters) {
     const page = filters.page ?? 1
     const perPage = filters.perPage ?? 20
@@ -110,10 +113,20 @@ export default class EquipmentService {
     return query.paginate(page, perPage)
   }
 
-  async create(payload: EquipmentPayload) {
+  async create(payload: EquipmentPayload, audit?: AuditContext) {
     await this.validateBusinessRules(payload)
 
-    return Equipment.create(payload)
+    const equipment = await Equipment.create(payload)
+
+    await this.auditService.record({
+      ...audit,
+      action: 'equipment.created',
+      entityType: 'equipment',
+      entityId: equipment.id,
+      newValues: equipment.$attributes,
+    })
+
+    return equipment
   }
 
   findDetails(id: string) {
@@ -133,12 +146,14 @@ export default class EquipmentService {
     return Equipment.query().where('id', id).whereNull('deleted_at').first()
   }
 
-  async update(id: string, payload: EquipmentPayload) {
+  async update(id: string, payload: EquipmentPayload, audit?: AuditContext) {
     const equipment = await this.findActive(id)
 
     if (!equipment) {
       return null
     }
+
+    const oldValues = { ...equipment.$attributes }
 
     await this.validateBusinessRules(
       {
@@ -152,18 +167,41 @@ export default class EquipmentService {
     equipment.merge(payload)
     await equipment.save()
 
+    await this.auditService.record({
+      ...audit,
+      action: 'equipment.updated',
+      entityType: 'equipment',
+      entityId: equipment.id,
+      oldValues,
+      newValues: equipment.$attributes,
+    })
+
     return equipment
   }
 
-  async softDelete(id: string) {
+  async softDelete(id: string, audit?: AuditContext) {
     const equipment = await this.findActive(id)
 
     if (!equipment) {
       return null
     }
 
+    const oldValues = { ...equipment.$attributes }
+
     equipment.deletedAt = DateTime.local()
     await equipment.save()
+
+    await this.auditService.record({
+      ...audit,
+      action: 'equipment.deleted',
+      entityType: 'equipment',
+      entityId: equipment.id,
+      oldValues,
+      newValues: {
+        ...equipment.$attributes,
+        deletedAt: equipment.deletedAt,
+      },
+    })
 
     return equipment
   }

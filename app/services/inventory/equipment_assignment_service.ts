@@ -1,6 +1,7 @@
 import Equipment from '#models/equipment'
 import EquipmentAssignment from '#models/equipment_assignment'
 import User from '#models/user'
+import AuditService, { type AuditContext } from '#services/audit/audit_service'
 import db from '@adonisjs/lucid/services/db'
 import { DateTime } from 'luxon'
 
@@ -8,10 +9,12 @@ type AssignEquipmentPayload = {
   userId: string
   assignedAt?: DateTime
   assignedBy?: string | null
+  audit?: AuditContext
   notes?: string
 }
 
 type ReturnEquipmentPayload = {
+  audit?: AuditContext
   returnedAt?: DateTime
   notes?: string
 }
@@ -26,6 +29,8 @@ export class EquipmentAssignmentError extends Error {
 }
 
 export default class EquipmentAssignmentService {
+  private auditService = new AuditService()
+
   listByEquipment(equipmentId: string) {
     return this.ensureEquipmentExists(equipmentId).then(() => {
       return EquipmentAssignment.query()
@@ -66,6 +71,7 @@ export default class EquipmentAssignmentService {
         throw new EquipmentAssignmentError('Equipment already has an active assignment', 409)
       }
 
+      const previousResponsibleId = equipment.currentResponsibleId
       const assignment = await EquipmentAssignment.create(
         {
           equipmentId: equipment.id,
@@ -84,6 +90,18 @@ export default class EquipmentAssignmentService {
       assignment.useTransaction(trx)
       await assignment.load('user')
       await assignment.load('assigner')
+
+      await this.auditService.record({
+        ...payload.audit,
+        action: 'equipment.assigned',
+        entityType: 'equipment_assignment',
+        entityId: assignment.id,
+        oldValues: {
+          equipmentId: equipment.id,
+          currentResponsibleId: previousResponsibleId,
+        },
+        newValues: assignment.$attributes,
+      })
 
       return assignment
     })
@@ -109,6 +127,11 @@ export default class EquipmentAssignmentService {
         throw new EquipmentAssignmentError('Equipment has no active assignment', 404)
       }
 
+      const oldValues = {
+        assignment: { ...assignment.$attributes },
+        equipment: { currentResponsibleId: equipment.currentResponsibleId },
+      }
+
       assignment.useTransaction(trx)
       assignment.returnedAt = payload.returnedAt ?? DateTime.local()
 
@@ -127,6 +150,18 @@ export default class EquipmentAssignmentService {
       assignment.useTransaction(trx)
       await assignment.load('user')
       await assignment.load('assigner')
+
+      await this.auditService.record({
+        ...payload.audit,
+        action: 'equipment.returned',
+        entityType: 'equipment_assignment',
+        entityId: assignment.id,
+        oldValues,
+        newValues: {
+          assignment: assignment.$attributes,
+          equipment: { currentResponsibleId: equipment.currentResponsibleId },
+        },
+      })
 
       return assignment
     })

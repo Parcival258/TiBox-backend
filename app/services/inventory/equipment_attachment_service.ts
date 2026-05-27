@@ -1,11 +1,13 @@
 import Attachment from '#models/attachment'
 import Equipment from '#models/equipment'
+import AuditService, { type AuditContext } from '#services/audit/audit_service'
 import app from '@adonisjs/core/services/app'
 import type { MultipartFile } from '@adonisjs/bodyparser'
 import string from '@adonisjs/core/helpers/string'
 import { unlink } from 'node:fs/promises'
 
 type UploadEquipmentAttachmentPayload = {
+  audit?: AuditContext
   file: MultipartFile
   uploadedBy?: string | null
 }
@@ -20,6 +22,8 @@ export class EquipmentAttachmentError extends Error {
 }
 
 export default class EquipmentAttachmentService {
+  private auditService = new AuditService()
+
   async list(equipmentId: string) {
     await this.ensureEquipmentExists(equipmentId)
 
@@ -45,7 +49,7 @@ export default class EquipmentAttachmentService {
       throw new EquipmentAttachmentError('Attachment could not be stored')
     }
 
-    return Attachment.create({
+    const attachment = await Attachment.create({
       entityType: 'equipment',
       entityId: equipmentId,
       fileName: payload.file.clientName,
@@ -54,6 +58,16 @@ export default class EquipmentAttachmentService {
       sizeBytes: payload.file.size,
       uploadedBy: payload.uploadedBy ?? null,
     })
+
+    await this.auditService.record({
+      ...payload.audit,
+      action: 'equipment_attachment.uploaded',
+      entityType: 'attachment',
+      entityId: attachment.id,
+      newValues: attachment.$attributes,
+    })
+
+    return attachment
   }
 
   async find(equipmentId: string, attachmentId: string) {
@@ -73,8 +87,9 @@ export default class EquipmentAttachmentService {
     return attachment
   }
 
-  async delete(equipmentId: string, attachmentId: string) {
+  async delete(equipmentId: string, attachmentId: string, audit?: AuditContext) {
     const attachment = await this.find(equipmentId, attachmentId)
+    const oldValues = { ...attachment.$attributes }
 
     await attachment.delete()
 
@@ -83,6 +98,14 @@ export default class EquipmentAttachmentService {
     } catch {
       // The DB record is the source of truth; missing files should not block deletion.
     }
+
+    await this.auditService.record({
+      ...audit,
+      action: 'equipment_attachment.deleted',
+      entityType: 'attachment',
+      entityId: attachment.id,
+      oldValues,
+    })
 
     return attachment
   }

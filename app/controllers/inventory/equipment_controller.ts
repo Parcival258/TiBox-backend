@@ -15,11 +15,14 @@ export default class EquipmentController {
     return this.equipmentService.list(filters)
   }
 
-  async store({ request, response }: HttpContext) {
+  async store({ auth, request, response }: HttpContext) {
     const payload = await request.validateUsing(createEquipmentValidator)
 
     try {
-      const equipment = await this.equipmentService.create(payload)
+      const equipment = await this.equipmentService.create(
+        payload,
+        this.auditContext({ auth, request })
+      )
 
       return response.created(equipment)
     } catch (error) {
@@ -44,11 +47,15 @@ export default class EquipmentController {
     return equipment
   }
 
-  async update({ params, request, response }: HttpContext) {
+  async update({ auth, params, request, response }: HttpContext) {
     const payload = await request.validateUsing(updateEquipmentValidator)
 
     try {
-      const equipment = await this.equipmentService.update(params.id, payload)
+      const equipment = await this.equipmentService.update(
+        params.id,
+        payload,
+        this.auditContext({ auth, request })
+      )
 
       if (!equipment) {
         return response.notFound({ message: 'Equipment not found' })
@@ -67,13 +74,24 @@ export default class EquipmentController {
     }
   }
 
-  async destroy({ params, response }: HttpContext) {
-    const equipment = await this.equipmentService.softDelete(params.id)
+  async destroy({ auth, params, request, response }: HttpContext) {
+    const equipment = await this.equipmentService.softDelete(
+      params.id,
+      this.auditContext({ auth, request })
+    )
 
     if (!equipment) {
       return response.notFound({ message: 'Equipment not found' })
     }
 
     return response.noContent()
+  }
+
+  private auditContext({ auth, request }: Pick<HttpContext, 'auth' | 'request'>) {
+    return {
+      userId: auth.isAuthenticated ? auth.getUserOrFail().id : null,
+      ipAddress: request.ip(),
+      userAgent: request.header('user-agent') ?? null,
+    }
   }
 }

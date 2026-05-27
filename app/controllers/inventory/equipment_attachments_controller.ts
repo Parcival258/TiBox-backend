@@ -21,6 +21,7 @@ export default class EquipmentAttachmentsController {
 
     try {
       const attachment = await this.attachmentService.upload(params.equipment_id, {
+        audit: this.auditContext({ auth, request }),
         file: payload.file,
         uploadedBy,
       })
@@ -41,13 +42,25 @@ export default class EquipmentAttachmentsController {
     }
   }
 
-  async destroy({ params, response }: HttpContext) {
+  async destroy({ auth, params, request, response }: HttpContext) {
     try {
-      await this.attachmentService.delete(params.equipment_id, params.id)
+      await this.attachmentService.delete(
+        params.equipment_id,
+        params.id,
+        this.auditContext({ auth, request })
+      )
 
       return response.noContent()
     } catch (error) {
       return this.handleAttachmentError(error, response)
+    }
+  }
+
+  private auditContext({ auth, request }: Pick<HttpContext, 'auth' | 'request'>) {
+    return {
+      userId: auth.isAuthenticated ? auth.getUserOrFail().id : null,
+      ipAddress: request.ip(),
+      userAgent: request.header('user-agent') ?? null,
     }
   }
 
