@@ -31,4 +31,17 @@ export default class LocationService {
 
     return location
   }
+
+  async deactivate(id: string) {
+    const location = await this.find(id)
+
+    if (!location) {
+      return null
+    }
+
+    location.isActive = false
+    await location.save()
+
+    return location
+  }
 }

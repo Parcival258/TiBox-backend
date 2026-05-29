@@ -130,6 +130,7 @@ export class EquipmentSchema extends BaseModel {
     'notes',
     'ownershipType',
     'purchaseDate',
+    'secondaryResponsibleId',
     'serial',
     'status',
     'type',
@@ -176,6 +177,8 @@ export class EquipmentSchema extends BaseModel {
   declare ownershipType: any
   @column.date()
   declare purchaseDate: DateTime | null
+  @column()
+  declare secondaryResponsibleId: string | null
   @column()
   declare serial: string
   @column()

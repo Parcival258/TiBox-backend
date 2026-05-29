@@ -36,4 +36,14 @@ export default class LocationsController {
 
     return location
   }
+
+  async destroy({ params, response }: HttpContext) {
+    const location = await this.locationService.deactivate(params.id)
+
+    if (!location) {
+      return response.notFound({ message: 'Location not found' })
+    }
+
+    return response.noContent()
+  }
 }

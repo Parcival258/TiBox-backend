@@ -55,6 +55,11 @@ class UserModel extends BaseModel {
   })
   declare assignedEquipment: HasMany<typeof Equipment>
 
+  @hasMany(() => Equipment, {
+    foreignKey: 'secondaryResponsibleId',
+  })
+  declare secondaryAssignedEquipment: HasMany<typeof Equipment>
+
   get fullName() {
     return this.name
   }

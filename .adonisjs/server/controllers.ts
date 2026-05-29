@@ -12,6 +12,7 @@ export const controllers = {
   inventory: {
     EquipmentAssignments: () => import('#controllers/inventory/equipment_assignments_controller'),
     EquipmentAttachments: () => import('#controllers/inventory/equipment_attachments_controller'),
+    EquipmentCatalogs: () => import('#controllers/inventory/equipment_catalogs_controller'),
     Equipment: () => import('#controllers/inventory/equipment_controller'),
   },
   reports: {

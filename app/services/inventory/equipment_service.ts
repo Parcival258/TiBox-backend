@@ -16,6 +16,7 @@ type ListEquipmentFilters = {
   headquarterId?: string
   locationId?: string
   currentResponsibleId?: string
+  secondaryResponsibleId?: string
   warrantyUntilBefore?: DateTime
   leaseUntilBefore?: DateTime
   page?: number
@@ -61,6 +62,7 @@ export default class EquipmentService {
       .preload('headquarter')
       .preload('location')
       .preload('currentResponsible')
+      .preload('secondaryResponsible')
       .orderBy(orderBy, orderDirection)
 
     if (filters.status) {
@@ -91,6 +93,10 @@ export default class EquipmentService {
       query.where('current_responsible_id', filters.currentResponsibleId)
     }
 
+    if (filters.secondaryResponsibleId) {
+      query.where('secondary_responsible_id', filters.secondaryResponsibleId)
+    }
+
     if (filters.warrantyUntilBefore) {
       query.where('warranty_until', '<=', filters.warrantyUntilBefore.toSQLDate()!)
     }
@@ -116,7 +122,11 @@ export default class EquipmentService {
   async create(payload: EquipmentPayload, audit?: AuditContext) {
     await this.validateBusinessRules(payload)
 
-    const equipment = await Equipment.create(payload)
+    const equipment = await Equipment.create({
+      ...payload,
+      createdBy: audit?.userId ?? payload.createdBy,
+      updatedBy: audit?.userId ?? payload.updatedBy,
+    })
 
     await this.auditService.record({
       ...audit,
@@ -136,6 +146,7 @@ export default class EquipmentService {
       .preload('headquarter')
       .preload('location')
       .preload('currentResponsible')
+      .preload('secondaryResponsible')
       .preload('assignments')
       .preload('maintenanceSchedules')
       .preload('maintenanceRecords')
@@ -164,7 +175,10 @@ export default class EquipmentService {
       equipment.id
     )
 
-    equipment.merge(payload)
+    equipment.merge({
+      ...payload,
+      updatedBy: audit?.userId ?? payload.updatedBy,
+    })
     await equipment.save()
 
     await this.auditService.record({
@@ -216,6 +230,7 @@ export default class EquipmentService {
       this.ensureExists(errors, 'headquarterId', Headquarter, payload.headquarterId),
       this.ensureExists(errors, 'locationId', Location, payload.locationId),
       this.ensureExists(errors, 'currentResponsibleId', User, payload.currentResponsibleId),
+      this.ensureExists(errors, 'secondaryResponsibleId', User, payload.secondaryResponsibleId),
     ])
 
     if (payload.headquarterId && payload.locationId) {

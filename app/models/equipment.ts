@@ -54,6 +54,9 @@ export default class Equipment extends BaseModel {
   @column()
   declare currentResponsibleId: string | null
 
+  @column()
+  declare secondaryResponsibleId: string | null
+
   @column.date()
   declare purchaseDate: DateTime | null
 
@@ -103,6 +106,11 @@ export default class Equipment extends BaseModel {
     foreignKey: 'currentResponsibleId',
   })
   declare currentResponsible: BelongsTo<typeof User>
+
+  @belongsTo(() => User, {
+    foreignKey: 'secondaryResponsibleId',
+  })
+  declare secondaryResponsible: BelongsTo<typeof User>
 
   @hasMany(() => EquipmentAssignment)
   declare assignments: HasMany<typeof EquipmentAssignment>

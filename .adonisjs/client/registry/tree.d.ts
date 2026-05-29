@@ -26,6 +26,7 @@ export interface ApiDefinition {
       store: typeof routes['settings.headquarters.store']
       show: typeof routes['settings.headquarters.show']
       update: typeof routes['settings.headquarters.update']
+      patch: typeof routes['settings.headquarters.patch']
       destroy: typeof routes['settings.headquarters.destroy']
     }
     locations: {
@@ -33,16 +34,31 @@ export interface ApiDefinition {
       store: typeof routes['settings.locations.store']
       show: typeof routes['settings.locations.show']
       update: typeof routes['settings.locations.update']
+      patch: typeof routes['settings.locations.patch']
       destroy: typeof routes['settings.locations.destroy']
     }
   }
   inventory: {
     equipment: {
+      catalogs: typeof routes['inventory.equipment.catalogs']
       index: typeof routes['inventory.equipment.index']
       store: typeof routes['inventory.equipment.store']
+      lifeSheet: typeof routes['inventory.equipment.life_sheet']
       show: typeof routes['inventory.equipment.show']
       update: typeof routes['inventory.equipment.update']
+      patch: typeof routes['inventory.equipment.patch']
       destroy: typeof routes['inventory.equipment.destroy']
+      assignments: {
+        index: typeof routes['inventory.equipment.assignments.index']
+        store: typeof routes['inventory.equipment.assignments.store']
+        returnCurrent: typeof routes['inventory.equipment.assignments.return_current']
+      }
+      attachments: {
+        index: typeof routes['inventory.equipment.attachments.index']
+        store: typeof routes['inventory.equipment.attachments.store']
+        show: typeof routes['inventory.equipment.attachments.show']
+        destroy: typeof routes['inventory.equipment.attachments.destroy']
+      }
     }
   }
 }

@@ -27,4 +27,17 @@ export default class HeadquarterService {
 
     return headquarter
   }
+
+  async deactivate(id: string) {
+    const headquarter = await this.find(id)
+
+    if (!headquarter) {
+      return null
+    }
+
+    headquarter.isActive = false
+    await headquarter.save()
+
+    return headquarter
+  }
 }

@@ -1,4 +1,5 @@
 import EquipmentService, { EquipmentValidationError } from '#services/inventory/equipment_service'
+import EquipmentLifeSheetService from '#services/inventory/equipment_life_sheet_service'
 import {
   createEquipmentValidator,
   listEquipmentValidator,
@@ -8,6 +9,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 export default class EquipmentController {
   private equipmentService = new EquipmentService()
+  private lifeSheetService = new EquipmentLifeSheetService()
 
   async index({ request }: HttpContext) {
     const filters = await request.validateUsing(listEquipmentValidator)
@@ -45,6 +47,16 @@ export default class EquipmentController {
     }
 
     return equipment
+  }
+
+  async lifeSheet({ params, response }: HttpContext) {
+    const lifeSheet = await this.lifeSheetService.getByEquipmentId(params.id)
+
+    if (!lifeSheet) {
+      return response.notFound({ message: 'Equipment not found' })
+    }
+
+    return lifeSheet
   }
 
   async update({ auth, params, request, response }: HttpContext) {

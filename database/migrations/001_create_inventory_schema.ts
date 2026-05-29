@@ -78,6 +78,7 @@ export default class extends BaseSchema {
       table.timestamp('deleted_at').nullable()
     })
 
+    //sede
     this.schema.createTable('headquarters', (table) => {
       table.uuid('id').primary().defaultTo(uuidDefault)
       table.string('name', 150).notNullable()

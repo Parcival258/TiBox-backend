@@ -7,7 +7,7 @@ export default class extends BaseSeeder {
       {
         name: 'Administrador',
         slug: 'admin',
-        description: 'acceso completo al sistema',
+        description: 'Acceso completo al sistema.',
         isActive: true,
       },
       {
@@ -18,23 +18,23 @@ export default class extends BaseSeeder {
         isActive: true,
       },
       {
-        name: 'Técnico de mantenimiento',
+        name: 'Tecnico de mantenimiento',
         slug: 'maintenance_technician',
         description:
-          'Gestiona mantenimientos programados, registro de mantenimientos y reportes de fallas ',
+          'Gestiona mantenimientos programados, registros de mantenimiento y reportes de fallas.',
         isActive: true,
       },
       {
         name: 'Usuario',
         slug: 'user',
-        description: 'Consulta sus equipos y reporta fallas',
+        description: 'Consulta sus equipos y reporta fallas.',
         isActive: true,
       },
       {
         name: 'Auditor',
         slug: 'auditor',
         description:
-          'consulta informacion del sistema y revisa registros de auditoria sin modificar datos',
+          'Consulta informacion del sistema y revisa registros de auditoria sin modificar datos.',
         isActive: true,
       },
     ])

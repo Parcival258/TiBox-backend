@@ -8,7 +8,10 @@ const ProfileController = () => import('#controllers/auth/profile_controller')
 export default function authRoutes() {
   router
     .group(() => {
-      router.post('signup', [NewAccountController, 'store'])
+      router
+        .post('signup', [NewAccountController, 'store'])
+        .use(middleware.auth())
+        .use(middleware.permission({ permissions: ['users.create'] }))
       router.post('login', [SessionController, 'login'])
       router.post('logout', [SessionController, 'logout']).use(middleware.auth())
     })

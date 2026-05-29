@@ -13,7 +13,13 @@ export default class AccountService {
   }
 
   async validateLogin(email: string, password: string) {
-    const user = await User.verifyCredentials(email, password)
+    let user: User
+
+    try {
+      user = await User.verifyCredentials(email, password)
+    } catch {
+      return null
+    }
 
     if (!user.isActive || user.deletedAt) {
       return null

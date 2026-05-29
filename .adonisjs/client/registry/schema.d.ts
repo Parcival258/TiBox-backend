@@ -116,7 +116,19 @@ export interface Registry {
     }
   }
   'settings.headquarters.update': {
-    methods: ["PUT","PATCH"]
+    methods: ["PUT"]
+    pattern: '/api/v1/headquarters/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/headquarter').headquarterValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/headquarter').headquarterValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/settings/headquarters_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/settings/headquarters_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'settings.headquarters.patch': {
+    methods: ["PATCH"]
     pattern: '/api/v1/headquarters/:id'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/headquarter').headquarterValidator)>>
@@ -176,7 +188,19 @@ export interface Registry {
     }
   }
   'settings.locations.update': {
-    methods: ["PUT","PATCH"]
+    methods: ["PUT"]
+    pattern: '/api/v1/locations/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/location').locationValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/location').locationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/settings/locations_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/settings/locations_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'settings.locations.patch': {
+    methods: ["PATCH"]
     pattern: '/api/v1/locations/:id'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/location').locationValidator)>>
@@ -197,6 +221,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/settings/locations_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/settings/locations_controller').default['destroy']>>>
+    }
+  }
+  'inventory.equipment.catalogs': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment/catalogs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_catalogs_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_catalogs_controller').default['index']>>>
     }
   }
   'inventory.equipment.index': {
@@ -223,6 +259,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'inventory.equipment.life_sheet': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment/:id/life-sheet'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['lifeSheet']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['lifeSheet']>>>
+    }
+  }
   'inventory.equipment.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/equipment/:id'
@@ -236,7 +284,19 @@ export interface Registry {
     }
   }
   'inventory.equipment.update': {
-    methods: ["PUT","PATCH"]
+    methods: ["PUT"]
+    pattern: '/api/v1/equipment/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment').updateEquipmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment').updateEquipmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment.patch': {
+    methods: ["PATCH"]
     pattern: '/api/v1/equipment/:id'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/equipment').updateEquipmentValidator)>>
@@ -257,6 +317,90 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['destroy']>>>
+    }
+  }
+  'inventory.equipment.assignments.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment/:equipment_id/assignments'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { equipment_id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_assignments_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_assignments_controller').default['index']>>>
+    }
+  }
+  'inventory.equipment.assignments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/equipment/:equipment_id/assignments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_assignment').assignEquipmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { equipment_id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_assignment').assignEquipmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_assignments_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_assignments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment.assignments.return_current': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/equipment/:equipment_id/assignments/current/return'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_assignment').returnEquipmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { equipment_id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_assignment').returnEquipmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_assignments_controller').default['returnCurrent']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_assignments_controller').default['returnCurrent']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment.attachments.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment/:equipment_id/attachments'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { equipment_id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['index']>>>
+    }
+  }
+  'inventory.equipment.attachments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/equipment/:equipment_id/attachments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/attachment').uploadEquipmentAttachmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { equipment_id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/attachment').uploadEquipmentAttachmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment.attachments.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment/:equipment_id/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { equipment_id: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['show']>>>
+    }
+  }
+  'inventory.equipment.attachments.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/equipment/:equipment_id/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { equipment_id: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['destroy']>>>
     }
   }
 }

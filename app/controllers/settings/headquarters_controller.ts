@@ -36,4 +36,14 @@ export default class HeadquartersController {
 
     return headquarter
   }
+
+  async destroy({ params, response }: HttpContext) {
+    const headquarter = await this.headquarterService.deactivate(params.id)
+
+    if (!headquarter) {
+      return response.notFound({ message: 'Headquarter not found' })
+    }
+
+    return response.noContent()
+  }
 }
