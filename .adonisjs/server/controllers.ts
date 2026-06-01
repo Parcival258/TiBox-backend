@@ -4,6 +4,9 @@
  */
 
 export const controllers = {
+  alerts: {
+    Alerts: () => import('#controllers/alerts/alerts_controller'),
+  },
   auth: {
     NewAccount: () => import('#controllers/auth/new_account_controller'),
     Profile: () => import('#controllers/auth/profile_controller'),
@@ -14,6 +17,10 @@ export const controllers = {
     EquipmentAttachments: () => import('#controllers/inventory/equipment_attachments_controller'),
     EquipmentCatalogs: () => import('#controllers/inventory/equipment_catalogs_controller'),
     Equipment: () => import('#controllers/inventory/equipment_controller'),
+    FailureReports: () => import('#controllers/inventory/failure_reports_controller'),
+    MaintenanceRecordAttachments: () => import('#controllers/inventory/maintenance_record_attachments_controller'),
+    MaintenanceRecords: () => import('#controllers/inventory/maintenance_records_controller'),
+    MaintenanceSchedules: () => import('#controllers/inventory/maintenance_schedules_controller'),
   },
   reports: {
     Dashboard: () => import('#controllers/reports/dashboard_controller'),

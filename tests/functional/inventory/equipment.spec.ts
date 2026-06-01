@@ -38,6 +38,11 @@ type EquipmentCatalogsResponse = {
 type EquipmentResponse = {
   id: string
   createdBy: string | null
+  ipAddresses: string | null
+  macAddress: string | null
+  processor: string | null
+  storageCapacityGb: number | null
+  storageType: string | null
   updatedBy: string | null
 }
 
@@ -59,9 +64,15 @@ type EquipmentLifeSheetResponse = {
   auditLogs: unknown[]
   equipment: {
     id: string
+    ipAddresses: string | null
+    macAddress: string | null
+    processor: string | null
     secondaryResponsibleId: string | null
+    storageCapacityGb: number | null
+    storageType: string | null
   }
   failureReports: unknown[]
+  maintenanceRecordAttachments: unknown[]
   maintenanceRecords: unknown[]
   maintenanceSchedules: unknown[]
   summary: {
@@ -70,6 +81,10 @@ type EquipmentLifeSheetResponse = {
     totalAttachments: number
     totalMaintenanceRecords: number
   }
+  technicalHistory: Array<{
+    sourceId: string
+    type: string
+  }>
 }
 
 const uniqueSuffix = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -161,6 +176,11 @@ function equipmentPayload(context: Awaited<ReturnType<typeof createInventoryCont
     type: 'Laptop',
     brand: 'Lenovo',
     model: 'ThinkPad',
+    ipAddresses: '192.168.1.10, 10.0.0.10',
+    macAddress: 'AA:BB:CC:DD:EE:FF',
+    processor: 'Intel Core i7',
+    storageType: 'SSD',
+    storageCapacityGb: 512,
     ownershipType: 'owned',
     status: 'active',
     headquarterId: context.headquarter.id,
@@ -186,10 +206,20 @@ test.group('Inventory equipment', (group) => {
       internalCode: `EQ-${context.suffix}`,
       currentResponsibleId: context.user.id,
       secondaryResponsibleId: context.secondaryUser.id,
+      ipAddresses: '192.168.1.10, 10.0.0.10',
+      macAddress: 'AA:BB:CC:DD:EE:FF',
+      processor: 'Intel Core i7',
+      storageType: 'SSD',
+      storageCapacityGb: 512,
     })
 
     const equipment = await Equipment.findByOrFail('internal_code', `EQ-${context.suffix}`)
     assert.equal(equipment.secondaryResponsibleId, context.secondaryUser.id)
+    assert.equal(equipment.ipAddresses, '192.168.1.10, 10.0.0.10')
+    assert.equal(equipment.macAddress, 'AA:BB:CC:DD:EE:FF')
+    assert.equal(equipment.processor, 'Intel Core i7')
+    assert.equal(equipment.storageType, 'SSD')
+    assert.equal(equipment.storageCapacityGb, 512)
     assert.equal(equipment.createdBy, actor.id)
     assert.equal(equipment.updatedBy, actor.id)
 
@@ -296,6 +326,11 @@ test.group('Inventory equipment', (group) => {
     const response = await client.patch(`/api/v1/equipment/${equipmentId}`).loginAs(actor).json({
       brand: 'HP',
       model: 'EliteBook',
+      ipAddresses: '172.16.0.20',
+      macAddress: '11:22:33:44:55:66',
+      processor: 'AMD Ryzen 7',
+      storageType: 'NVMe',
+      storageCapacityGb: 1024,
       notes: 'Equipo actualizado desde prueba funcional.',
     })
 
@@ -303,11 +338,21 @@ test.group('Inventory equipment', (group) => {
     response.assertBodyContains({
       brand: 'HP',
       model: 'EliteBook',
+      ipAddresses: '172.16.0.20',
+      macAddress: '11:22:33:44:55:66',
+      processor: 'AMD Ryzen 7',
+      storageType: 'NVMe',
+      storageCapacityGb: 1024,
       updatedBy: actor.id,
     })
 
     const equipment = await Equipment.findOrFail(equipmentId)
     assert.equal(equipment.brand, 'HP')
+    assert.equal(equipment.ipAddresses, '172.16.0.20')
+    assert.equal(equipment.macAddress, '11:22:33:44:55:66')
+    assert.equal(equipment.processor, 'AMD Ryzen 7')
+    assert.equal(equipment.storageType, 'NVMe')
+    assert.equal(equipment.storageCapacityGb, 1024)
     assert.equal(equipment.updatedBy, actor.id)
 
     const auditLog = await AuditLog.query()
@@ -519,10 +564,19 @@ test.group('Inventory equipment', (group) => {
 
     assert.equal(body.equipment.id, equipmentId)
     assert.equal(body.equipment.secondaryResponsibleId, context.secondaryUser.id)
+    assert.equal(body.equipment.ipAddresses, '192.168.1.10, 10.0.0.10')
+    assert.equal(body.equipment.macAddress, 'AA:BB:CC:DD:EE:FF')
+    assert.equal(body.equipment.processor, 'Intel Core i7')
+    assert.equal(body.equipment.storageType, 'SSD')
+    assert.equal(body.equipment.storageCapacityGb, 512)
     assert.lengthOf(body.maintenanceSchedules, 1)
     assert.lengthOf(body.maintenanceRecords, 1)
     assert.lengthOf(body.failureReports, 1)
     assert.lengthOf(body.attachments, 1)
+    assert.lengthOf(body.maintenanceRecordAttachments, 0)
+    assert.isTrue(body.technicalHistory.some((item) => item.sourceId === equipmentId) === false)
+    assert.isTrue(body.technicalHistory.some((item) => item.type === 'maintenance_record'))
+    assert.isTrue(body.technicalHistory.some((item) => item.type === 'failure_report'))
     assert.isAtLeast(body.auditLogs.length, 1)
     assert.equal(body.summary.totalMaintenanceRecords, 1)
     assert.equal(body.summary.openFailureReports, 1)

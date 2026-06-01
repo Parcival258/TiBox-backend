@@ -17,6 +17,13 @@ export interface ApiDefinition {
   profile: {
     show: typeof routes['profile.show']
   }
+  alerts: {
+    catalogs: typeof routes['alerts.catalogs']
+    index: typeof routes['alerts.index']
+    run: typeof routes['alerts.run']
+    acknowledge: typeof routes['alerts.acknowledge']
+    resolve: typeof routes['alerts.resolve']
+  }
   dashboard: {
     index: typeof routes['dashboard.index']
   }
@@ -59,6 +66,43 @@ export interface ApiDefinition {
         show: typeof routes['inventory.equipment.attachments.show']
         destroy: typeof routes['inventory.equipment.attachments.destroy']
       }
+    }
+    maintenance: {
+      schedules: {
+        catalogs: typeof routes['inventory.maintenance.schedules.catalogs']
+        index: typeof routes['inventory.maintenance.schedules.index']
+        store: typeof routes['inventory.maintenance.schedules.store']
+        show: typeof routes['inventory.maintenance.schedules.show']
+        update: typeof routes['inventory.maintenance.schedules.update']
+        patch: typeof routes['inventory.maintenance.schedules.patch']
+        cancel: typeof routes['inventory.maintenance.schedules.cancel']
+        pending: typeof routes['inventory.maintenance.schedules.pending']
+        start: typeof routes['inventory.maintenance.schedules.start']
+        finish: typeof routes['inventory.maintenance.schedules.finish']
+        reschedule: typeof routes['inventory.maintenance.schedules.reschedule']
+      }
+      records: {
+        index: typeof routes['inventory.maintenance.records.index']
+        store: typeof routes['inventory.maintenance.records.store']
+        show: typeof routes['inventory.maintenance.records.show']
+        update: typeof routes['inventory.maintenance.records.update']
+        patch: typeof routes['inventory.maintenance.records.patch']
+        close: typeof routes['inventory.maintenance.records.close']
+        attachments: {
+          index: typeof routes['inventory.maintenance.records.attachments.index']
+          store: typeof routes['inventory.maintenance.records.attachments.store']
+          show: typeof routes['inventory.maintenance.records.attachments.show']
+          destroy: typeof routes['inventory.maintenance.records.attachments.destroy']
+        }
+      }
+    }
+    failureReports: {
+      index: typeof routes['inventory.failure_reports.index']
+      store: typeof routes['inventory.failure_reports.store']
+      show: typeof routes['inventory.failure_reports.show']
+      update: typeof routes['inventory.failure_reports.update']
+      patch: typeof routes['inventory.failure_reports.patch']
+      close: typeof routes['inventory.failure_reports.close']
     }
   }
 }

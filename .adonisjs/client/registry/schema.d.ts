@@ -67,6 +67,66 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/profile_controller').default['show']>>>
     }
   }
+  'alerts.catalogs': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/alerts/catalogs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['catalogs']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['catalogs']>>>
+    }
+  }
+  'alerts.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/alerts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/alert').listAlertValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'alerts.run': {
+    methods: ["POST"]
+    pattern: '/api/v1/alerts/run'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/alert').runAlertChecksValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/alert').runAlertChecksValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['runChecks']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['runChecks']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'alerts.acknowledge': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/alerts/:id/acknowledge'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['acknowledge']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['acknowledge']>>>
+    }
+  }
+  'alerts.resolve': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/alerts/:id/resolve'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['resolve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['resolve']>>>
+    }
+  }
   'dashboard.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/dashboard'
@@ -401,6 +461,330 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['destroy']>>>
+    }
+  }
+  'inventory.maintenance.schedules.catalogs': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/maintenance/schedules/catalogs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['catalogs']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['catalogs']>>>
+    }
+  }
+  'inventory.maintenance.schedules.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/maintenance/schedules'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/maintenance').listMaintenanceScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.schedules.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/maintenance/schedules'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').createMaintenanceScheduleValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').createMaintenanceScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.schedules.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/maintenance/schedules/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['show']>>>
+    }
+  }
+  'inventory.maintenance.schedules.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/maintenance/schedules/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').updateMaintenanceScheduleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').updateMaintenanceScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.schedules.patch': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/schedules/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').updateMaintenanceScheduleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').updateMaintenanceScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.schedules.cancel': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/schedules/:id/cancel'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['cancel']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['cancel']>>>
+    }
+  }
+  'inventory.maintenance.schedules.pending': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/schedules/:id/pending'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['markPending']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['markPending']>>>
+    }
+  }
+  'inventory.maintenance.schedules.start': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/schedules/:id/start'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['start']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['start']>>>
+    }
+  }
+  'inventory.maintenance.schedules.finish': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/schedules/:id/finish'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['finish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['finish']>>>
+    }
+  }
+  'inventory.maintenance.schedules.reschedule': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/schedules/:id/reschedule'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').rescheduleMaintenanceScheduleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').rescheduleMaintenanceScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['reschedule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_schedules_controller').default['reschedule']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/maintenance/records'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/maintenance').listMaintenanceRecordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/maintenance/records'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').createMaintenanceRecordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').createMaintenanceRecordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/maintenance/records/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['show']>>>
+    }
+  }
+  'inventory.maintenance.records.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/maintenance/records/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').updateMaintenanceRecordValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').updateMaintenanceRecordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.patch': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/records/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').updateMaintenanceRecordValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').updateMaintenanceRecordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.close': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/records/:id/close'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').closeMaintenanceRecordValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').closeMaintenanceRecordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['close']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['close']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.attachments.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/maintenance/records/:record_id/attachments'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { record_id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['index']>>>
+    }
+  }
+  'inventory.maintenance.records.attachments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/maintenance/records/:record_id/attachments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/attachment').uploadEquipmentAttachmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { record_id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/attachment').uploadEquipmentAttachmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.attachments.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/maintenance/records/:record_id/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { record_id: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['show']>>>
+    }
+  }
+  'inventory.maintenance.records.attachments.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/maintenance/records/:record_id/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { record_id: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['destroy']>>>
+    }
+  }
+  'inventory.failure_reports.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/failure-reports'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/failure_report').listFailureReportValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.failure_reports.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/failure-reports'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/failure_report').createFailureReportValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/failure_report').createFailureReportValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.failure_reports.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/failure-reports/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['show']>>>
+    }
+  }
+  'inventory.failure_reports.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/failure-reports/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/failure_report').updateFailureReportValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/failure_report').updateFailureReportValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.failure_reports.patch': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/failure-reports/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/failure_report').updateFailureReportValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/failure_report').updateFailureReportValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.failure_reports.close': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/failure-reports/:id/close'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/failure_report').closeFailureReportValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/failure_report').closeFailureReportValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['close']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/failure_reports_controller').default['close']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
 }

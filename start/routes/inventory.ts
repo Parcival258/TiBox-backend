@@ -8,6 +8,13 @@ const EquipmentAttachmentsController = () =>
   import('#controllers/inventory/equipment_attachments_controller')
 const EquipmentCatalogsController = () =>
   import('#controllers/inventory/equipment_catalogs_controller')
+const FailureReportsController = () => import('#controllers/inventory/failure_reports_controller')
+const MaintenanceRecordsController = () =>
+  import('#controllers/inventory/maintenance_records_controller')
+const MaintenanceRecordAttachmentsController = () =>
+  import('#controllers/inventory/maintenance_record_attachments_controller')
+const MaintenanceSchedulesController = () =>
+  import('#controllers/inventory/maintenance_schedules_controller')
 
 export default function inventoryRoutes() {
   router
@@ -78,6 +85,132 @@ export default function inventoryRoutes() {
         ])
         .use(middleware.permission({ permissions: ['equipment.attachments.manage'] }))
         .as('equipment.attachments.destroy')
+
+      router
+        .get('maintenance/schedules/catalogs', [MaintenanceSchedulesController, 'catalogs'])
+        .use(middleware.permission({ permissions: ['maintenance.view'] }))
+        .as('maintenance.schedules.catalogs')
+      router
+        .get('maintenance/schedules', [MaintenanceSchedulesController, 'index'])
+        .use(middleware.permission({ permissions: ['maintenance.view'] }))
+        .as('maintenance.schedules.index')
+      router
+        .post('maintenance/schedules', [MaintenanceSchedulesController, 'store'])
+        .use(middleware.permission({ permissions: ['maintenance.create'] }))
+        .as('maintenance.schedules.store')
+      router
+        .get('maintenance/schedules/:id', [MaintenanceSchedulesController, 'show'])
+        .use(middleware.permission({ permissions: ['maintenance.view'] }))
+        .as('maintenance.schedules.show')
+      router
+        .put('maintenance/schedules/:id', [MaintenanceSchedulesController, 'update'])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.schedules.update')
+      router
+        .patch('maintenance/schedules/:id', [MaintenanceSchedulesController, 'update'])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.schedules.patch')
+      router
+        .patch('maintenance/schedules/:id/cancel', [MaintenanceSchedulesController, 'cancel'])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.schedules.cancel')
+      router
+        .patch('maintenance/schedules/:id/pending', [MaintenanceSchedulesController, 'markPending'])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.schedules.pending')
+      router
+        .patch('maintenance/schedules/:id/start', [MaintenanceSchedulesController, 'start'])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.schedules.start')
+      router
+        .patch('maintenance/schedules/:id/finish', [MaintenanceSchedulesController, 'finish'])
+        .use(middleware.permission({ permissions: ['maintenance.close'] }))
+        .as('maintenance.schedules.finish')
+      router
+        .patch('maintenance/schedules/:id/reschedule', [
+          MaintenanceSchedulesController,
+          'reschedule',
+        ])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.schedules.reschedule')
+
+      router
+        .get('maintenance/records', [MaintenanceRecordsController, 'index'])
+        .use(middleware.permission({ permissions: ['maintenance.view'] }))
+        .as('maintenance.records.index')
+      router
+        .post('maintenance/records', [MaintenanceRecordsController, 'store'])
+        .use(middleware.permission({ permissions: ['maintenance.create'] }))
+        .as('maintenance.records.store')
+      router
+        .get('maintenance/records/:id', [MaintenanceRecordsController, 'show'])
+        .use(middleware.permission({ permissions: ['maintenance.view'] }))
+        .as('maintenance.records.show')
+      router
+        .put('maintenance/records/:id', [MaintenanceRecordsController, 'update'])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.records.update')
+      router
+        .patch('maintenance/records/:id', [MaintenanceRecordsController, 'update'])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.records.patch')
+      router
+        .patch('maintenance/records/:id/close', [MaintenanceRecordsController, 'close'])
+        .use(middleware.permission({ permissions: ['maintenance.close'] }))
+        .as('maintenance.records.close')
+      router
+        .get('maintenance/records/:record_id/attachments', [
+          MaintenanceRecordAttachmentsController,
+          'index',
+        ])
+        .use(middleware.permission({ permissions: ['maintenance.view'] }))
+        .as('maintenance.records.attachments.index')
+      router
+        .post('maintenance/records/:record_id/attachments', [
+          MaintenanceRecordAttachmentsController,
+          'store',
+        ])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.records.attachments.store')
+      router
+        .get('maintenance/records/:record_id/attachments/:id', [
+          MaintenanceRecordAttachmentsController,
+          'show',
+        ])
+        .use(middleware.permission({ permissions: ['maintenance.view'] }))
+        .as('maintenance.records.attachments.show')
+      router
+        .delete('maintenance/records/:record_id/attachments/:id', [
+          MaintenanceRecordAttachmentsController,
+          'destroy',
+        ])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.records.attachments.destroy')
+
+      router
+        .get('failure-reports', [FailureReportsController, 'index'])
+        .use(middleware.permission({ permissions: ['failure_reports.view'] }))
+        .as('failure_reports.index')
+      router
+        .post('failure-reports', [FailureReportsController, 'store'])
+        .use(middleware.permission({ permissions: ['failure_reports.create'] }))
+        .as('failure_reports.store')
+      router
+        .get('failure-reports/:id', [FailureReportsController, 'show'])
+        .use(middleware.permission({ permissions: ['failure_reports.view'] }))
+        .as('failure_reports.show')
+      router
+        .put('failure-reports/:id', [FailureReportsController, 'update'])
+        .use(middleware.permission({ permissions: ['failure_reports.manage'] }))
+        .as('failure_reports.update')
+      router
+        .patch('failure-reports/:id', [FailureReportsController, 'update'])
+        .use(middleware.permission({ permissions: ['failure_reports.manage'] }))
+        .as('failure_reports.patch')
+      router
+        .patch('failure-reports/:id/close', [FailureReportsController, 'close'])
+        .use(middleware.permission({ permissions: ['failure_reports.manage'] }))
+        .as('failure_reports.close')
     })
     .use(middleware.auth())
     .as('inventory')

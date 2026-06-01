@@ -1,6 +1,6 @@
 import Equipment from '#models/equipment'
 import User from '#models/user'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, computed } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
@@ -14,6 +14,28 @@ export type MaintenanceStatus =
   | 'rescheduled'
   | 'overdue'
 export type MaintenancePriority = 'low' | 'medium' | 'high' | 'critical'
+
+const maintenanceTypeLabels: Record<MaintenanceType, string> = {
+  corrective: 'Correctivo',
+  preventive: 'Preventivo',
+}
+
+const maintenanceStatusLabels: Record<MaintenanceStatus, string> = {
+  cancelled: 'Cancelado',
+  completed: 'Finalizado',
+  in_progress: 'En proceso',
+  overdue: 'Vencido',
+  pending: 'Pendiente',
+  rescheduled: 'Reprogramado',
+  scheduled: 'Programado',
+}
+
+const maintenancePriorityLabels: Record<MaintenancePriority, string> = {
+  critical: 'Critica',
+  high: 'Alta',
+  low: 'Baja',
+  medium: 'Media',
+}
 
 export default class MaintenanceSchedule extends BaseModel {
   @column({ isPrimary: true })
@@ -54,6 +76,21 @@ export default class MaintenanceSchedule extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @computed()
+  get maintenanceTypeLabel() {
+    return maintenanceTypeLabels[this.maintenanceType]
+  }
+
+  @computed()
+  get statusLabel() {
+    return maintenanceStatusLabels[this.status]
+  }
+
+  @computed()
+  get priorityLabel() {
+    return maintenancePriorityLabels[this.priority]
+  }
 
   @belongsTo(() => Equipment)
   declare equipment: BelongsTo<typeof Equipment>

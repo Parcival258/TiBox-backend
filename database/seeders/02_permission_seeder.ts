@@ -119,6 +119,16 @@ export default class extends BaseSeeder {
         slug: 'audit_logs.view',
         description: 'Permite consultar registros de auditoria.',
       },
+      {
+        name: 'Ver alertas',
+        slug: 'alerts.view',
+        description: 'Permite consultar alertas y notificaciones internas.',
+      },
+      {
+        name: 'Gestionar alertas',
+        slug: 'alerts.manage',
+        description: 'Permite ejecutar seguimiento automatico y resolver alertas.',
+      },
     ])
   }
 }

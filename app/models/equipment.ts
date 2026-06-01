@@ -40,6 +40,21 @@ export default class Equipment extends BaseModel {
   declare model: string | null
 
   @column()
+  declare ipAddresses: string | null
+
+  @column()
+  declare macAddress: string | null
+
+  @column()
+  declare processor: string | null
+
+  @column()
+  declare storageType: string | null
+
+  @column()
+  declare storageCapacityGb: number | null
+
+  @column()
   declare ownershipType: OwnershipType
 
   @column()

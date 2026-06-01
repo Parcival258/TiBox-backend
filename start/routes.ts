@@ -1,6 +1,7 @@
 import router from '@adonisjs/core/services/router'
 import db from '@adonisjs/lucid/services/db'
 import authRoutes from '#start/routes/auth'
+import alertRoutes from '#start/routes/alerts'
 import dashboardRoutes from '#start/routes/dashboard'
 import inventoryRoutes from '#start/routes/inventory'
 import settingsRoutes from '#start/routes/settings'
@@ -21,6 +22,7 @@ router.get('/health', async () => {
 router
   .group(() => {
     authRoutes()
+    alertRoutes()
     dashboardRoutes()
     settingsRoutes()
     inventoryRoutes()

@@ -113,6 +113,10 @@ export default class EquipmentService {
           .orWhereILike('asset_tag', `%${filters.search}%`)
           .orWhereILike('brand', `%${filters.search}%`)
           .orWhereILike('model', `%${filters.search}%`)
+          .orWhereILike('ip_addresses', `%${filters.search}%`)
+          .orWhereILike('mac_address', `%${filters.search}%`)
+          .orWhereILike('processor', `%${filters.search}%`)
+          .orWhereILike('storage_type', `%${filters.search}%`)
       })
     }
 

@@ -14,6 +14,8 @@ export default class extends BaseSeeder {
       admin: permissions.map((permission) => permission.slug),
 
       equipment_manager: [
+        'alerts.view',
+        'alerts.manage',
         'equipment.view',
         'equipment.create',
         'equipment.update',
@@ -31,6 +33,7 @@ export default class extends BaseSeeder {
       ],
 
       maintenance_technician: [
+        'alerts.view',
         'equipment.view',
         'equipment.attachments.manage',
         'maintenance.view',
@@ -44,6 +47,7 @@ export default class extends BaseSeeder {
       user: ['equipment.view', 'failure_reports.view', 'failure_reports.create'],
 
       auditor: [
+        'alerts.view',
         'users.view',
         'equipment.view',
         'settings.headquarters.view',
