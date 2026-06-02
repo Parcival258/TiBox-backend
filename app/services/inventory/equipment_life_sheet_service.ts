@@ -7,15 +7,24 @@ import MaintenanceRecord from '#models/maintenance_record'
 import MaintenanceSchedule from '#models/maintenance_schedule'
 
 export default class EquipmentLifeSheetService {
-  async getByEquipmentId(equipmentId: string) {
-    const equipment = await Equipment.query()
+  async getByEquipmentId(equipmentId: string, visibleToResponsibleId?: string) {
+    const equipmentQuery = Equipment.query()
       .where('id', equipmentId)
       .whereNull('deleted_at')
       .preload('headquarter')
       .preload('location')
       .preload('currentResponsible')
       .preload('secondaryResponsible')
-      .first()
+
+    if (visibleToResponsibleId) {
+      equipmentQuery.where((builder) => {
+        builder
+          .where('current_responsible_id', visibleToResponsibleId)
+          .orWhere('secondary_responsible_id', visibleToResponsibleId)
+      })
+    }
+
+    const equipment = await equipmentQuery.first()
 
     if (!equipment) {
       return null

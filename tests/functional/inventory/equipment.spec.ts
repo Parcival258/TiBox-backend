@@ -21,6 +21,8 @@ type EquipmentIndexResponse = {
     total: number
   }
   data: Array<{
+    currentResponsibleId: string | null
+    id: string
     secondaryResponsibleId: string | null
   }>
 }
@@ -168,6 +170,33 @@ async function createInventoryActor() {
   })
 }
 
+async function createEndUserRole() {
+  const role = await Role.updateOrCreate(
+    { slug: 'user' },
+    {
+      name: 'Usuario',
+      slug: 'user',
+      isActive: true,
+    }
+  )
+  const permissions = await Promise.all(
+    ['equipment.view', 'failure_reports.view', 'failure_reports.create'].map((slug) =>
+      Permission.updateOrCreate(
+        { slug },
+        {
+          name: slug,
+          slug,
+          description: null,
+        }
+      )
+    )
+  )
+
+  await role.related('permissions').sync(permissions.map((permission) => permission.id))
+
+  return role
+}
+
 function equipmentPayload(context: Awaited<ReturnType<typeof createInventoryContext>>) {
   return {
     internalCode: `EQ-${context.suffix}`,
@@ -292,6 +321,48 @@ test.group('Inventory equipment', (group) => {
 
     assert.equal(body.meta.total, 1)
     assert.equal(body.data[0].secondaryResponsibleId, context.secondaryUser.id)
+  })
+
+  test('limits regular users to equipment under their responsibility', async ({ assert, client }) => {
+    const context = await createInventoryContext()
+    const actor = await createInventoryActor()
+    const userRole = await createEndUserRole()
+
+    context.user.roleId = userRole.id
+    await context.user.save()
+
+    const ownEquipmentResponse = await client
+      .post('/api/v1/equipment')
+      .loginAs(actor)
+      .json(equipmentPayload(context))
+    const ownEquipmentId = (ownEquipmentResponse.body() as unknown as EquipmentResponse).id
+
+    await client
+      .post('/api/v1/equipment')
+      .loginAs(actor)
+      .json({
+        ...equipmentPayload(context),
+        internalCode: `EQ-OTHER-${context.suffix}`,
+        assetTag: `ASSET-OTHER-${context.suffix}`,
+        serial: `SERIAL-OTHER-${context.suffix}`,
+        currentResponsibleId: context.secondaryUser.id,
+        secondaryResponsibleId: null,
+      })
+
+    const response = await client.get('/api/v1/equipment').loginAs(context.user)
+
+    response.assertOk()
+    const body = response.body() as unknown as EquipmentIndexResponse
+
+    assert.equal(body.meta.total, 1)
+    assert.equal(body.data[0].id, ownEquipmentId)
+    assert.equal(body.data[0].currentResponsibleId, context.user.id)
+
+    const lifeSheetResponse = await client
+      .get(`/api/v1/equipment/${ownEquipmentId}/life-sheet`)
+      .loginAs(context.user)
+
+    lifeSheetResponse.assertOk()
   })
 
   test('returns catalogs for equipment forms and filters', async ({ assert, client }) => {

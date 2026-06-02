@@ -105,7 +105,7 @@ async function createAlertContext() {
     priority: 'critical',
   })
 
-  return { equipment }
+  return { equipment, responsible }
 }
 
 test.group('Alerts', (group) => {
@@ -170,6 +170,60 @@ test.group('Alerts', (group) => {
     resolveResponse.assertBodyContains({
       status: 'resolved',
       statusLabel: 'Resuelta',
+    })
+  })
+
+  test('assigns failure alerts from common queue and supports self assignment', async ({
+    assert,
+    client,
+  }) => {
+    const manager = await createActor(['alerts.view', 'alerts.manage'])
+    const technician = await createActor(['alerts.view'])
+    const { equipment } = await createAlertContext()
+
+    const runResponse = await client.post('/api/v1/alerts/run').loginAs(manager).json({
+      referenceDate: '2026-06-01',
+    })
+
+    runResponse.assertCreated()
+    const failureAlert = await Alert.query()
+      .where('equipment_id', equipment.id)
+      .where('type', 'damaged_equipment_reported')
+      .firstOrFail()
+
+    assert.isNull(failureAlert.assignedTo)
+
+    const assignResponse = await client
+      .patch(`/api/v1/alerts/${failureAlert.id}/assign`)
+      .loginAs(manager)
+      .json({ assignedTo: technician.id })
+
+    assignResponse.assertOk()
+    assignResponse.assertBodyContains({
+      assignedTo: technician.id,
+    })
+
+    const unassignedAlert = await Alert.create({
+      alertKey: `damaged_equipment_reported:self-${uniqueSuffix()}`,
+      type: 'damaged_equipment_reported',
+      severity: 'medium',
+      status: 'open',
+      title: 'Falla reportada en equipo',
+      message: 'Falla pendiente de asignacion.',
+      entityType: 'failure_report',
+      entityId: failureAlert.entityId,
+      equipmentId: equipment.id,
+      assignedTo: null,
+      channels: ['internal'],
+    })
+
+    const selfAssignResponse = await client
+      .patch(`/api/v1/alerts/${unassignedAlert.id}/self-assign`)
+      .loginAs(technician)
+
+    selfAssignResponse.assertOk()
+    selfAssignResponse.assertBodyContains({
+      assignedTo: technician.id,
     })
   })
 })

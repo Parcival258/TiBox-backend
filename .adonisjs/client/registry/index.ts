@@ -60,6 +60,18 @@ const routes = {
     tokens: [{"old":"/api/v1/alerts/:id/acknowledge","type":0,"val":"api","end":""},{"old":"/api/v1/alerts/:id/acknowledge","type":0,"val":"v1","end":""},{"old":"/api/v1/alerts/:id/acknowledge","type":0,"val":"alerts","end":""},{"old":"/api/v1/alerts/:id/acknowledge","type":1,"val":"id","end":""},{"old":"/api/v1/alerts/:id/acknowledge","type":0,"val":"acknowledge","end":""}],
     types: placeholder as Registry['alerts.acknowledge']['types'],
   },
+  'alerts.assign': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/alerts/:id/assign',
+    tokens: [{"old":"/api/v1/alerts/:id/assign","type":0,"val":"api","end":""},{"old":"/api/v1/alerts/:id/assign","type":0,"val":"v1","end":""},{"old":"/api/v1/alerts/:id/assign","type":0,"val":"alerts","end":""},{"old":"/api/v1/alerts/:id/assign","type":1,"val":"id","end":""},{"old":"/api/v1/alerts/:id/assign","type":0,"val":"assign","end":""}],
+    types: placeholder as Registry['alerts.assign']['types'],
+  },
+  'alerts.self_assign': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/alerts/:id/self-assign',
+    tokens: [{"old":"/api/v1/alerts/:id/self-assign","type":0,"val":"api","end":""},{"old":"/api/v1/alerts/:id/self-assign","type":0,"val":"v1","end":""},{"old":"/api/v1/alerts/:id/self-assign","type":0,"val":"alerts","end":""},{"old":"/api/v1/alerts/:id/self-assign","type":1,"val":"id","end":""},{"old":"/api/v1/alerts/:id/self-assign","type":0,"val":"self-assign","end":""}],
+    types: placeholder as Registry['alerts.self_assign']['types'],
+  },
   'alerts.resolve': {
     methods: ["PATCH"],
     pattern: '/api/v1/alerts/:id/resolve',

@@ -16,3 +16,7 @@ export const listAlertValidator = vine.create({
 export const runAlertChecksValidator = vine.create({
   referenceDate: vine.date().optional(),
 })
+
+export const assignAlertValidator = vine.create({
+  assignedTo: vine.string().uuid(),
+})

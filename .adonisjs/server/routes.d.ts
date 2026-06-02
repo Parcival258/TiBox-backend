@@ -13,6 +13,8 @@ export type ScannedRoutes = {
     'alerts.index': { paramsTuple?: []; params?: {} }
     'alerts.run': { paramsTuple?: []; params?: {} }
     'alerts.acknowledge': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'alerts.assign': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'alerts.self_assign': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'alerts.resolve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.index': { paramsTuple?: []; params?: {} }
     'settings.headquarters.index': { paramsTuple?: []; params?: {} }
@@ -141,6 +143,8 @@ export type ScannedRoutes = {
   }
   PATCH: {
     'alerts.acknowledge': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'alerts.assign': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'alerts.self_assign': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'alerts.resolve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.headquarters.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

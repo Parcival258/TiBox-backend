@@ -2,6 +2,7 @@ import Alert, { type AlertSeverity } from '#models/alert'
 import Equipment from '#models/equipment'
 import FailureReport from '#models/failure_report'
 import MaintenanceSchedule from '#models/maintenance_schedule'
+import User from '#models/user'
 import AuditService, { type AuditContext } from '#services/audit/audit_service'
 import AlertDeliveryService from '#services/alerts/alert_delivery_service'
 import { DateTime } from 'luxon'
@@ -90,7 +91,7 @@ export default class AlertService {
         { label: 'Garantia proxima a vencer', value: 'warranty_expiring' },
         { label: 'Arriendo proximo a renovar', value: 'lease_expiring' },
         { label: 'Mantenimiento programado manana', value: 'maintenance_tomorrow' },
-        { label: 'Equipo reportado danado', value: 'damaged_equipment_reported' },
+        { label: 'Falla reportada en equipo', value: 'damaged_equipment_reported' },
       ],
     }
   }
@@ -112,6 +113,41 @@ export default class AlertService {
       alerts,
       deliveries,
     }
+  }
+
+  async createForFailureReport(failureReportId: string, audit?: AuditContext) {
+    const report = await FailureReport.query()
+      .where('id', failureReportId)
+      .preload('equipment', (equipmentQuery) => {
+        equipmentQuery.preload('currentResponsible')
+      })
+      .preload('reporter')
+      .first()
+
+    if (!report) {
+      return null
+    }
+
+    return this.upsert(
+      {
+        alertKey: `damaged_equipment_reported:${report.id}`,
+        assignedTo: null,
+        channels: ['internal'],
+        entityId: report.id,
+        entityType: 'failure_report',
+        equipmentId: report.equipmentId,
+        message: `El equipo ${report.equipment.internalCode} tiene una falla reportada: ${report.title}.`,
+        metadata: {
+          failureReportTitle: report.title,
+          priority: report.priority,
+          reportedBy: report.reportedBy,
+        },
+        severity: this.failureSeverity(report.priority),
+        title: 'Falla reportada en equipo',
+        type: 'damaged_equipment_reported',
+      },
+      audit
+    )
   }
 
   async acknowledge(id: string, audit?: AuditContext) {
@@ -138,6 +174,44 @@ export default class AlertService {
     })
 
     return alert
+  }
+
+  async assign(id: string, assignedTo: string, audit?: AuditContext) {
+    const [alert, user] = await Promise.all([
+      Alert.find(id),
+      User.query().where('id', assignedTo).where('is_active', true).first(),
+    ])
+
+    if (!alert || !user) {
+      return null
+    }
+
+    const oldValues = { ...alert.$attributes }
+
+    alert.assignedTo = user.id
+    alert.channels = this.channelsFor(user.email)
+    await alert.save()
+    await alert.load('equipment')
+    await alert.load('assignee')
+
+    await this.auditService.record({
+      ...audit,
+      action: 'alert.assigned',
+      entityType: 'alert',
+      entityId: alert.id,
+      oldValues,
+      newValues: alert.$attributes,
+    })
+
+    return alert
+  }
+
+  selfAssign(id: string, audit?: AuditContext) {
+    if (!audit?.userId) {
+      return null
+    }
+
+    return this.assign(id, audit.userId, audit)
   }
 
   async resolve(id: string, audit?: AuditContext) {
@@ -292,23 +366,32 @@ export default class AlertService {
   private async findDamagedEquipmentReports() {
     const reports = await FailureReport.query()
       .whereIn('status', ['open', 'in_review'])
-      .where('priority', 'critical')
-      .preload('equipment')
+      .preload('equipment', (equipmentQuery) => {
+        equipmentQuery.preload('currentResponsible')
+      })
       .preload('reporter')
 
     return reports.map((report) => ({
       alertKey: `damaged_equipment_reported:${report.id}`,
-      assignedTo: report.reportedBy,
-      channels: this.channelsFor(report.reporter?.email),
+      assignedTo: null,
+      channels: ['internal'],
       entityId: report.id,
       entityType: 'failure_report',
       equipmentId: report.equipmentId,
-      message: `El equipo ${report.equipment.internalCode} tiene una falla critica reportada: ${report.title}.`,
+      message: `El equipo ${report.equipment.internalCode} tiene una falla reportada: ${report.title}.`,
       metadata: { failureReportTitle: report.title, priority: report.priority },
-      severity: 'critical' as const,
-      title: 'Equipo reportado danado',
+      severity: this.failureSeverity(report.priority),
+      title: 'Falla reportada en equipo',
       type: 'damaged_equipment_reported',
     }))
+  }
+
+  private failureSeverity(priority: string): AlertSeverity {
+    if (priority === 'critical') return 'critical'
+    if (priority === 'high') return 'high'
+    if (priority === 'low') return 'low'
+
+    return 'medium'
   }
 
   private channelsFor(email?: string | null) {

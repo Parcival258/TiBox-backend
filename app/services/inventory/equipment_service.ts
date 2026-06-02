@@ -23,6 +23,7 @@ type ListEquipmentFilters = {
   perPage?: number
   orderBy?: string
   orderDirection?: 'asc' | 'desc'
+  visibleToResponsibleId?: string
 }
 
 type EquipmentBusinessRulesPayload = EquipmentPayload & {
@@ -64,6 +65,16 @@ export default class EquipmentService {
       .preload('currentResponsible')
       .preload('secondaryResponsible')
       .orderBy(orderBy, orderDirection)
+
+    if (filters.visibleToResponsibleId) {
+      const responsibleId = filters.visibleToResponsibleId
+
+      query.where((builder) => {
+        builder
+          .where('current_responsible_id', responsibleId)
+          .orWhere('secondary_responsible_id', responsibleId)
+      })
+    }
 
     if (filters.status) {
       query.where('status', filters.status)
@@ -143,8 +154,8 @@ export default class EquipmentService {
     return equipment
   }
 
-  findDetails(id: string) {
-    return Equipment.query()
+  findDetails(id: string, visibleToResponsibleId?: string) {
+    const query = Equipment.query()
       .where('id', id)
       .whereNull('deleted_at')
       .preload('headquarter')
@@ -154,7 +165,16 @@ export default class EquipmentService {
       .preload('assignments')
       .preload('maintenanceSchedules')
       .preload('maintenanceRecords')
-      .first()
+
+    if (visibleToResponsibleId) {
+      query.where((builder) => {
+        builder
+          .where('current_responsible_id', visibleToResponsibleId)
+          .orWhere('secondary_responsible_id', visibleToResponsibleId)
+      })
+    }
+
+    return query.first()
   }
 
   findActive(id: string) {

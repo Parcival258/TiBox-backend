@@ -12,10 +12,13 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class FailureReportsController {
   private failureReportService = new FailureReportService()
 
-  async index({ request }: HttpContext) {
+  async index({ auth, request }: HttpContext) {
     const filters = await request.validateUsing(listFailureReportValidator)
 
-    return this.failureReportService.list(filters)
+    return this.failureReportService.list({
+      ...filters,
+      visibleToResponsibleId: await this.visibleToResponsibleId({ auth }),
+    })
   }
 
   async store({ auth, request, response }: HttpContext) {
@@ -24,7 +27,10 @@ export default class FailureReportsController {
     try {
       const report = await this.failureReportService.create(
         payload,
-        this.auditContext({ auth, request })
+        this.auditContext({ auth, request }),
+        {
+          visibleToResponsibleId: await this.visibleToResponsibleId({ auth }),
+        }
       )
 
       return response.created(report)
@@ -33,8 +39,10 @@ export default class FailureReportsController {
     }
   }
 
-  async show({ params, response }: HttpContext) {
-    const report = await this.failureReportService.find(params.id)
+  async show({ auth, params, response }: HttpContext) {
+    const report = await this.failureReportService.find(params.id, {
+      visibleToResponsibleId: await this.visibleToResponsibleId({ auth }),
+    })
 
     if (!report) {
       return response.notFound({ message: 'Failure report not found' })
@@ -100,5 +108,13 @@ export default class FailureReportsController {
       ipAddress: request.ip(),
       userAgent: request.header('user-agent') ?? null,
     }
+  }
+
+  private async visibleToResponsibleId({ auth }: Pick<HttpContext, 'auth'>) {
+    const user = auth.getUserOrFail()
+
+    await user.load('role')
+
+    return user.role?.slug === 'user' ? user.id : undefined
   }
 }

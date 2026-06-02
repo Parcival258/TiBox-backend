@@ -2,6 +2,7 @@ import Equipment from '#models/equipment'
 import FailureReport from '#models/failure_report'
 import MaintenanceRecord from '#models/maintenance_record'
 import User from '#models/user'
+import AlertService from '#services/alerts/alert_service'
 import AuditService, { type AuditContext } from '#services/audit/audit_service'
 import { DateTime } from 'luxon'
 
@@ -16,6 +17,11 @@ type ListFailureReportFilters = {
   reportedBy?: string
   search?: string
   status?: string
+  visibleToResponsibleId?: string
+}
+
+type FailureReportOptions = {
+  visibleToResponsibleId?: string
 }
 
 type FailureReportValidationErrors = Record<string, string[]>
@@ -27,6 +33,7 @@ export class FailureReportValidationError extends Error {
 }
 
 export default class FailureReportService {
+  private alertService = new AlertService()
   private auditService = new AuditService()
 
   list(filters: ListFailureReportFilters) {
@@ -38,6 +45,22 @@ export default class FailureReportService {
 
     if (filters.equipmentId) {
       query.where('equipment_id', filters.equipmentId)
+    }
+
+    if (filters.visibleToResponsibleId) {
+      const responsibleId = filters.visibleToResponsibleId
+
+      query.whereIn(
+        'equipment_id',
+        Equipment.query()
+          .whereNull('deleted_at')
+          .where((builder) => {
+            builder
+              .where('current_responsible_id', responsibleId)
+              .orWhere('secondary_responsible_id', responsibleId)
+          })
+          .select('id')
+      )
     }
 
     if (filters.reportedBy) {
@@ -67,17 +90,38 @@ export default class FailureReportService {
     return query.paginate(filters.page ?? 1, filters.perPage ?? 20)
   }
 
-  find(id: string) {
-    return FailureReport.query()
+  find(id: string, options: FailureReportOptions = {}) {
+    const query = FailureReport.query()
       .where('id', id)
       .preload('equipment')
       .preload('reporter')
       .preload('maintenanceRecord')
-      .first()
+
+    if (options.visibleToResponsibleId) {
+      const responsibleId = options.visibleToResponsibleId
+
+      query.whereIn(
+        'equipment_id',
+        Equipment.query()
+          .whereNull('deleted_at')
+          .where((builder) => {
+            builder
+              .where('current_responsible_id', responsibleId)
+              .orWhere('secondary_responsible_id', responsibleId)
+          })
+          .select('id')
+      )
+    }
+
+    return query.first()
   }
 
-  async create(payload: FailureReportPayload, audit?: AuditContext) {
-    await this.validate(payload)
+  async create(
+    payload: FailureReportPayload,
+    audit?: AuditContext,
+    options: FailureReportOptions = {}
+  ) {
+    await this.validate(payload, options)
 
     const report = await FailureReport.create({
       ...payload,
@@ -93,6 +137,8 @@ export default class FailureReportService {
       entityId: report.id,
       newValues: report.$attributes,
     })
+
+    await this.alertService.createForFailureReport(report.id, audit)
 
     return this.find(report.id)
   }
@@ -145,11 +191,11 @@ export default class FailureReportService {
     )
   }
 
-  private async validate(payload: FailureReportPayload) {
+  private async validate(payload: FailureReportPayload, options: FailureReportOptions = {}) {
     const errors: FailureReportValidationErrors = {}
 
     await Promise.all([
-      this.ensureEquipment(errors, payload.equipmentId),
+      this.ensureEquipment(errors, payload.equipmentId, options.visibleToResponsibleId),
       this.ensureUser(errors, 'reportedBy', payload.reportedBy),
       this.ensureMaintenanceRecord(errors, payload.equipmentId, payload.maintenanceRecordId),
     ])
@@ -161,17 +207,27 @@ export default class FailureReportService {
 
   private async ensureEquipment(
     errors: FailureReportValidationErrors,
-    equipmentId?: string | null
+    equipmentId?: string | null,
+    visibleToResponsibleId?: string
   ) {
     if (!equipmentId) {
       this.addError(errors, 'equipmentId', 'Equipment is required')
       return
     }
 
-    const equipment = await Equipment.query()
+    const query = Equipment.query()
       .where('id', equipmentId)
       .whereNull('deleted_at')
-      .first()
+
+    if (visibleToResponsibleId) {
+      query.where((builder) => {
+        builder
+          .where('current_responsible_id', visibleToResponsibleId)
+          .orWhere('secondary_responsible_id', visibleToResponsibleId)
+      })
+    }
+
+    const equipment = await query.first()
 
     if (!equipment) {
       this.addError(errors, 'equipmentId', 'Equipment does not exist')

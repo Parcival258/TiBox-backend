@@ -11,10 +11,14 @@ export default class EquipmentController {
   private equipmentService = new EquipmentService()
   private lifeSheetService = new EquipmentLifeSheetService()
 
-  async index({ request }: HttpContext) {
+  async index({ auth, request }: HttpContext) {
     const filters = await request.validateUsing(listEquipmentValidator)
+    const visibleToResponsibleId = await this.visibleToResponsibleId({ auth })
 
-    return this.equipmentService.list(filters)
+    return this.equipmentService.list({
+      ...filters,
+      visibleToResponsibleId,
+    })
   }
 
   async store({ auth, request, response }: HttpContext) {
@@ -39,8 +43,11 @@ export default class EquipmentController {
     }
   }
 
-  async show({ params, response }: HttpContext) {
-    const equipment = await this.equipmentService.findDetails(params.id)
+  async show({ auth, params, response }: HttpContext) {
+    const equipment = await this.equipmentService.findDetails(
+      params.id,
+      await this.visibleToResponsibleId({ auth })
+    )
 
     if (!equipment) {
       return response.notFound({ message: 'Equipment not found' })
@@ -49,8 +56,11 @@ export default class EquipmentController {
     return equipment
   }
 
-  async lifeSheet({ params, response }: HttpContext) {
-    const lifeSheet = await this.lifeSheetService.getByEquipmentId(params.id)
+  async lifeSheet({ auth, params, response }: HttpContext) {
+    const lifeSheet = await this.lifeSheetService.getByEquipmentId(
+      params.id,
+      await this.visibleToResponsibleId({ auth })
+    )
 
     if (!lifeSheet) {
       return response.notFound({ message: 'Equipment not found' })
@@ -105,5 +115,13 @@ export default class EquipmentController {
       ipAddress: request.ip(),
       userAgent: request.header('user-agent') ?? null,
     }
+  }
+
+  private async visibleToResponsibleId({ auth }: Pick<HttpContext, 'auth'>) {
+    const user = auth.getUserOrFail()
+
+    await user.load('role')
+
+    return user.role?.slug === 'user' ? user.id : undefined
   }
 }

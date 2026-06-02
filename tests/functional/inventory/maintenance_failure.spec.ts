@@ -1,4 +1,5 @@
 import AuditLog from '#models/audit_log'
+import Alert from '#models/alert'
 import Equipment from '#models/equipment'
 import FailureReport from '#models/failure_report'
 import Headquarter from '#models/headquarter'
@@ -299,6 +300,38 @@ test.group('Maintenance and failure modules', (group) => {
     const report = await FailureReport.findOrFail(reportId)
 
     assert.exists(report.closedAt)
+  })
+
+  test('creates an alert when a failure is reported', async ({ assert, client }) => {
+    const { equipment, technician } = await createEquipmentContext()
+    const actor = await createActor([
+      'failure_reports.view',
+      'failure_reports.create',
+      'failure_reports.manage',
+    ])
+
+    equipment.currentResponsibleId = technician.id
+    await equipment.save()
+
+    const createResponse = await client.post('/api/v1/failure-reports').loginAs(actor).json({
+      equipmentId: equipment.id,
+      title: 'Teclado no responde',
+      description: 'Varias teclas no funcionan.',
+      priority: 'high',
+    })
+
+    createResponse.assertCreated()
+    const reportId = (createResponse.body() as unknown as FailureReportResponse).id
+    const alert = await Alert.query()
+      .where('alert_key', `damaged_equipment_reported:${reportId}`)
+      .firstOrFail()
+
+    assert.equal(alert.type, 'damaged_equipment_reported')
+    assert.equal(alert.status, 'open')
+    assert.equal(alert.severity, 'high')
+    assert.equal(alert.equipmentId, equipment.id)
+    assert.equal(alert.entityId, reportId)
+    assert.isNull(alert.assignedTo)
   })
 
   test('manages maintenance record attachments', async ({ assert, client }) => {

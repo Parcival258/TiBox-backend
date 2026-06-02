@@ -115,6 +115,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['acknowledge']>>>
     }
   }
+  'alerts.assign': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/alerts/:id/assign'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/alert').assignAlertValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/alert').assignAlertValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['assign']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['assign']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'alerts.self_assign': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/alerts/:id/self-assign'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['selfAssign']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['selfAssign']>>>
+    }
+  }
   'alerts.resolve': {
     methods: ["PATCH"]
     pattern: '/api/v1/alerts/:id/resolve'

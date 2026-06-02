@@ -6,7 +6,7 @@ import { equipmentStatuses, ownershipTypes } from '#validators/equipment'
 
 export default class EquipmentCatalogService {
   async getCatalogs() {
-    const [types, brands, headquarters, locations, responsibles] = await Promise.all([
+    const [types, brands, headquarters, locations, responsibles, technicians] = await Promise.all([
       this.distinctEquipmentValues('type'),
       this.distinctEquipmentValues('brand'),
       Headquarter.query()
@@ -23,6 +23,14 @@ export default class EquipmentCatalogService {
         .whereNull('deleted_at')
         .orderBy('name', 'asc')
         .select(['id', 'name', 'email', 'job_title', 'department']),
+      User.query()
+        .where('is_active', true)
+        .whereNull('deleted_at')
+        .whereHas('role', (roleQuery) => {
+          roleQuery.where('slug', 'maintenance_technician')
+        })
+        .orderBy('name', 'asc')
+        .select(['id', 'name', 'email', 'job_title', 'department']),
     ])
 
     return {
@@ -33,6 +41,7 @@ export default class EquipmentCatalogService {
       headquarters,
       locations,
       responsibles,
+      technicians,
     }
   }
 
