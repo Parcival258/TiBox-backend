@@ -300,6 +300,12 @@ test.group('Maintenance and failure modules', (group) => {
     const report = await FailureReport.findOrFail(reportId)
 
     assert.exists(report.closedAt)
+
+    const alert = await Alert.query()
+      .where('alert_key', `damaged_equipment_reported:${reportId}`)
+      .firstOrFail()
+
+    assert.equal(alert.status, 'resolved')
   })
 
   test('creates an alert when a failure is reported', async ({ assert, client }) => {

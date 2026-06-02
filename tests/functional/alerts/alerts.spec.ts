@@ -225,5 +225,28 @@ test.group('Alerts', (group) => {
     selfAssignResponse.assertBodyContains({
       assignedTo: technician.id,
     })
+
+    const noteResponse = await client
+      .patch(`/api/v1/alerts/${unassignedAlert.id}/note`)
+      .loginAs(technician)
+      .json({ note: 'Pendiente de repuesto para cerrar el caso.' })
+
+    noteResponse.assertOk()
+
+    await unassignedAlert.refresh()
+    const notes = unassignedAlert.metadata?.notes as Array<{ note: string }> | undefined
+
+    assert.isArray(notes)
+    assert.equal(notes?.[0]?.note, 'Pendiente de repuesto para cerrar el caso.')
+
+    const dismissResponse = await client
+      .patch(`/api/v1/alerts/${unassignedAlert.id}/dismiss`)
+      .loginAs(technician)
+
+    dismissResponse.assertOk()
+    dismissResponse.assertBodyContains({
+      status: 'dismissed',
+      statusLabel: 'Quitada',
+    })
   })
 })

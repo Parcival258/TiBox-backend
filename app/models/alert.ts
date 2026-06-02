@@ -4,11 +4,12 @@ import { BaseModel, belongsTo, column, computed } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
-export type AlertStatus = 'open' | 'acknowledged' | 'resolved'
+export type AlertStatus = 'open' | 'acknowledged' | 'resolved' | 'dismissed'
 export type AlertSeverity = 'low' | 'medium' | 'high' | 'critical'
 
 const statusLabels: Record<AlertStatus, string> = {
   acknowledged: 'Reconocida',
+  dismissed: 'Quitada',
   open: 'Abierta',
   resolved: 'Resuelta',
 }

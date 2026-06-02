@@ -139,6 +139,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['selfAssign']>>>
     }
   }
+  'alerts.note': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/alerts/:id/note'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/alert').alertNoteValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/alert').alertNoteValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['addNote']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['addNote']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'alerts.resolve': {
     methods: ["PATCH"]
     pattern: '/api/v1/alerts/:id/resolve'
@@ -149,6 +161,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['resolve']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['resolve']>>>
+    }
+  }
+  'alerts.dismiss': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/alerts/:id/dismiss'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['dismiss']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['dismiss']>>>
     }
   }
   'dashboard.index': {

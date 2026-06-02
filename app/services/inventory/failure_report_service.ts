@@ -176,6 +176,10 @@ export default class FailureReportService {
       newValues: report.$attributes,
     })
 
+    if (report.status === 'closed' || report.status === 'resolved') {
+      await this.alertService.resolveByKey(`damaged_equipment_reported:${report.id}`, audit)
+    }
+
     return this.find(report.id)
   }
 

@@ -1,5 +1,10 @@
 import AlertService from '#services/alerts/alert_service'
-import { assignAlertValidator, listAlertValidator, runAlertChecksValidator } from '#validators/alert'
+import {
+  alertNoteValidator,
+  assignAlertValidator,
+  listAlertValidator,
+  runAlertChecksValidator,
+} from '#validators/alert'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AlertsController {
@@ -63,8 +68,33 @@ export default class AlertsController {
     return alert
   }
 
+  async addNote({ auth, params, request, response }: HttpContext) {
+    const payload = await request.validateUsing(alertNoteValidator)
+    const alert = await this.alertService.addNote(
+      params.id,
+      payload.note,
+      this.auditContext({ auth, request })
+    )
+
+    if (!alert) {
+      return response.notFound({ message: 'Alert not found' })
+    }
+
+    return alert
+  }
+
   async resolve({ auth, params, request, response }: HttpContext) {
     const alert = await this.alertService.resolve(params.id, this.auditContext({ auth, request }))
+
+    if (!alert) {
+      return response.notFound({ message: 'Alert not found' })
+    }
+
+    return alert
+  }
+
+  async dismiss({ auth, params, request, response }: HttpContext) {
+    const alert = await this.alertService.dismiss(params.id, this.auditContext({ auth, request }))
 
     if (!alert) {
       return response.notFound({ message: 'Alert not found' })

@@ -72,11 +72,23 @@ const routes = {
     tokens: [{"old":"/api/v1/alerts/:id/self-assign","type":0,"val":"api","end":""},{"old":"/api/v1/alerts/:id/self-assign","type":0,"val":"v1","end":""},{"old":"/api/v1/alerts/:id/self-assign","type":0,"val":"alerts","end":""},{"old":"/api/v1/alerts/:id/self-assign","type":1,"val":"id","end":""},{"old":"/api/v1/alerts/:id/self-assign","type":0,"val":"self-assign","end":""}],
     types: placeholder as Registry['alerts.self_assign']['types'],
   },
+  'alerts.note': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/alerts/:id/note',
+    tokens: [{"old":"/api/v1/alerts/:id/note","type":0,"val":"api","end":""},{"old":"/api/v1/alerts/:id/note","type":0,"val":"v1","end":""},{"old":"/api/v1/alerts/:id/note","type":0,"val":"alerts","end":""},{"old":"/api/v1/alerts/:id/note","type":1,"val":"id","end":""},{"old":"/api/v1/alerts/:id/note","type":0,"val":"note","end":""}],
+    types: placeholder as Registry['alerts.note']['types'],
+  },
   'alerts.resolve': {
     methods: ["PATCH"],
     pattern: '/api/v1/alerts/:id/resolve',
     tokens: [{"old":"/api/v1/alerts/:id/resolve","type":0,"val":"api","end":""},{"old":"/api/v1/alerts/:id/resolve","type":0,"val":"v1","end":""},{"old":"/api/v1/alerts/:id/resolve","type":0,"val":"alerts","end":""},{"old":"/api/v1/alerts/:id/resolve","type":1,"val":"id","end":""},{"old":"/api/v1/alerts/:id/resolve","type":0,"val":"resolve","end":""}],
     types: placeholder as Registry['alerts.resolve']['types'],
+  },
+  'alerts.dismiss': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/alerts/:id/dismiss',
+    tokens: [{"old":"/api/v1/alerts/:id/dismiss","type":0,"val":"api","end":""},{"old":"/api/v1/alerts/:id/dismiss","type":0,"val":"v1","end":""},{"old":"/api/v1/alerts/:id/dismiss","type":0,"val":"alerts","end":""},{"old":"/api/v1/alerts/:id/dismiss","type":1,"val":"id","end":""},{"old":"/api/v1/alerts/:id/dismiss","type":0,"val":"dismiss","end":""}],
+    types: placeholder as Registry['alerts.dismiss']['types'],
   },
   'dashboard.index': {
     methods: ["GET","HEAD"],

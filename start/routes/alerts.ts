@@ -31,9 +31,17 @@ export default function alertRoutes() {
         .use(middleware.permission({ permissions: ['alerts.view'] }))
         .as('self_assign')
       router
+        .patch(':id/note', [AlertsController, 'addNote'])
+        .use(middleware.permission({ permissions: ['alerts.view'] }))
+        .as('note')
+      router
         .patch(':id/resolve', [AlertsController, 'resolve'])
         .use(middleware.permission({ permissions: ['alerts.manage'] }))
         .as('resolve')
+      router
+        .patch(':id/dismiss', [AlertsController, 'dismiss'])
+        .use(middleware.permission({ permissions: ['alerts.view'] }))
+        .as('dismiss')
     })
     .prefix('alerts')
     .use(middleware.auth())

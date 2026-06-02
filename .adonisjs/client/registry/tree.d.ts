@@ -24,7 +24,9 @@ export interface ApiDefinition {
     acknowledge: typeof routes['alerts.acknowledge']
     assign: typeof routes['alerts.assign']
     selfAssign: typeof routes['alerts.self_assign']
+    note: typeof routes['alerts.note']
     resolve: typeof routes['alerts.resolve']
+    dismiss: typeof routes['alerts.dismiss']
   }
   dashboard: {
     index: typeof routes['dashboard.index']

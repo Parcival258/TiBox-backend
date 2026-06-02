@@ -214,6 +214,44 @@ export default class AlertService {
     return this.assign(id, audit.userId, audit)
   }
 
+  async addNote(id: string, note: string, audit?: AuditContext) {
+    const alert = await Alert.find(id)
+
+    if (!alert) {
+      return null
+    }
+
+    const oldValues = { ...alert.$attributes }
+    const notes = Array.isArray(alert.metadata?.notes) ? alert.metadata.notes : []
+
+    alert.metadata = {
+      ...(alert.metadata ?? {}),
+      notes: [
+        ...notes,
+        {
+          createdAt: DateTime.local().toISO(),
+          note,
+          userId: audit?.userId ?? null,
+        },
+      ],
+    }
+
+    await alert.save()
+    await alert.load('equipment')
+    await alert.load('assignee')
+
+    await this.auditService.record({
+      ...audit,
+      action: 'alert.note_added',
+      entityType: 'alert',
+      entityId: alert.id,
+      oldValues,
+      newValues: alert.$attributes,
+    })
+
+    return alert
+  }
+
   async resolve(id: string, audit?: AuditContext) {
     const alert = await Alert.find(id)
 
@@ -238,6 +276,40 @@ export default class AlertService {
     })
 
     return alert
+  }
+
+  async dismiss(id: string, audit?: AuditContext) {
+    const alert = await Alert.find(id)
+
+    if (!alert) {
+      return null
+    }
+
+    const oldValues = { ...alert.$attributes }
+
+    alert.status = 'dismissed'
+    await alert.save()
+
+    await this.auditService.record({
+      ...audit,
+      action: 'alert.dismissed',
+      entityType: 'alert',
+      entityId: alert.id,
+      oldValues,
+      newValues: alert.$attributes,
+    })
+
+    return alert
+  }
+
+  async resolveByKey(alertKey: string, audit?: AuditContext) {
+    const alert = await Alert.findBy('alert_key', alertKey)
+
+    if (!alert || alert.status === 'resolved') {
+      return alert
+    }
+
+    return this.resolve(alert.id, audit)
   }
 
   private async upsert(candidate: AlertCandidate, audit?: AuditContext) {
