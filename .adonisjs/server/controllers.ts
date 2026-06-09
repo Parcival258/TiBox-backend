@@ -22,6 +22,9 @@ export const controllers = {
     MaintenanceRecords: () => import('#controllers/inventory/maintenance_records_controller'),
     MaintenanceSchedules: () => import('#controllers/inventory/maintenance_schedules_controller'),
   },
+  realtime: {
+    RealtimeTokens: () => import('#controllers/realtime/realtime_tokens_controller'),
+  },
   reports: {
     Dashboard: () => import('#controllers/reports/dashboard_controller'),
   },

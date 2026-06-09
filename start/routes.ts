@@ -4,6 +4,7 @@ import authRoutes from '#start/routes/auth'
 import alertRoutes from '#start/routes/alerts'
 import dashboardRoutes from '#start/routes/dashboard'
 import inventoryRoutes from '#start/routes/inventory'
+import realtimeRoutes from '#start/routes/realtime'
 import settingsRoutes from '#start/routes/settings'
 
 router.get('/', () => {
@@ -24,6 +25,7 @@ router
     authRoutes()
     alertRoutes()
     dashboardRoutes()
+    realtimeRoutes()
     settingsRoutes()
     inventoryRoutes()
   })

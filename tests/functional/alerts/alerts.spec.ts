@@ -6,6 +6,7 @@ import Location from '#models/location'
 import MaintenanceSchedule from '#models/maintenance_schedule'
 import Permission from '#models/permission'
 import Role from '#models/role'
+import RealtimeTokenService from '#services/realtime/realtime_token_service'
 import User from '#models/user'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { test } from '@japa/runner'
@@ -248,5 +249,33 @@ test.group('Alerts', (group) => {
       status: 'dismissed',
       statusLabel: 'Quitada',
     })
+  })
+
+  test('issues realtime tokens only to alert viewers', async ({ assert, client }) => {
+    const viewer = await createActor(['alerts.view'])
+    const reporter = await createActor(['failure_reports.view'])
+    const restrictedUser = await createActor([])
+
+    const tokenResponse = await client.post('/api/v1/realtime/token').loginAs(viewer)
+
+    tokenResponse.assertOk()
+    const token = (tokenResponse.body() as { data: { token: string } }).data.token
+    const payload = new RealtimeTokenService().verify(token)
+
+    assert.equal(payload?.userId, viewer.id)
+    assert.include(payload?.permissions, 'alerts.view')
+
+    const reporterTokenResponse = await client.post('/api/v1/realtime/token').loginAs(reporter)
+
+    reporterTokenResponse.assertOk()
+    const reporterToken = (reporterTokenResponse.body() as { data: { token: string } }).data.token
+    const reporterPayload = new RealtimeTokenService().verify(reporterToken)
+
+    assert.equal(reporterPayload?.userId, reporter.id)
+    assert.include(reporterPayload?.permissions, 'failure_reports.view')
+
+    const forbiddenResponse = await client.post('/api/v1/realtime/token').loginAs(restrictedUser)
+
+    forbiddenResponse.assertForbidden()
   })
 })

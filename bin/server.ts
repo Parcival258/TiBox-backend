@@ -10,6 +10,9 @@
 */
 
 await import('reflect-metadata')
+import { createServer } from 'node:http'
+import realtimeService from '#services/realtime/realtime_service'
+
 const { Ignitor, prettyPrintError } = await import('@adonisjs/core')
 
 /**
@@ -38,7 +41,12 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     app.listenIf(app.managedByPm2, 'SIGINT', () => app.terminate())
   })
   .httpServer()
-  .start()
+  .start((handler) => {
+    const server = createServer(handler)
+    realtimeService.boot(server)
+
+    return server
+  })
   .catch((error) => {
     process.exitCode = 1
     prettyPrintError(error)

@@ -187,6 +187,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reports/dashboard_controller').default['index']>>>
     }
   }
+  'realtime.token': {
+    methods: ["POST"]
+    pattern: '/api/v1/realtime/token'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/realtime/realtime_tokens_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/realtime/realtime_tokens_controller').default['store']>>>
+    }
+  }
   'settings.headquarters.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/headquarters'

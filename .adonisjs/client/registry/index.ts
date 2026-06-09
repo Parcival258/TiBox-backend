@@ -96,6 +96,12 @@ const routes = {
     tokens: [{"old":"/api/v1/dashboard","type":0,"val":"api","end":""},{"old":"/api/v1/dashboard","type":0,"val":"v1","end":""},{"old":"/api/v1/dashboard","type":0,"val":"dashboard","end":""}],
     types: placeholder as Registry['dashboard.index']['types'],
   },
+  'realtime.token': {
+    methods: ["POST"],
+    pattern: '/api/v1/realtime/token',
+    tokens: [{"old":"/api/v1/realtime/token","type":0,"val":"api","end":""},{"old":"/api/v1/realtime/token","type":0,"val":"v1","end":""},{"old":"/api/v1/realtime/token","type":0,"val":"realtime","end":""},{"old":"/api/v1/realtime/token","type":0,"val":"token","end":""}],
+    types: placeholder as Registry['realtime.token']['types'],
+  },
   'settings.headquarters.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/headquarters',

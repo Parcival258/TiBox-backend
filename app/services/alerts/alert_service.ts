@@ -5,6 +5,7 @@ import MaintenanceSchedule from '#models/maintenance_schedule'
 import User from '#models/user'
 import AuditService, { type AuditContext } from '#services/audit/audit_service'
 import AlertDeliveryService from '#services/alerts/alert_delivery_service'
+import realtimeService from '#services/realtime/realtime_service'
 import { DateTime } from 'luxon'
 
 type ListAlertFilters = {
@@ -163,6 +164,7 @@ export default class AlertService {
     alert.acknowledgedAt = DateTime.local()
     alert.acknowledgedBy = audit?.userId ?? null
     await alert.save()
+    await this.loadRealtimeRelations(alert)
 
     await this.auditService.record({
       ...audit,
@@ -172,6 +174,8 @@ export default class AlertService {
       oldValues,
       newValues: alert.$attributes,
     })
+
+    realtimeService.emitAlert('alerts:updated', alert)
 
     return alert
   }
@@ -202,6 +206,8 @@ export default class AlertService {
       oldValues,
       newValues: alert.$attributes,
     })
+
+    realtimeService.emitAlert('alerts:assigned', alert)
 
     return alert
   }
@@ -249,6 +255,8 @@ export default class AlertService {
       newValues: alert.$attributes,
     })
 
+    realtimeService.emitAlert('alerts:note_added', alert)
+
     return alert
   }
 
@@ -265,6 +273,7 @@ export default class AlertService {
     alert.resolvedAt = DateTime.local()
     alert.resolvedBy = audit?.userId ?? null
     await alert.save()
+    await this.loadRealtimeRelations(alert)
 
     await this.auditService.record({
       ...audit,
@@ -274,6 +283,8 @@ export default class AlertService {
       oldValues,
       newValues: alert.$attributes,
     })
+
+    realtimeService.emitAlert('alerts:resolved', alert)
 
     return alert
   }
@@ -289,6 +300,7 @@ export default class AlertService {
 
     alert.status = 'dismissed'
     await alert.save()
+    await this.loadRealtimeRelations(alert)
 
     await this.auditService.record({
       ...audit,
@@ -298,6 +310,8 @@ export default class AlertService {
       oldValues,
       newValues: alert.$attributes,
     })
+
+    realtimeService.emitAlert('alerts:dismissed', alert)
 
     return alert
   }
@@ -313,6 +327,7 @@ export default class AlertService {
   }
 
   private async upsert(candidate: AlertCandidate, audit?: AuditContext) {
+    const existingAlert = await Alert.findBy('alert_key', candidate.alertKey)
     const alert = await Alert.updateOrCreate(
       { alertKey: candidate.alertKey },
       {
@@ -322,6 +337,7 @@ export default class AlertService {
         triggeredAt: DateTime.local(),
       }
     )
+    await this.loadRealtimeRelations(alert)
 
     await this.auditService.record({
       ...audit,
@@ -331,7 +347,14 @@ export default class AlertService {
       newValues: alert.$attributes,
     })
 
+    realtimeService.emitAlert(existingAlert ? 'alerts:updated' : 'alerts:created', alert)
+
     return alert
+  }
+
+  private async loadRealtimeRelations(alert: Alert) {
+    await alert.load('equipment')
+    await alert.load('assignee')
   }
 
   private async findMaintenanceOverdue(referenceDate: DateTime) {
@@ -451,7 +474,11 @@ export default class AlertService {
       entityType: 'failure_report',
       equipmentId: report.equipmentId,
       message: `El equipo ${report.equipment.internalCode} tiene una falla reportada: ${report.title}.`,
-      metadata: { failureReportTitle: report.title, priority: report.priority },
+      metadata: {
+        failureReportTitle: report.title,
+        priority: report.priority,
+        reportedBy: report.reportedBy,
+      },
       severity: this.failureSeverity(report.priority),
       title: 'Falla reportada en equipo',
       type: 'damaged_equipment_reported',

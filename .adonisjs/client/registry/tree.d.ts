@@ -31,6 +31,9 @@ export interface ApiDefinition {
   dashboard: {
     index: typeof routes['dashboard.index']
   }
+  realtime: {
+    token: typeof routes['realtime.token']
+  }
   settings: {
     headquarters: {
       index: typeof routes['settings.headquarters.index']

@@ -19,6 +19,7 @@ export type ScannedRoutes = {
     'alerts.resolve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'alerts.dismiss': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.index': { paramsTuple?: []; params?: {} }
+    'realtime.token': { paramsTuple?: []; params?: {} }
     'settings.headquarters.index': { paramsTuple?: []; params?: {} }
     'settings.headquarters.store': { paramsTuple?: []; params?: {} }
     'settings.headquarters.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -133,6 +134,7 @@ export type ScannedRoutes = {
     'auth.session.login': { paramsTuple?: []; params?: {} }
     'auth.session.logout': { paramsTuple?: []; params?: {} }
     'alerts.run': { paramsTuple?: []; params?: {} }
+    'realtime.token': { paramsTuple?: []; params?: {} }
     'settings.headquarters.store': { paramsTuple?: []; params?: {} }
     'settings.locations.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment.store': { paramsTuple?: []; params?: {} }
