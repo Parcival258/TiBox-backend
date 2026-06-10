@@ -24,3 +24,25 @@ export const loginValidator = vine.create({
   email: email(),
   password: vine.string(),
 })
+
+export const userCreateValidator = vine.create({
+  name: vine.string().trim().minLength(2).maxLength(150),
+  email: email(),
+  password: password(),
+  roleId: vine.string().uuid().optional(),
+  phone: vine.string().trim().maxLength(50).optional(),
+  jobTitle: vine.string().trim().maxLength(120).optional(),
+  department: vine.string().trim().maxLength(120).optional(),
+  isActive: vine.boolean().optional(),
+})
+
+export const userUpdateValidator = vine.create({
+  name: vine.string().trim().minLength(2).maxLength(150),
+  email: email(),
+  password: password().optional(),
+  roleId: vine.string().uuid().optional(),
+  phone: vine.string().trim().maxLength(50).optional(),
+  jobTitle: vine.string().trim().maxLength(120).optional(),
+  department: vine.string().trim().maxLength(120).optional(),
+  isActive: vine.boolean().optional(),
+})

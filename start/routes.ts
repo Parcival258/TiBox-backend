@@ -6,6 +6,7 @@ import dashboardRoutes from '#start/routes/dashboard'
 import inventoryRoutes from '#start/routes/inventory'
 import realtimeRoutes from '#start/routes/realtime'
 import settingsRoutes from '#start/routes/settings'
+import userRoutes from '#start/routes/users'
 
 router.get('/', () => {
   return { hello: 'world' }
@@ -27,6 +28,7 @@ router
     dashboardRoutes()
     realtimeRoutes()
     settingsRoutes()
+    userRoutes()
     inventoryRoutes()
   })
   .prefix('/api/v1')

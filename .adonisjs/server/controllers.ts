@@ -32,4 +32,7 @@ export const controllers = {
     Headquarters: () => import('#controllers/settings/headquarters_controller'),
     Locations: () => import('#controllers/settings/locations_controller'),
   },
+  users: {
+    Users: () => import('#controllers/users/users_controller'),
+  },
 }
