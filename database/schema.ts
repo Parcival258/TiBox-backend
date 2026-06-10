@@ -215,6 +215,47 @@ export class EquipmentAssignmentSchema extends BaseModel {
   declare userId: string
 }
 
+export class EquipmentLoanSchema extends BaseModel {
+  static $columns = ['borrowerName', 'createdAt', 'createdBy', 'equipmentId', 'estimatedReturnAt', 'id', 'loanedAt', 'notes', 'receivedSignatureImage', 'requestMode', 'requestedAt', 'requestedItem', 'returnedAt', 'returnedBy', 'signatureImage', 'status', 'updatedAt', 'userId'] as const
+  $columns = EquipmentLoanSchema.$columns
+  @column()
+  declare borrowerName: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare createdBy: string | null
+  @column()
+  declare equipmentId: string
+  @column.date()
+  declare estimatedReturnAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime()
+  declare loanedAt: DateTime
+  @column()
+  declare notes: string | null
+  @column()
+  declare receivedSignatureImage: string | null
+  @column()
+  declare requestMode: string | null
+  @column.dateTime()
+  declare requestedAt: DateTime
+  @column()
+  declare requestedItem: string
+  @column.dateTime()
+  declare returnedAt: DateTime | null
+  @column()
+  declare returnedBy: string | null
+  @column()
+  declare signatureImage: string | null
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+  @column()
+  declare userId: string | null
+}
+
 export class FailureReportSchema extends BaseModel {
   static $columns = ['closedAt', 'createdAt', 'description', 'equipmentId', 'id', 'maintenanceRecordId', 'priority', 'reportedBy', 'status', 'title', 'updatedAt'] as const
   $columns = FailureReportSchema.$columns

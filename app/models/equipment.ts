@@ -1,4 +1,5 @@
 import EquipmentAssignment from '#models/equipment_assignment'
+import EquipmentLoan from '#models/equipment_loan'
 import Headquarter from '#models/headquarter'
 import Location from '#models/location'
 import MaintenanceRecord from '#models/maintenance_record'
@@ -129,6 +130,9 @@ export default class Equipment extends BaseModel {
 
   @hasMany(() => EquipmentAssignment)
   declare assignments: HasMany<typeof EquipmentAssignment>
+
+  @hasMany(() => EquipmentLoan)
+  declare loans: HasMany<typeof EquipmentLoan>
 
   @hasMany(() => MaintenanceSchedule)
   declare maintenanceSchedules: HasMany<typeof MaintenanceSchedule>

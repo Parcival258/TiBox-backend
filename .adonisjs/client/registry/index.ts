@@ -294,6 +294,24 @@ const routes = {
     tokens: [{"old":"/api/v1/equipment/:equipment_id/attachments/:id","type":0,"val":"api","end":""},{"old":"/api/v1/equipment/:equipment_id/attachments/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment/:equipment_id/attachments/:id","type":0,"val":"equipment","end":""},{"old":"/api/v1/equipment/:equipment_id/attachments/:id","type":1,"val":"equipment_id","end":""},{"old":"/api/v1/equipment/:equipment_id/attachments/:id","type":0,"val":"attachments","end":""},{"old":"/api/v1/equipment/:equipment_id/attachments/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['inventory.equipment.attachments.destroy']['types'],
   },
+  'inventory.equipment_loans.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/equipment-loans',
+    tokens: [{"old":"/api/v1/equipment-loans","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans","type":0,"val":"equipment-loans","end":""}],
+    types: placeholder as Registry['inventory.equipment_loans.index']['types'],
+  },
+  'inventory.equipment_loans.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/equipment-loans',
+    tokens: [{"old":"/api/v1/equipment-loans","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans","type":0,"val":"equipment-loans","end":""}],
+    types: placeholder as Registry['inventory.equipment_loans.store']['types'],
+  },
+  'inventory.equipment_loans.return': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/equipment-loans/:id/return',
+    tokens: [{"old":"/api/v1/equipment-loans/:id/return","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans/:id/return","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans/:id/return","type":0,"val":"equipment-loans","end":""},{"old":"/api/v1/equipment-loans/:id/return","type":1,"val":"id","end":""},{"old":"/api/v1/equipment-loans/:id/return","type":0,"val":"return","end":""}],
+    types: placeholder as Registry['inventory.equipment_loans.return']['types'],
+  },
   'inventory.maintenance.schedules.catalogs': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/maintenance/schedules/catalogs',

@@ -8,6 +8,7 @@ const EquipmentAttachmentsController = () =>
   import('#controllers/inventory/equipment_attachments_controller')
 const EquipmentCatalogsController = () =>
   import('#controllers/inventory/equipment_catalogs_controller')
+const EquipmentLoansController = () => import('#controllers/inventory/equipment_loans_controller')
 const FailureReportsController = () => import('#controllers/inventory/failure_reports_controller')
 const MaintenanceRecordsController = () =>
   import('#controllers/inventory/maintenance_records_controller')
@@ -85,6 +86,19 @@ export default function inventoryRoutes() {
         ])
         .use(middleware.permission({ permissions: ['equipment.attachments.manage'] }))
         .as('equipment.attachments.destroy')
+
+      router
+        .get('equipment-loans', [EquipmentLoansController, 'index'])
+        .use(middleware.permission({ permissions: ['equipment.view'] }))
+        .as('equipment_loans.index')
+      router
+        .post('equipment-loans', [EquipmentLoansController, 'store'])
+        .use(middleware.permission({ permissions: ['equipment.assign'] }))
+        .as('equipment_loans.store')
+      router
+        .patch('equipment-loans/:id/return', [EquipmentLoansController, 'returnLoan'])
+        .use(middleware.permission({ permissions: ['equipment.return'] }))
+        .as('equipment_loans.return')
 
       router
         .get('maintenance/schedules/catalogs', [MaintenanceSchedulesController, 'catalogs'])

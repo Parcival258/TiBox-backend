@@ -1,5 +1,6 @@
 import Alert, { type AlertSeverity } from '#models/alert'
 import Equipment from '#models/equipment'
+import EquipmentLoan from '#models/equipment_loan'
 import FailureReport from '#models/failure_report'
 import MaintenanceSchedule from '#models/maintenance_schedule'
 import User from '#models/user'
@@ -93,6 +94,7 @@ export default class AlertService {
         { label: 'Arriendo proximo a renovar', value: 'lease_expiring' },
         { label: 'Mantenimiento programado manana', value: 'maintenance_tomorrow' },
         { label: 'Falla reportada en equipo', value: 'damaged_equipment_reported' },
+        { label: 'Prestamo de equipo vencido', value: 'equipment_loan_overdue' },
       ],
     }
   }
@@ -104,6 +106,7 @@ export default class AlertService {
       ...(await this.findLeaseExpiring(referenceDate)),
       ...(await this.findMaintenanceTomorrow(referenceDate)),
       ...(await this.findDamagedEquipmentReports()),
+      ...(await this.findOverdueEquipmentLoans(referenceDate)),
     ]
 
     const alerts = await Promise.all(candidates.map((candidate) => this.upsert(candidate, audit)))
@@ -482,6 +485,44 @@ export default class AlertService {
       severity: this.failureSeverity(report.priority),
       title: 'Falla reportada en equipo',
       type: 'damaged_equipment_reported',
+    }))
+  }
+
+  private async findOverdueEquipmentLoans(referenceDate: DateTime) {
+    const today = referenceDate.toSQLDate()!
+    const loans = await EquipmentLoan.query()
+      .whereIn('status', ['active', 'overdue'])
+      .whereNull('returned_at')
+      .where('estimated_return_at', '<', today)
+      .preload('equipment')
+      .preload('user')
+
+    await Promise.all(
+      loans
+        .filter((loan) => loan.status === 'active')
+        .map(async (loan) => {
+          loan.status = 'overdue'
+          await loan.save()
+        })
+    )
+
+    return loans.map((loan) => ({
+      alertKey: `equipment_loan_overdue:${loan.id}`,
+      assignedTo: null,
+      channels: ['internal'],
+      dueAt: loan.estimatedReturnAt,
+      entityId: loan.id,
+      entityType: 'equipment_loan',
+      equipmentId: loan.equipmentId,
+      message: `El prestamo del equipo ${loan.equipment.internalCode} a ${loan.borrowerLabel} vencio el ${loan.estimatedReturnAt.toISODate()}.`,
+      metadata: {
+        borrower: loan.borrowerLabel,
+        estimatedReturnAt: loan.estimatedReturnAt,
+        requestedItem: loan.requestedItem,
+      },
+      severity: 'high' as const,
+      title: 'Prestamo de equipo vencido',
+      type: 'equipment_loan_overdue',
     }))
   }
 

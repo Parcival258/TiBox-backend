@@ -583,6 +583,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_attachments_controller').default['destroy']>>>
     }
   }
+  'inventory.equipment_loans.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment-loans'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/equipment_loan').listEquipmentLoansValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_loans.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/equipment-loans'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_loan').createEquipmentLoanValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_loan').createEquipmentLoanValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_loans.return': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/equipment-loans/:id/return'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_loan').returnEquipmentLoanValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_loan').returnEquipmentLoanValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['returnLoan']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['returnLoan']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'inventory.maintenance.schedules.catalogs': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/maintenance/schedules/catalogs'

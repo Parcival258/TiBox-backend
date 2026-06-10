@@ -2,6 +2,7 @@ import Attachment from '#models/attachment'
 import AuditLog from '#models/audit_log'
 import Equipment from '#models/equipment'
 import EquipmentAssignment from '#models/equipment_assignment'
+import EquipmentLoan from '#models/equipment_loan'
 import FailureReport from '#models/failure_report'
 import MaintenanceRecord from '#models/maintenance_record'
 import MaintenanceSchedule from '#models/maintenance_schedule'
@@ -37,6 +38,7 @@ export default class EquipmentLifeSheetService {
       failureReports,
       attachments,
       maintenanceRecordAttachments,
+      loans,
       auditLogs,
     ] = await Promise.all([
       EquipmentAssignment.query()
@@ -72,6 +74,12 @@ export default class EquipmentLifeSheetService {
         )
         .preload('uploader')
         .orderBy('created_at', 'desc'),
+      EquipmentLoan.query()
+        .where('equipment_id', equipment.id)
+        .preload('user')
+        .preload('creator')
+        .preload('returner')
+        .orderBy('loaned_at', 'desc'),
       AuditLog.query()
         .where('entity_type', 'equipment')
         .where('entity_id', equipment.id)
@@ -86,17 +94,20 @@ export default class EquipmentLifeSheetService {
       maintenanceSchedules,
       maintenanceRecords,
       failureReports,
+      loans,
       attachments,
       maintenanceRecordAttachments,
       auditLogs,
       technicalHistory: this.buildTechnicalHistory({
         assignments,
         failureReports,
+        loans,
         maintenanceRecords,
         maintenanceSchedules,
       }),
       summary: {
         totalAssignments: assignments.length,
+        totalLoans: loans.length,
         totalMaintenanceRecords: maintenanceRecords.length,
         openFailureReports: failureReports.filter((report) =>
           ['open', 'in_review'].includes(report.status)
@@ -109,11 +120,13 @@ export default class EquipmentLifeSheetService {
   private buildTechnicalHistory({
     assignments,
     failureReports,
+    loans,
     maintenanceRecords,
     maintenanceSchedules,
   }: {
     assignments: EquipmentAssignment[]
     failureReports: FailureReport[]
+    loans: EquipmentLoan[]
     maintenanceRecords: MaintenanceRecord[]
     maintenanceSchedules: MaintenanceSchedule[]
   }) {
@@ -157,6 +170,16 @@ export default class EquipmentLifeSheetService {
         detail: assignment.notes,
         status: assignment.returnedAt ? 'returned' : 'active',
         priority: null,
+      })),
+      ...loans.map((loan) => ({
+        id: `equipment-loan:${loan.id}`,
+        sourceId: loan.id,
+        type: 'equipment_loan',
+        date: loan.returnedAt ?? loan.loanedAt,
+        title: loan.returnedAt ? 'Prestamo devuelto' : 'Equipo prestado',
+        detail: `${loan.borrowerLabel} / ${loan.requestedItem}`,
+        status: loan.status,
+        priority: loan.status === 'overdue' ? 'high' : null,
       })),
     ].sort((left, right) => right.date.toMillis() - left.date.toMillis())
   }

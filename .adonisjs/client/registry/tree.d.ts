@@ -81,6 +81,11 @@ export interface ApiDefinition {
         destroy: typeof routes['inventory.equipment.attachments.destroy']
       }
     }
+    equipmentLoans: {
+      index: typeof routes['inventory.equipment_loans.index']
+      store: typeof routes['inventory.equipment_loans.store']
+      return: typeof routes['inventory.equipment_loans.return']
+    }
     maintenance: {
       schedules: {
         catalogs: typeof routes['inventory.maintenance.schedules.catalogs']
