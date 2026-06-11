@@ -210,6 +210,30 @@ const routes = {
     tokens: [{"old":"/api/v1/equipment/catalogs","type":0,"val":"api","end":""},{"old":"/api/v1/equipment/catalogs","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment/catalogs","type":0,"val":"equipment","end":""},{"old":"/api/v1/equipment/catalogs","type":0,"val":"catalogs","end":""}],
     types: placeholder as Registry['inventory.equipment.catalogs']['types'],
   },
+  'inventory.equipment_types.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/equipment-types',
+    tokens: [{"old":"/api/v1/equipment-types","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-types","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-types","type":0,"val":"equipment-types","end":""}],
+    types: placeholder as Registry['inventory.equipment_types.index']['types'],
+  },
+  'inventory.equipment_types.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/equipment-types',
+    tokens: [{"old":"/api/v1/equipment-types","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-types","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-types","type":0,"val":"equipment-types","end":""}],
+    types: placeholder as Registry['inventory.equipment_types.store']['types'],
+  },
+  'inventory.equipment_types.update': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/equipment-types/:id',
+    tokens: [{"old":"/api/v1/equipment-types/:id","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-types/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-types/:id","type":0,"val":"equipment-types","end":""},{"old":"/api/v1/equipment-types/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['inventory.equipment_types.update']['types'],
+  },
+  'inventory.equipment_types.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/equipment-types/:id',
+    tokens: [{"old":"/api/v1/equipment-types/:id","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-types/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-types/:id","type":0,"val":"equipment-types","end":""},{"old":"/api/v1/equipment-types/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['inventory.equipment_types.destroy']['types'],
+  },
   'inventory.equipment.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/equipment',
@@ -300,11 +324,35 @@ const routes = {
     tokens: [{"old":"/api/v1/equipment-loans","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans","type":0,"val":"equipment-loans","end":""}],
     types: placeholder as Registry['inventory.equipment_loans.index']['types'],
   },
+  'inventory.equipment_loans.requestable_equipment': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/equipment-loans/requestable-equipment',
+    tokens: [{"old":"/api/v1/equipment-loans/requestable-equipment","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans/requestable-equipment","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans/requestable-equipment","type":0,"val":"equipment-loans","end":""},{"old":"/api/v1/equipment-loans/requestable-equipment","type":0,"val":"requestable-equipment","end":""}],
+    types: placeholder as Registry['inventory.equipment_loans.requestable_equipment']['types'],
+  },
+  'inventory.equipment_loans.requests.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/equipment-loans/requests',
+    tokens: [{"old":"/api/v1/equipment-loans/requests","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans/requests","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans/requests","type":0,"val":"equipment-loans","end":""},{"old":"/api/v1/equipment-loans/requests","type":0,"val":"requests","end":""}],
+    types: placeholder as Registry['inventory.equipment_loans.requests.store']['types'],
+  },
   'inventory.equipment_loans.store': {
     methods: ["POST"],
     pattern: '/api/v1/equipment-loans',
     tokens: [{"old":"/api/v1/equipment-loans","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans","type":0,"val":"equipment-loans","end":""}],
     types: placeholder as Registry['inventory.equipment_loans.store']['types'],
+  },
+  'inventory.equipment_loans.approve': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/equipment-loans/:id/approve',
+    tokens: [{"old":"/api/v1/equipment-loans/:id/approve","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans/:id/approve","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans/:id/approve","type":0,"val":"equipment-loans","end":""},{"old":"/api/v1/equipment-loans/:id/approve","type":1,"val":"id","end":""},{"old":"/api/v1/equipment-loans/:id/approve","type":0,"val":"approve","end":""}],
+    types: placeholder as Registry['inventory.equipment_loans.approve']['types'],
+  },
+  'inventory.equipment_loans.reject': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/equipment-loans/:id/reject',
+    tokens: [{"old":"/api/v1/equipment-loans/:id/reject","type":0,"val":"api","end":""},{"old":"/api/v1/equipment-loans/:id/reject","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment-loans/:id/reject","type":0,"val":"equipment-loans","end":""},{"old":"/api/v1/equipment-loans/:id/reject","type":1,"val":"id","end":""},{"old":"/api/v1/equipment-loans/:id/reject","type":0,"val":"reject","end":""}],
+    types: placeholder as Registry['inventory.equipment_loans.reject']['types'],
   },
   'inventory.equipment_loans.return': {
     methods: ["PATCH"],

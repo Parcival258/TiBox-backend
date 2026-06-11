@@ -54,6 +54,13 @@ type EquipmentAssignmentResponse = {
   userId: string
 }
 
+type EquipmentLoanResponse = {
+  id: string
+  loanedAt: string | null
+  status: string
+  userId: string | null
+}
+
 type AttachmentResponse = {
   id: string
   fileName: string
@@ -652,5 +659,68 @@ test.group('Inventory equipment', (group) => {
     assert.equal(body.summary.totalMaintenanceRecords, 1)
     assert.equal(body.summary.openFailureReports, 1)
     assert.equal(body.summary.totalAttachments, 1)
+  })
+
+  test('allows a user to request equipment and a manager to approve it', async ({ assert, client }) => {
+    const context = await createInventoryContext()
+    const actor = await createInventoryActor()
+    const userRole = await createEndUserRole()
+    context.user.roleId = userRole.id
+    await context.user.save()
+
+    const equipmentResponse = await client
+      .post('/api/v1/equipment')
+      .loginAs(actor)
+      .json(equipmentPayload(context))
+    const equipmentId = (equipmentResponse.body() as unknown as EquipmentResponse).id
+
+    const requestableResponse = await client
+      .get('/api/v1/equipment-loans/requestable-equipment')
+      .loginAs(context.user)
+    requestableResponse.assertOk()
+    assert.isTrue(
+      (requestableResponse.body() as Array<{ id: string }>).some((item) => item.id === equipmentId)
+    )
+
+    const requestResponse = await client
+      .post('/api/v1/equipment-loans/requests')
+      .loginAs(context.user)
+      .json({
+        estimatedReturnAt: DateTime.local().plus({ days: 7 }).toISODate(),
+        requestedItem: 'Trabajo remoto',
+        notes: 'Necesito el equipo durante una semana.',
+      })
+
+    requestResponse.assertCreated()
+    const requestedLoan = requestResponse.body() as unknown as EquipmentLoanResponse
+    assert.equal(requestedLoan.status, 'requested')
+    assert.equal(requestedLoan.userId, context.user.id)
+    assert.isNull(requestedLoan.loanedAt)
+
+    const directLoanResponse = await client
+      .post('/api/v1/equipment-loans')
+      .loginAs(context.user)
+      .json({
+        equipmentId,
+        estimatedReturnAt: DateTime.local().plus({ days: 7 }).toISODate(),
+        requestedItem: 'Intento directo',
+        userId: context.user.id,
+      })
+    directLoanResponse.assertForbidden()
+
+    const approvalResponse = await client
+      .patch(`/api/v1/equipment-loans/${requestedLoan.id}/approve`)
+      .loginAs(actor)
+      .json({ equipmentId })
+    approvalResponse.assertOk()
+    const approvedLoan = approvalResponse.body() as unknown as EquipmentLoanResponse
+    assert.equal(approvedLoan.status, 'active')
+    assert.isNotNull(approvedLoan.loanedAt)
+
+    const ownLoansResponse = await client.get('/api/v1/equipment-loans').loginAs(context.user)
+    ownLoansResponse.assertOk()
+    const ownLoans = ownLoansResponse.body() as unknown as { data: EquipmentLoanResponse[] }
+    assert.lengthOf(ownLoans.data, 1)
+    assert.equal(ownLoans.data[0].id, requestedLoan.id)
   })
 })

@@ -38,6 +38,10 @@ export type ScannedRoutes = {
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'users.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.catalogs': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_types.index': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_types.store': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_types.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_types.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.index': { paramsTuple?: []; params?: {} }
     'inventory.equipment.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment.life_sheet': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -53,7 +57,11 @@ export type ScannedRoutes = {
     'inventory.equipment.attachments.show': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
     'inventory.equipment.attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
     'inventory.equipment_loans.index': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_loans.requestable_equipment': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_loans.requests.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment_loans.store': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_loans.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_loans.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment_loans.return': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.schedules.catalogs': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.schedules.index': { paramsTuple?: []; params?: {} }
@@ -96,6 +104,7 @@ export type ScannedRoutes = {
     'users.index': { paramsTuple?: []; params?: {} }
     'users.roles': { paramsTuple?: []; params?: {} }
     'inventory.equipment.catalogs': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_types.index': { paramsTuple?: []; params?: {} }
     'inventory.equipment.index': { paramsTuple?: []; params?: {} }
     'inventory.equipment.life_sheet': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -103,6 +112,7 @@ export type ScannedRoutes = {
     'inventory.equipment.attachments.index': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.attachments.show': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
     'inventory.equipment_loans.index': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_loans.requestable_equipment': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.schedules.catalogs': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.schedules.index': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.schedules.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -126,6 +136,7 @@ export type ScannedRoutes = {
     'users.index': { paramsTuple?: []; params?: {} }
     'users.roles': { paramsTuple?: []; params?: {} }
     'inventory.equipment.catalogs': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_types.index': { paramsTuple?: []; params?: {} }
     'inventory.equipment.index': { paramsTuple?: []; params?: {} }
     'inventory.equipment.life_sheet': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -133,6 +144,7 @@ export type ScannedRoutes = {
     'inventory.equipment.attachments.index': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.attachments.show': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
     'inventory.equipment_loans.index': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_loans.requestable_equipment': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.schedules.catalogs': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.schedules.index': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.schedules.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -152,9 +164,11 @@ export type ScannedRoutes = {
     'settings.headquarters.store': { paramsTuple?: []; params?: {} }
     'settings.locations.store': { paramsTuple?: []; params?: {} }
     'users.store': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_types.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment.assignments.store': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.attachments.store': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
+    'inventory.equipment_loans.requests.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment_loans.store': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.schedules.store': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.records.store': { paramsTuple?: []; params?: {} }
@@ -171,8 +185,11 @@ export type ScannedRoutes = {
     'settings.headquarters.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_types.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.assignments.return_current': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
+    'inventory.equipment_loans.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_loans.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment_loans.return': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.schedules.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.schedules.cancel': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -197,6 +214,7 @@ export type ScannedRoutes = {
     'settings.headquarters.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'users.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_types.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
     'inventory.maintenance.records.attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'record_id': ParamValue,'id': ParamValue} }

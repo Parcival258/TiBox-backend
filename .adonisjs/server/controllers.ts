@@ -18,6 +18,7 @@ export const controllers = {
     EquipmentCatalogs: () => import('#controllers/inventory/equipment_catalogs_controller'),
     Equipment: () => import('#controllers/inventory/equipment_controller'),
     EquipmentLoans: () => import('#controllers/inventory/equipment_loans_controller'),
+    EquipmentTypes: () => import('#controllers/inventory/equipment_types_controller'),
     FailureReports: () => import('#controllers/inventory/failure_reports_controller'),
     MaintenanceRecordAttachments: () => import('#controllers/inventory/maintenance_record_attachments_controller'),
     MaintenanceRecords: () => import('#controllers/inventory/maintenance_records_controller'),

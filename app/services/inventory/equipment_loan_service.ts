@@ -11,6 +11,7 @@ type ListEquipmentLoanFilters = {
   page?: number
   perPage?: number
   status?: string
+  visibleToUserId?: string
 }
 
 type CreateEquipmentLoanPayload = {
@@ -35,6 +36,14 @@ type ReturnEquipmentLoanPayload = {
   receivedSignatureImage?: string
   returnedAt?: DateTime
   returnedBy?: string | null
+}
+
+type RequestEquipmentLoanPayload = {
+  audit?: AuditContext
+  estimatedReturnAt: DateTime
+  notes?: string
+  requestedItem: string
+  userId: string
 }
 
 export class EquipmentLoanError extends Error {
@@ -68,7 +77,133 @@ export default class EquipmentLoanService {
       query.where('status', filters.status)
     }
 
+    if (filters.visibleToUserId) {
+      query.where('user_id', filters.visibleToUserId)
+    }
+
     return query.paginate(filters.page ?? 1, filters.perPage ?? 50)
+  }
+
+  requestableEquipment() {
+    return Equipment.query()
+      .whereNull('deleted_at')
+      .where('status', 'active')
+      .whereDoesntHave('loans', (loanQuery) => {
+        loanQuery.whereIn('status', ['active', 'overdue'])
+      })
+      .orderBy('internal_code', 'asc')
+      .select(['id', 'internal_code', 'asset_tag', 'serial', 'type', 'brand', 'model'])
+  }
+
+  async request(payload: RequestEquipmentLoanPayload) {
+    return db.transaction(async (trx) => {
+      const existingLoan = await EquipmentLoan.query({ client: trx })
+        .where('status', 'requested')
+        .where('user_id', payload.userId)
+        .first()
+
+      if (existingLoan) {
+        throw new EquipmentLoanError('User already has a pending loan request', 409)
+      }
+
+      const loan = await EquipmentLoan.create(
+        {
+          borrowerName: null,
+          createdBy: payload.userId,
+          equipmentId: null,
+          estimatedReturnAt: payload.estimatedReturnAt,
+          loanedAt: null,
+          notes: payload.notes ?? null,
+          requestedAt: DateTime.local(),
+          requestedItem: payload.requestedItem,
+          requestMode: 'portal',
+          status: 'requested',
+          userId: payload.userId,
+        },
+        { client: trx }
+      )
+
+      loan.useTransaction(trx)
+      await loan.load('user')
+      await this.auditService.record({
+        ...payload.audit,
+        action: 'equipment.loan_requested',
+        entityType: 'equipment_loan',
+        entityId: loan.id,
+        newValues: loan.$attributes,
+      })
+
+      return loan
+    })
+  }
+
+  async approve(id: string, equipmentId: string, reviewerId: string, audit?: AuditContext) {
+    return db.transaction(async (trx) => {
+      const loan = await EquipmentLoan.query({ client: trx }).where('id', id).first()
+
+      if (!loan) throw new EquipmentLoanError('Loan request not found', 404)
+      if (loan.status !== 'requested') throw new EquipmentLoanError('Loan request is not pending', 409)
+
+      const equipment = await Equipment.query({ client: trx })
+        .where('id', equipmentId)
+        .where('status', 'active')
+        .whereNull('deleted_at')
+        .first()
+
+      if (!equipment) throw new EquipmentLoanError('Equipment not found or unavailable', 404)
+
+      const activeLoan = await EquipmentLoan.query({ client: trx })
+        .where('equipment_id', equipment.id)
+        .whereIn('status', ['active', 'overdue'])
+        .first()
+
+      if (activeLoan) throw new EquipmentLoanError('Equipment already has an active loan', 409)
+
+      const oldValues = { ...loan.$attributes }
+      loan.useTransaction(trx)
+      loan.equipmentId = equipment.id
+      loan.status = 'active'
+      loan.loanedAt = DateTime.local()
+      loan.reviewedAt = DateTime.local()
+      loan.reviewedBy = reviewerId
+      await loan.save()
+
+      await loan.load('equipment')
+      await loan.load('user')
+      await this.auditService.record({
+        ...audit,
+        action: 'equipment.loan_request_approved',
+        entityType: 'equipment_loan',
+        entityId: loan.id,
+        oldValues,
+        newValues: loan.$attributes,
+      })
+      return loan
+    })
+  }
+
+  async reject(id: string, reviewerId: string, reason: string, audit?: AuditContext) {
+    const loan = await EquipmentLoan.find(id)
+    if (!loan) throw new EquipmentLoanError('Loan request not found', 404)
+    if (loan.status !== 'requested') throw new EquipmentLoanError('Loan request is not pending', 409)
+
+    const oldValues = { ...loan.$attributes }
+    loan.status = 'rejected'
+    loan.reviewedAt = DateTime.local()
+    loan.reviewedBy = reviewerId
+    loan.rejectionReason = reason
+    await loan.save()
+    await loan.load('equipment')
+    await loan.load('user')
+    await this.auditService.record({
+      ...audit,
+      action: 'equipment.loan_request_rejected',
+      entityType: 'equipment_loan',
+      entityId: loan.id,
+      oldValues,
+      newValues: loan.$attributes,
+    })
+    return loan
   }
 
   async create(payload: CreateEquipmentLoanPayload) {
@@ -153,6 +288,10 @@ export default class EquipmentLoanService {
 
       if (loan.returnedAt || loan.status === 'returned') {
         throw new EquipmentLoanError('Loan already returned', 409)
+      }
+
+      if (loan.status !== 'active' && loan.status !== 'overdue') {
+        throw new EquipmentLoanError('Only active loans can be returned', 409)
       }
 
       const oldValues = { ...loan.$attributes }

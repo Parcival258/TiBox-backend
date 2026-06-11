@@ -4,12 +4,20 @@ import { BaseModel, belongsTo, column, computed } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
-export type EquipmentLoanStatus = 'active' | 'returned' | 'overdue' | 'cancelled'
+export type EquipmentLoanStatus =
+  | 'requested'
+  | 'active'
+  | 'returned'
+  | 'overdue'
+  | 'cancelled'
+  | 'rejected'
 
 const statusLabels: Record<EquipmentLoanStatus, string> = {
   active: 'Activo',
   cancelled: 'Cancelado',
   overdue: 'Vencido',
+  rejected: 'Rechazado',
+  requested: 'Solicitado',
   returned: 'Devuelto',
 }
 
@@ -18,7 +26,7 @@ export default class EquipmentLoan extends BaseModel {
   declare id: string
 
   @column()
-  declare equipmentId: string
+  declare equipmentId: string | null
 
   @column()
   declare userId: string | null
@@ -30,7 +38,7 @@ export default class EquipmentLoan extends BaseModel {
   declare requestedAt: DateTime
 
   @column.dateTime()
-  declare loanedAt: DateTime
+  declare loanedAt: DateTime | null
 
   @column()
   declare requestedItem: string
@@ -61,6 +69,15 @@ export default class EquipmentLoan extends BaseModel {
 
   @column()
   declare returnedBy: string | null
+
+  @column()
+  declare reviewedBy: string | null
+
+  @column.dateTime()
+  declare reviewedAt: DateTime | null
+
+  @column()
+  declare rejectionReason: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

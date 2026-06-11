@@ -4,7 +4,21 @@ export const listEquipmentLoansValidator = vine.create({
   equipmentId: vine.string().uuid().optional(),
   page: vine.number().positive().optional(),
   perPage: vine.number().positive().max(100).optional(),
-  status: vine.enum(['active', 'returned', 'overdue', 'cancelled']).optional(),
+  status: vine.enum(['requested', 'active', 'returned', 'overdue', 'cancelled', 'rejected']).optional(),
+})
+
+export const requestEquipmentLoanValidator = vine.create({
+  estimatedReturnAt: vine.date(),
+  notes: vine.string().trim().optional(),
+  requestedItem: vine.string().trim().minLength(2),
+})
+
+export const approveEquipmentLoanValidator = vine.create({
+  equipmentId: vine.string().uuid(),
+})
+
+export const rejectEquipmentLoanValidator = vine.create({
+  reason: vine.string().trim().minLength(2),
 })
 
 export const createEquipmentLoanValidator = vine.create({

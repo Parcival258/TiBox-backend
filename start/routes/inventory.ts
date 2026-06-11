@@ -8,6 +8,7 @@ const EquipmentAttachmentsController = () =>
   import('#controllers/inventory/equipment_attachments_controller')
 const EquipmentCatalogsController = () =>
   import('#controllers/inventory/equipment_catalogs_controller')
+const EquipmentTypesController = () => import('#controllers/inventory/equipment_types_controller')
 const EquipmentLoansController = () => import('#controllers/inventory/equipment_loans_controller')
 const FailureReportsController = () => import('#controllers/inventory/failure_reports_controller')
 const MaintenanceRecordsController = () =>
@@ -24,6 +25,22 @@ export default function inventoryRoutes() {
         .get('equipment/catalogs', [EquipmentCatalogsController, 'index'])
         .use(middleware.permission({ permissions: ['equipment.view'] }))
         .as('equipment.catalogs')
+      router
+        .get('equipment-types', [EquipmentTypesController, 'index'])
+        .use(middleware.permission({ permissions: ['equipment.view'] }))
+        .as('equipment_types.index')
+      router
+        .post('equipment-types', [EquipmentTypesController, 'store'])
+        .use(middleware.permission({ permissions: ['equipment.create'] }))
+        .as('equipment_types.store')
+      router
+        .patch('equipment-types/:id', [EquipmentTypesController, 'update'])
+        .use(middleware.permission({ permissions: ['equipment.update'] }))
+        .as('equipment_types.update')
+      router
+        .delete('equipment-types/:id', [EquipmentTypesController, 'destroy'])
+        .use(middleware.permission({ permissions: ['equipment.update'] }))
+        .as('equipment_types.destroy')
       router
         .get('equipment', [EquipmentController, 'index'])
         .use(middleware.permission({ permissions: ['equipment.view'] }))
@@ -92,9 +109,25 @@ export default function inventoryRoutes() {
         .use(middleware.permission({ permissions: ['equipment.view'] }))
         .as('equipment_loans.index')
       router
+        .get('equipment-loans/requestable-equipment', [EquipmentLoansController, 'requestableEquipment'])
+        .use(middleware.permission({ permissions: ['equipment.view'] }))
+        .as('equipment_loans.requestable_equipment')
+      router
+        .post('equipment-loans/requests', [EquipmentLoansController, 'requestLoan'])
+        .use(middleware.permission({ permissions: ['equipment.view'] }))
+        .as('equipment_loans.requests.store')
+      router
         .post('equipment-loans', [EquipmentLoansController, 'store'])
         .use(middleware.permission({ permissions: ['equipment.assign'] }))
         .as('equipment_loans.store')
+      router
+        .patch('equipment-loans/:id/approve', [EquipmentLoansController, 'approve'])
+        .use(middleware.permission({ permissions: ['equipment.assign'] }))
+        .as('equipment_loans.approve')
+      router
+        .patch('equipment-loans/:id/reject', [EquipmentLoansController, 'reject'])
+        .use(middleware.permission({ permissions: ['equipment.assign'] }))
+        .as('equipment_loans.reject')
       router
         .patch('equipment-loans/:id/return', [EquipmentLoansController, 'returnLoan'])
         .use(middleware.permission({ permissions: ['equipment.return'] }))

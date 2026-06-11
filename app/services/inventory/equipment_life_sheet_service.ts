@@ -175,8 +175,15 @@ export default class EquipmentLifeSheetService {
         id: `equipment-loan:${loan.id}`,
         sourceId: loan.id,
         type: 'equipment_loan',
-        date: loan.returnedAt ?? loan.loanedAt,
-        title: loan.returnedAt ? 'Prestamo devuelto' : 'Equipo prestado',
+        date: loan.returnedAt ?? loan.loanedAt ?? loan.requestedAt,
+        title:
+          loan.status === 'requested'
+            ? 'Prestamo solicitado'
+            : loan.status === 'rejected'
+              ? 'Solicitud de prestamo rechazada'
+              : loan.returnedAt
+                ? 'Prestamo devuelto'
+                : 'Equipo prestado',
         detail: `${loan.borrowerLabel} / ${loan.requestedItem}`,
         status: loan.status,
         priority: loan.status === 'overdue' ? 'high' : null,

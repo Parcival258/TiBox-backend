@@ -415,6 +415,54 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_catalogs_controller').default['index']>>>
     }
   }
+  'inventory.equipment_types.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment-types'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_types_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_types_controller').default['index']>>>
+    }
+  }
+  'inventory.equipment_types.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/equipment-types'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_type').equipmentTypeValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_type').equipmentTypeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_types_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_types_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_types.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/equipment-types/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_type').equipmentTypeValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_type').equipmentTypeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_types_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_types_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_types.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/equipment-types/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_types_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_types_controller').default['destroy']>>>
+    }
+  }
   'inventory.equipment.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/equipment'
@@ -595,6 +643,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'inventory.equipment_loans.requestable_equipment': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment-loans/requestable-equipment'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['requestableEquipment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['requestableEquipment']>>>
+    }
+  }
+  'inventory.equipment_loans.requests.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/equipment-loans/requests'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_loan').requestEquipmentLoanValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_loan').requestEquipmentLoanValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['requestLoan']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['requestLoan']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'inventory.equipment_loans.store': {
     methods: ["POST"]
     pattern: '/api/v1/equipment-loans'
@@ -605,6 +677,30 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/equipment_loan').createEquipmentLoanValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['store']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_loans.approve': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/equipment-loans/:id/approve'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_loan').approveEquipmentLoanValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_loan').approveEquipmentLoanValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['approve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['approve']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_loans.reject': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/equipment-loans/:id/reject'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_loan').rejectEquipmentLoanValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_loan').rejectEquipmentLoanValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['reject']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_loans_controller').default['reject']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'inventory.equipment_loans.return': {

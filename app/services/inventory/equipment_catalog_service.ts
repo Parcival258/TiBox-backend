@@ -1,13 +1,15 @@
 import Equipment from '#models/equipment'
+import EquipmentType from '#models/equipment_type'
 import Headquarter from '#models/headquarter'
 import Location from '#models/location'
 import User from '#models/user'
 import { equipmentStatuses, ownershipTypes } from '#validators/equipment'
+import db from '@adonisjs/lucid/services/db'
 
 export default class EquipmentCatalogService {
   async getCatalogs() {
     const [types, brands, headquarters, locations, responsibles, technicians] = await Promise.all([
-      this.distinctEquipmentValues('type'),
+      this.getEquipmentTypes(),
       this.distinctEquipmentValues('brand'),
       Headquarter.query()
         .where('is_active', true)
@@ -43,6 +45,21 @@ export default class EquipmentCatalogService {
       responsibles,
       technicians,
     }
+  }
+
+  private async getEquipmentTypes() {
+    const hasEquipmentTypesTable = await db.connection().schema.hasTable('equipment_types')
+
+    if (!hasEquipmentTypesTable) {
+      return this.distinctEquipmentValues('type')
+    }
+
+    const types = await EquipmentType.query()
+      .where('is_active', true)
+      .orderBy('name', 'asc')
+      .select('name')
+
+    return types.map((type) => type.name)
   }
 
   private async distinctEquipmentValues(column: 'type' | 'brand') {
