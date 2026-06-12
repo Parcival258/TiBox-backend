@@ -52,19 +52,24 @@ export class EquipmentValidationError extends Error {
 export default class EquipmentService {
   private auditService = new AuditService()
 
-  list(filters: ListEquipmentFilters) {
+  async list(filters: ListEquipmentFilters) {
     const page = filters.page ?? 1
     const perPage = filters.perPage ?? 20
     const orderBy = orderColumns[filters.orderBy ?? 'createdAt']
     const orderDirection = filters.orderDirection ?? 'desc'
 
     const query = Equipment.query()
-      .whereNull('deleted_at')
       .preload('headquarter')
       .preload('location')
       .preload('currentResponsible')
       .preload('secondaryResponsible')
       .orderBy(orderBy, orderDirection)
+
+    if (filters.status === 'retired') {
+      query.whereNotNull('deleted_at')
+    } else {
+      query.whereNull('deleted_at')
+    }
 
     if (filters.visibleToResponsibleId) {
       const responsibleId = filters.visibleToResponsibleId
@@ -76,7 +81,7 @@ export default class EquipmentService {
       })
     }
 
-    if (filters.status) {
+    if (filters.status && filters.status !== 'retired') {
       query.where('status', filters.status)
     }
 
@@ -131,7 +136,15 @@ export default class EquipmentService {
       })
     }
 
-    return query.paginate(page, perPage)
+    const result = await query.paginate(page, perPage)
+
+    if (filters.status === 'retired') {
+      result.all().forEach((equipment) => {
+        equipment.status = 'retired'
+      })
+    }
+
+    return result
   }
 
   async create(payload: EquipmentPayload, audit?: AuditContext) {
@@ -154,10 +167,9 @@ export default class EquipmentService {
     return equipment
   }
 
-  findDetails(id: string, visibleToResponsibleId?: string) {
+  async findDetails(id: string, visibleToResponsibleId?: string) {
     const query = Equipment.query()
       .where('id', id)
-      .whereNull('deleted_at')
       .preload('headquarter')
       .preload('location')
       .preload('currentResponsible')
@@ -174,7 +186,13 @@ export default class EquipmentService {
       })
     }
 
-    return query.first()
+    const equipment = await query.first()
+
+    if (equipment?.deletedAt) {
+      equipment.status = 'retired'
+    }
+
+    return equipment
   }
 
   findActive(id: string) {
@@ -226,6 +244,7 @@ export default class EquipmentService {
 
     const oldValues = { ...equipment.$attributes }
 
+    equipment.status = 'retired'
     equipment.deletedAt = DateTime.local()
     await equipment.save()
 

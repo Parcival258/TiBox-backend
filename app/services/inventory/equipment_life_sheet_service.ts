@@ -11,7 +11,6 @@ export default class EquipmentLifeSheetService {
   async getByEquipmentId(equipmentId: string, visibleToResponsibleId?: string) {
     const equipmentQuery = Equipment.query()
       .where('id', equipmentId)
-      .whereNull('deleted_at')
       .preload('headquarter')
       .preload('location')
       .preload('currentResponsible')
@@ -29,6 +28,10 @@ export default class EquipmentLifeSheetService {
 
     if (!equipment) {
       return null
+    }
+
+    if (equipment.deletedAt) {
+      equipment.status = 'retired'
     }
 
     const [

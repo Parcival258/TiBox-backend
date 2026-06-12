@@ -45,6 +45,7 @@ type EquipmentResponse = {
   processor: string | null
   storageCapacityGb: number | null
   storageType: string | null
+  status: string
   updatedBy: string | null
 }
 
@@ -441,7 +442,10 @@ test.group('Inventory equipment', (group) => {
     assert.exists(auditLog)
   })
 
-  test('soft deletes equipment and hides it from reads', async ({ assert, client }) => {
+  test('retires equipment, hides it by default, and exposes it through the retired filter', async ({
+    assert,
+    client,
+  }) => {
     const context = await createInventoryContext()
     const actor = await createInventoryActor()
     const createResponse = await client
@@ -456,9 +460,10 @@ test.group('Inventory equipment', (group) => {
 
     const equipment = await Equipment.findOrFail(equipmentId)
     assert.exists(equipment.deletedAt)
+    assert.equal(equipment.status, 'retired')
 
     const showResponse = await client.get(`/api/v1/equipment/${equipmentId}`).loginAs(actor)
-    showResponse.assertNotFound()
+    showResponse.assertOk()
 
     const indexResponse = await client
       .get('/api/v1/equipment')
@@ -468,6 +473,28 @@ test.group('Inventory equipment', (group) => {
       })
     const body = indexResponse.body() as unknown as EquipmentIndexResponse
     assert.equal(body.meta.total, 0)
+
+    const retiredResponse = await client
+      .get('/api/v1/equipment')
+      .loginAs(actor)
+      .qs({
+        search: `EQ-${context.suffix}`,
+        status: 'retired',
+      })
+    retiredResponse.assertOk()
+
+    const retiredBody = retiredResponse.body() as unknown as EquipmentIndexResponse
+    assert.equal(retiredBody.meta.total, 1)
+    assert.equal(retiredBody.data[0].id, equipmentId)
+
+    const lifeSheetResponse = await client
+      .get(`/api/v1/equipment/${equipmentId}/life-sheet`)
+      .loginAs(actor)
+    lifeSheetResponse.assertOk()
+    assert.equal(
+      (lifeSheetResponse.body() as unknown as EquipmentLifeSheetResponse).equipment.id,
+      equipmentId
+    )
   })
 
   test('assigns and returns equipment', async ({ assert, client }) => {
