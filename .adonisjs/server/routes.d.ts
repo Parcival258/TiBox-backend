@@ -45,6 +45,7 @@ export type ScannedRoutes = {
     'inventory.equipment.index': { paramsTuple?: []; params?: {} }
     'inventory.equipment.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment.life_sheet': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment.restore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -186,6 +187,7 @@ export type ScannedRoutes = {
     'settings.locations.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment_types.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment.restore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.assignments.return_current': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment_loans.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

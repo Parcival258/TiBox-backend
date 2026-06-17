@@ -54,6 +54,10 @@ export default function inventoryRoutes() {
         .use(middleware.permission({ permissions: ['equipment.view'] }))
         .as('equipment.life_sheet')
       router
+        .patch('equipment/:id/restore', [EquipmentController, 'restore'])
+        .use(middleware.permission({ permissions: ['equipment.update'] }))
+        .as('equipment.restore')
+      router
         .get('equipment/:id', [EquipmentController, 'show'])
         .use(middleware.permission({ permissions: ['equipment.view'] }))
         .as('equipment.show')
@@ -109,7 +113,10 @@ export default function inventoryRoutes() {
         .use(middleware.permission({ permissions: ['equipment.view'] }))
         .as('equipment_loans.index')
       router
-        .get('equipment-loans/requestable-equipment', [EquipmentLoansController, 'requestableEquipment'])
+        .get('equipment-loans/requestable-equipment', [
+          EquipmentLoansController,
+          'requestableEquipment',
+        ])
         .use(middleware.permission({ permissions: ['equipment.view'] }))
         .as('equipment_loans.requestable_equipment')
       router

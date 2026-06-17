@@ -252,6 +252,12 @@ const routes = {
     tokens: [{"old":"/api/v1/equipment/:id/life-sheet","type":0,"val":"api","end":""},{"old":"/api/v1/equipment/:id/life-sheet","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment/:id/life-sheet","type":0,"val":"equipment","end":""},{"old":"/api/v1/equipment/:id/life-sheet","type":1,"val":"id","end":""},{"old":"/api/v1/equipment/:id/life-sheet","type":0,"val":"life-sheet","end":""}],
     types: placeholder as Registry['inventory.equipment.life_sheet']['types'],
   },
+  'inventory.equipment.restore': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/equipment/:id/restore',
+    tokens: [{"old":"/api/v1/equipment/:id/restore","type":0,"val":"api","end":""},{"old":"/api/v1/equipment/:id/restore","type":0,"val":"v1","end":""},{"old":"/api/v1/equipment/:id/restore","type":0,"val":"equipment","end":""},{"old":"/api/v1/equipment/:id/restore","type":1,"val":"id","end":""},{"old":"/api/v1/equipment/:id/restore","type":0,"val":"restore","end":""}],
+    types: placeholder as Registry['inventory.equipment.restore']['types'],
+  },
   'inventory.equipment.show': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/equipment/:id',

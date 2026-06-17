@@ -65,6 +65,7 @@ export interface ApiDefinition {
       index: typeof routes['inventory.equipment.index']
       store: typeof routes['inventory.equipment.store']
       lifeSheet: typeof routes['inventory.equipment.life_sheet']
+      restore: typeof routes['inventory.equipment.restore']
       show: typeof routes['inventory.equipment.show']
       update: typeof routes['inventory.equipment.update']
       patch: typeof routes['inventory.equipment.patch']

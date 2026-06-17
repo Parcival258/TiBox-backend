@@ -24,6 +24,7 @@ type EquipmentIndexResponse = {
     currentResponsibleId: string | null
     id: string
     secondaryResponsibleId: string | null
+    status: string
   }>
 }
 
@@ -331,7 +332,10 @@ test.group('Inventory equipment', (group) => {
     assert.equal(body.data[0].secondaryResponsibleId, context.secondaryUser.id)
   })
 
-  test('limits regular users to equipment under their responsibility', async ({ assert, client }) => {
+  test('limits regular users to equipment under their responsibility', async ({
+    assert,
+    client,
+  }) => {
     const context = await createInventoryContext()
     const actor = await createInventoryActor()
     const userRole = await createEndUserRole()
@@ -486,6 +490,7 @@ test.group('Inventory equipment', (group) => {
     const retiredBody = retiredResponse.body() as unknown as EquipmentIndexResponse
     assert.equal(retiredBody.meta.total, 1)
     assert.equal(retiredBody.data[0].id, equipmentId)
+    assert.equal(retiredBody.data[0].status, 'retired')
 
     const lifeSheetResponse = await client
       .get(`/api/v1/equipment/${equipmentId}/life-sheet`)
@@ -495,6 +500,40 @@ test.group('Inventory equipment', (group) => {
       (lifeSheetResponse.body() as unknown as EquipmentLifeSheetResponse).equipment.id,
       equipmentId
     )
+
+    const restoreResponse = await client
+      .patch(`/api/v1/equipment/${equipmentId}/restore`)
+      .loginAs(actor)
+
+    restoreResponse.assertOk()
+    restoreResponse.assertBodyContains({
+      id: equipmentId,
+      status: 'active',
+    })
+
+    await equipment.refresh()
+    assert.isNull(equipment.deletedAt)
+    assert.equal(equipment.status, 'active')
+
+    const restoredIndexResponse = await client
+      .get('/api/v1/equipment')
+      .loginAs(actor)
+      .qs({
+        search: `EQ-${context.suffix}`,
+      })
+    const restoredBody = restoredIndexResponse.body() as unknown as EquipmentIndexResponse
+    assert.equal(restoredBody.meta.total, 1)
+    assert.equal(restoredBody.data[0].id, equipmentId)
+
+    const restoredRetiredResponse = await client
+      .get('/api/v1/equipment')
+      .loginAs(actor)
+      .qs({
+        search: `EQ-${context.suffix}`,
+        status: 'retired',
+      })
+    const restoredRetiredBody = restoredRetiredResponse.body() as unknown as EquipmentIndexResponse
+    assert.equal(restoredRetiredBody.meta.total, 0)
   })
 
   test('assigns and returns equipment', async ({ assert, client }) => {
@@ -688,7 +727,10 @@ test.group('Inventory equipment', (group) => {
     assert.equal(body.summary.totalAttachments, 1)
   })
 
-  test('allows a user to request equipment and a manager to approve it', async ({ assert, client }) => {
+  test('allows a user to request equipment and a manager to approve it', async ({
+    assert,
+    client,
+  }) => {
     const context = await createInventoryContext()
     const actor = await createInventoryActor()
     const userRole = await createEndUserRole()

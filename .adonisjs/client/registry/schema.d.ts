@@ -499,6 +499,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['lifeSheet']>>>
     }
   }
+  'inventory.equipment.restore': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/equipment/:id/restore'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['restore']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['restore']>>>
+    }
+  }
   'inventory.equipment.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/equipment/:id'

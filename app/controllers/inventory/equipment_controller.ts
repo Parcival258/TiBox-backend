@@ -109,6 +109,19 @@ export default class EquipmentController {
     return response.noContent()
   }
 
+  async restore({ auth, params, request, response }: HttpContext) {
+    const equipment = await this.equipmentService.restore(
+      params.id,
+      this.auditContext({ auth, request })
+    )
+
+    if (!equipment) {
+      return response.notFound({ message: 'Equipment not found' })
+    }
+
+    return equipment
+  }
+
   private auditContext({ auth, request }: Pick<HttpContext, 'auth' | 'request'>) {
     return {
       userId: auth.isAuthenticated ? auth.getUserOrFail().id : null,

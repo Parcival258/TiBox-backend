@@ -199,6 +199,10 @@ export default class EquipmentService {
     return Equipment.query().where('id', id).whereNull('deleted_at').first()
   }
 
+  findRetired(id: string) {
+    return Equipment.query().where('id', id).whereNotNull('deleted_at').first()
+  }
+
   async update(id: string, payload: EquipmentPayload, audit?: AuditContext) {
     const equipment = await this.findActive(id)
 
@@ -258,6 +262,32 @@ export default class EquipmentService {
         ...equipment.$attributes,
         deletedAt: equipment.deletedAt,
       },
+    })
+
+    return equipment
+  }
+
+  async restore(id: string, audit?: AuditContext) {
+    const equipment = await this.findRetired(id)
+
+    if (!equipment) {
+      return null
+    }
+
+    const oldValues = { ...equipment.$attributes }
+
+    equipment.status = 'active'
+    equipment.deletedAt = null
+    equipment.updatedBy = audit?.userId ?? equipment.updatedBy
+    await equipment.save()
+
+    await this.auditService.record({
+      ...audit,
+      action: 'equipment.restored',
+      entityType: 'equipment',
+      entityId: equipment.id,
+      oldValues,
+      newValues: equipment.$attributes,
     })
 
     return equipment
