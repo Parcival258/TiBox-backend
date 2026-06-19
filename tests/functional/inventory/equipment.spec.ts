@@ -1,4 +1,5 @@
 import AuditLog from '#models/audit_log'
+import Alert from '#models/alert'
 import Attachment from '#models/attachment'
 import Equipment from '#models/equipment'
 import EquipmentAssignment from '#models/equipment_assignment'
@@ -770,6 +771,17 @@ test.group('Inventory equipment', (group) => {
     assert.equal(requestedLoan.userId, context.user.id)
     assert.isNull(requestedLoan.loanedAt)
 
+    const requestAlert = await Alert.findByOrFail(
+      'alert_key',
+      `equipment_loan_requested:${requestedLoan.id}`
+    )
+    assert.equal(requestAlert.status, 'open')
+    assert.equal(requestAlert.type, 'equipment_loan_requested')
+    assert.equal(requestAlert.entityId, requestedLoan.id)
+
+    const realtimeTokenResponse = await client.post('/api/v1/realtime/token').loginAs(actor)
+    realtimeTokenResponse.assertOk()
+
     const directLoanResponse = await client
       .post('/api/v1/equipment-loans')
       .loginAs(context.user)
@@ -789,6 +801,8 @@ test.group('Inventory equipment', (group) => {
     const approvedLoan = approvalResponse.body() as unknown as EquipmentLoanResponse
     assert.equal(approvedLoan.status, 'active')
     assert.isNotNull(approvedLoan.loanedAt)
+    await requestAlert.refresh()
+    assert.equal(requestAlert.status, 'resolved')
 
     const ownLoansResponse = await client.get('/api/v1/equipment-loans').loginAs(context.user)
     ownLoansResponse.assertOk()

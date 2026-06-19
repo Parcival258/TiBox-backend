@@ -1,4 +1,4 @@
-import Alert from '#models/alert'
+import type Alert from '#models/alert'
 import RealtimeTokenService from '#services/realtime/realtime_token_service'
 import env from '#start/env'
 import type { Server as NodeHttpServer } from 'node:http'
@@ -14,6 +14,7 @@ type AlertEvent =
 
 type RealtimeUser = {
   canManageAlerts: boolean
+  canManageLoanRequests: boolean
   permissions: string[]
   roleSlug?: string | null
   userId: string
@@ -27,6 +28,7 @@ type AlertPayload = {
 const userRoom = (userId: string) => `user:${userId}`
 const alertsManagersRoom = 'alerts:managers'
 const alertsTechniciansRoom = 'alerts:technicians'
+const loanManagersRoom = 'loans:managers'
 
 class RealtimeService {
   private io: Server | null = null
@@ -51,7 +53,8 @@ class RealtimeService {
       if (
         !payload ||
         (!payload.permissions.includes('alerts.view') &&
-          !payload.permissions.includes('failure_reports.view'))
+          !payload.permissions.includes('failure_reports.view') &&
+          !payload.permissions.includes('equipment.assign'))
       ) {
         next(new Error('Unauthorized realtime connection'))
         return
@@ -59,6 +62,7 @@ class RealtimeService {
 
       socket.data.user = {
         canManageAlerts: payload.permissions.includes('alerts.manage'),
+        canManageLoanRequests: payload.permissions.includes('equipment.assign'),
         permissions: payload.permissions,
         roleSlug: payload.roleSlug,
         userId: payload.userId,
@@ -75,6 +79,10 @@ class RealtimeService {
         socket.join(alertsManagersRoom)
       }
 
+      if (user.canManageLoanRequests) {
+        socket.join(loanManagersRoom)
+      }
+
       if (user.roleSlug === 'maintenance_technician') {
         socket.join(alertsTechniciansRoom)
       }
@@ -89,7 +97,11 @@ class RealtimeService {
     }
 
     const payload: AlertPayload = { alert, event }
-    this.io.to(alertsManagersRoom).emit(event, payload)
+    if (alert.type === 'equipment_loan_requested') {
+      this.io.to(alertsManagersRoom).to(loanManagersRoom).emit(event, payload)
+    } else {
+      this.io.to(alertsManagersRoom).emit(event, payload)
+    }
 
     const reportedBy = alert.metadata?.reportedBy
     if (typeof reportedBy === 'string') {

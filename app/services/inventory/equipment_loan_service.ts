@@ -96,7 +96,7 @@ export default class EquipmentLoanService {
   }
 
   async request(payload: RequestEquipmentLoanPayload) {
-    return db.transaction(async (trx) => {
+    const requestedLoan = await db.transaction(async (trx) => {
       const existingLoan = await EquipmentLoan.query({ client: trx })
         .where('status', 'requested')
         .where('user_id', payload.userId)
@@ -135,14 +135,19 @@ export default class EquipmentLoanService {
 
       return loan
     })
+
+    await this.alertService.createForLoanRequest(requestedLoan.id, payload.audit)
+    return requestedLoan
   }
 
   async approve(id: string, equipmentId: string, reviewerId: string, audit?: AuditContext) {
-    return db.transaction(async (trx) => {
+    const approvedLoan = await db.transaction(async (trx) => {
       const loan = await EquipmentLoan.query({ client: trx }).where('id', id).first()
 
       if (!loan) throw new EquipmentLoanError('Loan request not found', 404)
-      if (loan.status !== 'requested') throw new EquipmentLoanError('Loan request is not pending', 409)
+      if (loan.status !== 'requested') {
+        throw new EquipmentLoanError('Loan request is not pending', 409)
+      }
 
       const equipment = await Equipment.query({ client: trx })
         .where('id', equipmentId)
@@ -180,12 +185,17 @@ export default class EquipmentLoanService {
       })
       return loan
     })
+
+    await this.alertService.resolveByKey(`equipment_loan_requested:${approvedLoan.id}`, audit)
+    return approvedLoan
   }
 
   async reject(id: string, reviewerId: string, reason: string, audit?: AuditContext) {
     const loan = await EquipmentLoan.find(id)
     if (!loan) throw new EquipmentLoanError('Loan request not found', 404)
-    if (loan.status !== 'requested') throw new EquipmentLoanError('Loan request is not pending', 409)
+    if (loan.status !== 'requested') {
+      throw new EquipmentLoanError('Loan request is not pending', 409)
+    }
 
     const oldValues = { ...loan.$attributes }
     loan.status = 'rejected'
@@ -203,6 +213,7 @@ export default class EquipmentLoanService {
       oldValues,
       newValues: loan.$attributes,
     })
+    await this.alertService.resolveByKey(`equipment_loan_requested:${loan.id}`, audit)
     return loan
   }
 

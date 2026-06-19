@@ -94,6 +94,7 @@ export default class AlertService {
         { label: 'Arriendo proximo a renovar', value: 'lease_expiring' },
         { label: 'Mantenimiento programado manana', value: 'maintenance_tomorrow' },
         { label: 'Falla reportada en equipo', value: 'damaged_equipment_reported' },
+        { label: 'Solicitud de prestamo', value: 'equipment_loan_requested' },
         { label: 'Prestamo de equipo vencido', value: 'equipment_loan_overdue' },
       ],
     }
@@ -149,6 +150,34 @@ export default class AlertService {
         severity: this.failureSeverity(report.priority),
         title: 'Falla reportada en equipo',
         type: 'damaged_equipment_reported',
+      },
+      audit
+    )
+  }
+
+  async createForLoanRequest(loanId: string, audit?: AuditContext) {
+    const loan = await EquipmentLoan.query().where('id', loanId).preload('user').first()
+
+    if (!loan) {
+      return null
+    }
+
+    return this.upsert(
+      {
+        alertKey: `equipment_loan_requested:${loan.id}`,
+        assignedTo: null,
+        channels: ['internal'],
+        entityId: loan.id,
+        entityType: 'equipment_loan',
+        equipmentId: null,
+        message: `${loan.user?.name ?? 'Un usuario'} solicito ${loan.requestedItem}.`,
+        metadata: {
+          requestedBy: loan.userId,
+          requestedItem: loan.requestedItem,
+        },
+        severity: 'medium',
+        title: 'Nueva solicitud de prestamo',
+        type: 'equipment_loan_requested',
       },
       audit
     )

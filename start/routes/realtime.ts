@@ -13,7 +13,7 @@ export default function realtimeRoutes() {
         .use(
           middleware.permission({
             mode: 'any',
-            permissions: ['alerts.view', 'failure_reports.view'],
+            permissions: ['alerts.view', 'failure_reports.view', 'equipment.assign'],
           })
         )
         .as('token')
