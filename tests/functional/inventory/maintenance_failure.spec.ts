@@ -1,5 +1,6 @@
 import AuditLog from '#models/audit_log'
 import Alert from '#models/alert'
+import Attachment from '#models/attachment'
 import Equipment from '#models/equipment'
 import FailureReport from '#models/failure_report'
 import Headquarter from '#models/headquarter'
@@ -14,6 +15,7 @@ import testUtils from '@adonisjs/core/services/test_utils'
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 import { rm, writeFile } from 'node:fs/promises'
+import { isAbsolute } from 'node:path'
 
 type MaintenanceScheduleResponse = {
   id: string
@@ -369,6 +371,9 @@ test.group('Maintenance and failure modules', (group) => {
     })
 
     const attachmentId = (uploadResponse.body() as unknown as AttachmentResponse).id
+    const storedAttachment = await Attachment.findOrFail(attachmentId)
+    assert.isFalse(isAbsolute(storedAttachment.filePath))
+    assert.match(storedAttachment.filePath, /^maintenance-records\//)
     const listResponse = await client
       .get(`/api/v1/maintenance/records/${record.id}/attachments`)
       .loginAs(actor)

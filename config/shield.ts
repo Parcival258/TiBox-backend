@@ -1,4 +1,5 @@
 import { defineConfig } from '@adonisjs/shield'
+import app from '@adonisjs/core/services/app'
 
 const shieldConfig = defineConfig({
   /**
@@ -30,7 +31,7 @@ const shieldConfig = defineConfig({
     /**
      * Enable CSRF token verification for state-changing requests.
      */
-    enabled: false,
+    enabled: true,
 
     /**
      * Route patterns to exclude from CSRF checks.
@@ -42,6 +43,12 @@ const shieldConfig = defineConfig({
      * Expose an encrypted XSRF-TOKEN cookie for frontend HTTP clients.
      */
     enableXsrfCookie: true,
+
+    cookieOptions: {
+      path: '/',
+      sameSite: 'lax',
+      secure: app.inProduction,
+    },
 
     /**
      * HTTP methods protected by CSRF validation.

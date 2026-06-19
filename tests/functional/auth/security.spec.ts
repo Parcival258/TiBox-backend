@@ -51,6 +51,23 @@ test.group('Authentication and authorization', (group) => {
     response.assertBodyContains({ message: 'Invalid credentials' })
   })
 
+  test('rate limits repeated login attempts for the same identity', async ({ client }) => {
+    const payload = {
+      email: 'rate-limited@example.com',
+      password: 'wrong-password',
+    }
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const response = await client.post('/api/v1/auth/login').json(payload)
+      response.assertUnauthorized()
+    }
+
+    const response = await client.post('/api/v1/auth/login').json(payload)
+
+    response.assertStatus(429)
+    response.assertHeader('retry-after')
+  })
+
   test('returns authenticated user with role and permissions', async ({ assert, client }) => {
     const { role, user } = await createUserWithPermissions(['equipment.view'])
 

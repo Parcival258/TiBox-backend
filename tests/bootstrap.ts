@@ -1,5 +1,5 @@
 import { assert } from '@japa/assert'
-import { apiClient } from '@japa/api-client'
+import { ApiClient, apiClient } from '@japa/api-client'
 import app from '@adonisjs/core/services/app'
 import type { Config } from '@japa/runner/types'
 import { pluginAdonisJS } from '@japa/plugin-adonisjs'
@@ -7,7 +7,12 @@ import { dbAssertions } from '@adonisjs/lucid/plugins/db'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { authApiClient } from '@adonisjs/auth/plugins/api_client'
 import { sessionApiClient } from '@adonisjs/session/plugins/api_client'
+import { shieldApiClient } from '@adonisjs/shield/plugins/api_client'
 import type { Registry } from '../.adonisjs/client/registry/schema.d.ts'
+
+const csrfApiClient = () => {
+  ApiClient.setup((request) => request.withCsrfToken())
+}
 
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
@@ -31,6 +36,8 @@ export const plugins: Config['plugins'] = [
   apiClient(),
   sessionApiClient(app),
   authApiClient(app),
+  shieldApiClient(),
+  csrfApiClient,
 ]
 
 /**

@@ -441,6 +441,17 @@ export class PermissionSchema extends BaseModel {
   declare updatedAt: DateTime
 }
 
+export class RateLimitSchema extends BaseModel {
+  static $columns = ['expire', 'key', 'points'] as const
+  $columns = RateLimitSchema.$columns
+  @column()
+  declare expire: bigint | number | null
+  @column({ isPrimary: true })
+  declare key: string
+  @column()
+  declare points: number
+}
+
 export class RolePermissionSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'permissionId', 'roleId'] as const
   $columns = RolePermissionSchema.$columns

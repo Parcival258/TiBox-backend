@@ -1,10 +1,9 @@
 import Attachment from '#models/attachment'
 import MaintenanceRecord from '#models/maintenance_record'
 import AuditService, { type AuditContext } from '#services/audit/audit_service'
-import app from '@adonisjs/core/services/app'
+import AttachmentStorageService from '#services/storage/attachment_storage_service'
+import { AttachmentStorageError } from '#services/storage/attachment_storage'
 import type { MultipartFile } from '@adonisjs/bodyparser'
-import string from '@adonisjs/core/helpers/string'
-import { unlink } from 'node:fs/promises'
 
 type UploadMaintenanceRecordAttachmentPayload = {
   audit?: AuditContext
@@ -23,6 +22,7 @@ export class MaintenanceRecordAttachmentError extends Error {
 
 export default class MaintenanceRecordAttachmentService {
   private auditService = new AuditService()
+  private storage = new AttachmentStorageService()
 
   async list(recordId: string) {
     await this.ensureRecordExists(recordId)
@@ -37,27 +37,23 @@ export default class MaintenanceRecordAttachmentService {
   async upload(recordId: string, payload: UploadMaintenanceRecordAttachmentPayload) {
     await this.ensureRecordExists(recordId)
 
-    const fileName = this.buildStoredFileName(payload.file)
-    const uploadDirectory = app.tmpPath('uploads', 'maintenance_records', recordId)
+    const storageKey = await this.storage.save(payload.file, 'maintenance-records', recordId)
+    let attachment: Attachment
 
-    await payload.file.move(uploadDirectory, {
-      name: fileName,
-      overwrite: false,
-    })
-
-    if (!payload.file.filePath) {
-      throw new MaintenanceRecordAttachmentError('Attachment could not be stored')
+    try {
+      attachment = await Attachment.create({
+        entityType: 'maintenance_record',
+        entityId: recordId,
+        fileName: payload.file.clientName,
+        filePath: storageKey,
+        mimeType: this.getMimeType(payload.file),
+        sizeBytes: payload.file.size,
+        uploadedBy: payload.uploadedBy ?? null,
+      })
+    } catch (error) {
+      await this.storage.delete(storageKey)
+      throw error
     }
-
-    const attachment = await Attachment.create({
-      entityType: 'maintenance_record',
-      entityId: recordId,
-      fileName: payload.file.clientName,
-      filePath: payload.file.filePath,
-      mimeType: this.getMimeType(payload.file),
-      sizeBytes: payload.file.size,
-      uploadedBy: payload.uploadedBy ?? null,
-    })
 
     await this.auditService.record({
       ...payload.audit,
@@ -94,7 +90,7 @@ export default class MaintenanceRecordAttachmentService {
     await attachment.delete()
 
     try {
-      await unlink(attachment.filePath)
+      await this.storage.delete(attachment.filePath)
     } catch {
       // The DB record is the source of truth; missing files should not block deletion.
     }
@@ -110,18 +106,24 @@ export default class MaintenanceRecordAttachmentService {
     return attachment
   }
 
+  resolvePath(storageKey: string) {
+    try {
+      return this.storage.resolvePath(storageKey)
+    } catch (error) {
+      if (error instanceof AttachmentStorageError) {
+        throw new MaintenanceRecordAttachmentError('Attachment is unavailable', 404)
+      }
+
+      throw error
+    }
+  }
+
   private async ensureRecordExists(recordId: string) {
     const record = await MaintenanceRecord.query().where('id', recordId).first()
 
     if (!record) {
       throw new MaintenanceRecordAttachmentError('Maintenance record not found', 404)
     }
-  }
-
-  private buildStoredFileName(file: MultipartFile) {
-    const extension = file.extname ? `.${file.extname}` : ''
-
-    return `${string.generateRandom(32)}${extension}`
   }
 
   private getMimeType(file: MultipartFile) {

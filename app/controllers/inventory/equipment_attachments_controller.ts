@@ -36,7 +36,10 @@ export default class EquipmentAttachmentsController {
     try {
       const attachment = await this.attachmentService.find(params.equipment_id, params.id)
 
-      return response.attachment(attachment.filePath, attachment.fileName)
+      return response.attachment(
+        this.attachmentService.resolvePath(attachment.filePath),
+        attachment.fileName
+      )
     } catch (error) {
       return this.handleAttachmentError(error, response)
     }

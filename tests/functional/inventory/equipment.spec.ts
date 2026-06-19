@@ -15,6 +15,7 @@ import testUtils from '@adonisjs/core/services/test_utils'
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 import { rm, writeFile } from 'node:fs/promises'
+import { isAbsolute } from 'node:path'
 
 type EquipmentIndexResponse = {
   meta: {
@@ -617,6 +618,9 @@ test.group('Inventory equipment', (group) => {
     assert.match(uploadBody.fileName, /^warranty-.+\.png$/)
 
     const attachmentId = uploadBody.id
+    const storedAttachment = await Attachment.findOrFail(attachmentId)
+    assert.isFalse(isAbsolute(storedAttachment.filePath))
+    assert.match(storedAttachment.filePath, /^equipment\//)
     const listResponse = await client
       .get(`/api/v1/equipment/${equipmentId}/attachments`)
       .loginAs(actor)

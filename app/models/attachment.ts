@@ -18,7 +18,7 @@ export default class Attachment extends BaseModel {
   @column()
   declare fileName: string
 
-  @column()
+  @column({ serializeAs: null })
   declare filePath: string
 
   @column()
