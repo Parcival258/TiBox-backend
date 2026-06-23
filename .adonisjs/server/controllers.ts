@@ -34,6 +34,9 @@ export const controllers = {
     Headquarters: () => import('#controllers/settings/headquarters_controller'),
     Locations: () => import('#controllers/settings/locations_controller'),
   },
+  system: {
+    SystemLogs: () => import('#controllers/system/system_logs_controller'),
+  },
   users: {
     Users: () => import('#controllers/users/users_controller'),
   },

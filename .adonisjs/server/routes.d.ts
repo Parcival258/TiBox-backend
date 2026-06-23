@@ -32,10 +32,15 @@ export type ScannedRoutes = {
     'settings.locations.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'system_logs.errors': { paramsTuple?: []; params?: {} }
+    'system_logs.clear_errors': { paramsTuple?: []; params?: {} }
+    'system_logs.settings': { paramsTuple?: []; params?: {} }
+    'system_logs.update_settings': { paramsTuple?: []; params?: {} }
     'users.index': { paramsTuple?: []; params?: {} }
     'users.roles': { paramsTuple?: []; params?: {} }
     'users.store': { paramsTuple?: []; params?: {} }
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.reactivate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'users.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.catalogs': { paramsTuple?: []; params?: {} }
     'inventory.equipment_types.index': { paramsTuple?: []; params?: {} }
@@ -102,6 +107,8 @@ export type ScannedRoutes = {
     'settings.headquarters.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.index': { paramsTuple?: []; params?: {} }
     'settings.locations.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'system_logs.errors': { paramsTuple?: []; params?: {} }
+    'system_logs.settings': { paramsTuple?: []; params?: {} }
     'users.index': { paramsTuple?: []; params?: {} }
     'users.roles': { paramsTuple?: []; params?: {} }
     'inventory.equipment.catalogs': { paramsTuple?: []; params?: {} }
@@ -134,6 +141,8 @@ export type ScannedRoutes = {
     'settings.headquarters.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.index': { paramsTuple?: []; params?: {} }
     'settings.locations.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'system_logs.errors': { paramsTuple?: []; params?: {} }
+    'system_logs.settings': { paramsTuple?: []; params?: {} }
     'users.index': { paramsTuple?: []; params?: {} }
     'users.roles': { paramsTuple?: []; params?: {} }
     'inventory.equipment.catalogs': { paramsTuple?: []; params?: {} }
@@ -185,7 +194,9 @@ export type ScannedRoutes = {
     'alerts.dismiss': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.headquarters.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'system_logs.update_settings': { paramsTuple?: []; params?: {} }
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.reactivate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment_types.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.restore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -215,6 +226,7 @@ export type ScannedRoutes = {
   DELETE: {
     'settings.headquarters.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'system_logs.clear_errors': { paramsTuple?: []; params?: {} }
     'users.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment_types.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

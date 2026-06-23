@@ -174,6 +174,30 @@ const routes = {
     tokens: [{"old":"/api/v1/locations/:id","type":0,"val":"api","end":""},{"old":"/api/v1/locations/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/locations/:id","type":0,"val":"locations","end":""},{"old":"/api/v1/locations/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['settings.locations.destroy']['types'],
   },
+  'system_logs.errors': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/system-logs/errors',
+    tokens: [{"old":"/api/v1/system-logs/errors","type":0,"val":"api","end":""},{"old":"/api/v1/system-logs/errors","type":0,"val":"v1","end":""},{"old":"/api/v1/system-logs/errors","type":0,"val":"system-logs","end":""},{"old":"/api/v1/system-logs/errors","type":0,"val":"errors","end":""}],
+    types: placeholder as Registry['system_logs.errors']['types'],
+  },
+  'system_logs.clear_errors': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/system-logs/errors',
+    tokens: [{"old":"/api/v1/system-logs/errors","type":0,"val":"api","end":""},{"old":"/api/v1/system-logs/errors","type":0,"val":"v1","end":""},{"old":"/api/v1/system-logs/errors","type":0,"val":"system-logs","end":""},{"old":"/api/v1/system-logs/errors","type":0,"val":"errors","end":""}],
+    types: placeholder as Registry['system_logs.clear_errors']['types'],
+  },
+  'system_logs.settings': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/system-logs/settings',
+    tokens: [{"old":"/api/v1/system-logs/settings","type":0,"val":"api","end":""},{"old":"/api/v1/system-logs/settings","type":0,"val":"v1","end":""},{"old":"/api/v1/system-logs/settings","type":0,"val":"system-logs","end":""},{"old":"/api/v1/system-logs/settings","type":0,"val":"settings","end":""}],
+    types: placeholder as Registry['system_logs.settings']['types'],
+  },
+  'system_logs.update_settings': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/system-logs/settings',
+    tokens: [{"old":"/api/v1/system-logs/settings","type":0,"val":"api","end":""},{"old":"/api/v1/system-logs/settings","type":0,"val":"v1","end":""},{"old":"/api/v1/system-logs/settings","type":0,"val":"system-logs","end":""},{"old":"/api/v1/system-logs/settings","type":0,"val":"settings","end":""}],
+    types: placeholder as Registry['system_logs.update_settings']['types'],
+  },
   'users.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/users',
@@ -197,6 +221,12 @@ const routes = {
     pattern: '/api/v1/users/:id',
     tokens: [{"old":"/api/v1/users/:id","type":0,"val":"api","end":""},{"old":"/api/v1/users/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/users/:id","type":0,"val":"users","end":""},{"old":"/api/v1/users/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['users.update']['types'],
+  },
+  'users.reactivate': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/users/:id/reactivate',
+    tokens: [{"old":"/api/v1/users/:id/reactivate","type":0,"val":"api","end":""},{"old":"/api/v1/users/:id/reactivate","type":0,"val":"v1","end":""},{"old":"/api/v1/users/:id/reactivate","type":0,"val":"users","end":""},{"old":"/api/v1/users/:id/reactivate","type":1,"val":"id","end":""},{"old":"/api/v1/users/:id/reactivate","type":0,"val":"reactivate","end":""}],
+    types: placeholder as Registry['users.reactivate']['types'],
   },
   'users.destroy': {
     methods: ["DELETE"],

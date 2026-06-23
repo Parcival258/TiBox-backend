@@ -19,6 +19,9 @@ export default function userRoutes() {
         .patch('users/:id', [UsersController, 'update'])
         .use(middleware.permission({ permissions: ['users.update'] }))
       router
+        .patch('users/:id/reactivate', [UsersController, 'reactivate'])
+        .use(middleware.permission({ permissions: ['users.update'] }))
+      router
         .delete('users/:id', [UsersController, 'destroy'])
         .use(middleware.permission({ permissions: ['users.delete'] }))
     })

@@ -129,6 +129,11 @@ export default class extends BaseSeeder {
         slug: 'alerts.manage',
         description: 'Permite ejecutar seguimiento automatico y resolver alertas.',
       },
+      {
+        name: 'Gestionar logs del sistema',
+        slug: 'system_logs.manage',
+        description: 'Permite consultar y limpiar errores tecnicos del sistema.',
+      },
     ])
   }
 }

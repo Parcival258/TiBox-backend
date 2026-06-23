@@ -8,7 +8,6 @@ import { DateTime } from 'luxon'
 export default class UsersController {
   async index({ serialize }: HttpContext) {
     const users = await User.query()
-      .whereNull('deleted_at')
       .preload('role', (roleQuery) => roleQuery.preload('permissions'))
       .orderBy('name', 'asc')
 
@@ -23,7 +22,7 @@ export default class UsersController {
 
   async store({ request, response, serialize }: HttpContext) {
     const payload = await request.validateUsing(userCreateValidator)
-    const duplicatedUser = await User.query().where('email', payload.email).whereNull('deleted_at').first()
+    const duplicatedUser = await User.query().where('email', payload.email).first()
 
     if (duplicatedUser) {
       return response.conflict({ message: 'Email already exists' })
@@ -37,17 +36,17 @@ export default class UsersController {
 
     await user.load('role', (roleQuery) => roleQuery.preload('permissions'))
 
-    return response.created(
-      serialize({
-        user: UserTransformer.transform(user),
-      })
-    )
+    response.status(201)
+
+    return serialize({
+      user: UserTransformer.transform(user),
+    })
   }
 
   async update({ params, request, response, serialize }: HttpContext) {
     const payload = await request.validateUsing(userUpdateValidator)
     const { password, ...profilePayload } = payload
-    const user = await User.query().where('id', params.id).whereNull('deleted_at').first()
+    const user = await User.query().where('id', params.id).first()
 
     if (!user) {
       return response.notFound({ message: 'User not found' })
@@ -55,7 +54,6 @@ export default class UsersController {
 
     const duplicatedUser = await User.query()
       .where('email', payload.email)
-      .whereNull('deleted_at')
       .whereNot('id', user.id)
       .first()
 
@@ -68,6 +66,14 @@ export default class UsersController {
       roleId: profilePayload.roleId ?? null,
       isActive: profilePayload.isActive ?? true,
     })
+
+    if (profilePayload.isActive === true) {
+      user.deletedAt = null
+    }
+
+    if (profilePayload.isActive === false && !user.deletedAt) {
+      user.deletedAt = DateTime.local()
+    }
 
     if (password) {
       user.password = password
@@ -97,5 +103,22 @@ export default class UsersController {
     await user.save()
 
     return response.noContent()
+  }
+
+  async reactivate({ params, response, serialize }: HttpContext) {
+    const user = await User.query().where('id', params.id).first()
+
+    if (!user) {
+      return response.notFound({ message: 'User not found' })
+    }
+
+    user.isActive = true
+    user.deletedAt = null
+    await user.save()
+    await user.load('role', (roleQuery) => roleQuery.preload('permissions'))
+
+    return serialize({
+      user: UserTransformer.transform(user),
+    })
   }
 }

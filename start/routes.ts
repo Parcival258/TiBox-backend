@@ -6,6 +6,7 @@ import dashboardRoutes from '#start/routes/dashboard'
 import inventoryRoutes from '#start/routes/inventory'
 import realtimeRoutes from '#start/routes/realtime'
 import settingsRoutes from '#start/routes/settings'
+import systemLogRoutes from '#start/routes/system_logs'
 import userRoutes from '#start/routes/users'
 
 router.get('/', () => {
@@ -28,6 +29,7 @@ router
     dashboardRoutes()
     realtimeRoutes()
     settingsRoutes()
+    systemLogRoutes()
     userRoutes()
     inventoryRoutes()
   })

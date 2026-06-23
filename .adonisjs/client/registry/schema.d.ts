@@ -343,6 +343,54 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/settings/locations_controller').default['destroy']>>>
     }
   }
+  'system_logs.errors': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/system-logs/errors'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/system/system_logs_controller').default['errors']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/system/system_logs_controller').default['errors']>>>
+    }
+  }
+  'system_logs.clear_errors': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/system-logs/errors'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/system/system_logs_controller').default['clearErrors']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/system/system_logs_controller').default['clearErrors']>>>
+    }
+  }
+  'system_logs.settings': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/system-logs/settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/system/system_logs_controller').default['settings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/system/system_logs_controller').default['settings']>>>
+    }
+  }
+  'system_logs.update_settings': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/system-logs/settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/system/system_logs_controller').default['updateSettings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/system/system_logs_controller').default['updateSettings']>>>
+    }
+  }
   'users.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/users'
@@ -389,6 +437,18 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/user').userUpdateValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/users/users_controller').default['update']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users/users_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'users.reactivate': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/users/:id/reactivate'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/users/users_controller').default['reactivate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users/users_controller').default['reactivate']>>>
     }
   }
   'users.destroy': {

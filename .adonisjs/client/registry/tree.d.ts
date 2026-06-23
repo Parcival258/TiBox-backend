@@ -52,11 +52,18 @@ export interface ApiDefinition {
       destroy: typeof routes['settings.locations.destroy']
     }
   }
+  systemLogs: {
+    errors: typeof routes['system_logs.errors']
+    clearErrors: typeof routes['system_logs.clear_errors']
+    settings: typeof routes['system_logs.settings']
+    updateSettings: typeof routes['system_logs.update_settings']
+  }
   users: {
     index: typeof routes['users.index']
     roles: typeof routes['users.roles']
     store: typeof routes['users.store']
     update: typeof routes['users.update']
+    reactivate: typeof routes['users.reactivate']
     destroy: typeof routes['users.destroy']
   }
   inventory: {

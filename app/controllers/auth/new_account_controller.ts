@@ -14,10 +14,10 @@ export default class NewAccountController {
     const user = await this.accountService.register({ name, email, password })
     await this.authorizationService.loadAccessProfile(user)
 
-    return response.created(
-      serialize({
-        user: UserTransformer.transform(user),
-      })
-    )
+    response.status(201)
+
+    return serialize({
+      user: UserTransformer.transform(user),
+    })
   }
 }

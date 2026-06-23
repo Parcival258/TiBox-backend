@@ -1,7 +1,10 @@
 import app from '@adonisjs/core/services/app'
+import SystemErrorLogService from '#services/system/system_error_log_service'
 import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
+  private systemErrorLogService = new SystemErrorLogService()
+
   /**
    * In debug mode, the exception handler will display verbose errors
    * with pretty printed stack traces.
@@ -23,6 +26,8 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * @note You should not attempt to send a response from this method.
    */
   async report(error: unknown, ctx: HttpContext) {
+    await this.systemErrorLogService.record(error, ctx).catch(() => undefined)
+
     return super.report(error, ctx)
   }
 }
