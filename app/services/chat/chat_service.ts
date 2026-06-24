@@ -304,6 +304,56 @@ export default class ChatService {
     return result
   }
 
+  async clearMessages(conversationId: string, userId: string) {
+    if (!(await this.isParticipant(conversationId, userId))) {
+      return null
+    }
+
+    const conversation = await ChatConversation.find(conversationId)
+    if (!conversation) {
+      return null
+    }
+
+    const now = DateTime.local()
+    await ChatMessage.query()
+      .where('conversation_id', conversationId)
+      .whereNull('deleted_at')
+      .update({ deletedAt: now })
+
+    conversation.lastMessageId = null
+    conversation.lastMessageAt = null
+    await conversation.save()
+    await this.loadConversation(conversation)
+    await this.emitConversationUpdated(conversation)
+
+    return {
+      conversation: {
+        ...this.serializeConversation(conversation, userId),
+        unreadCount: await this.unreadCount(conversation.id, userId),
+      },
+    }
+  }
+
+  async deleteConversation(conversationId: string, userId: string) {
+    const conversation = await ChatConversation.query()
+      .where('id', conversationId)
+      .preload('participants')
+      .first()
+
+    if (
+      !conversation ||
+      !conversation.participants.some((participant) => participant.userId === userId)
+    ) {
+      return false
+    }
+
+    const participantIds = conversation.participants.map((participant) => participant.userId)
+    await conversation.delete()
+    realtimeService.emitChatConversationUpdated({ deleted: true, id: conversationId }, participantIds)
+
+    return true
+  }
+
   private async getConversationForUser(conversationId: string, userId: string) {
     const conversation = await ChatConversation.findOrFail(conversationId)
     await this.loadConversation(conversation)
@@ -318,9 +368,11 @@ export default class ChatService {
     await conversation.load('participants', (participantQuery) => {
       participantQuery.preload('user', (userQuery) => userQuery.preload('role'))
     })
-    await conversation.load('lastMessage', (messageQuery) => {
-      messageQuery.preload('sender')
-    })
+    if (conversation.lastMessageId) {
+      await conversation.load('lastMessage', (messageQuery) => {
+        messageQuery.preload('sender')
+      })
+    }
   }
 
   private async findActiveUser(userId: string) {

@@ -132,6 +132,18 @@ const routes = {
     tokens: [{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"conversations","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":1,"val":"id","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"read","end":""}],
     types: placeholder as Registry['chat.chat.mark_read']['types'],
   },
+  'chat.chat.clear_messages': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/chat/conversations/:id/messages',
+    tokens: [{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"conversations","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":1,"val":"id","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"messages","end":""}],
+    types: placeholder as Registry['chat.chat.clear_messages']['types'],
+  },
+  'chat.chat.delete_conversation': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/chat/conversations/:id',
+    tokens: [{"old":"/api/v1/chat/conversations/:id","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations/:id","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations/:id","type":0,"val":"conversations","end":""},{"old":"/api/v1/chat/conversations/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['chat.chat.delete_conversation']['types'],
+  },
   'dashboard.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/dashboard',

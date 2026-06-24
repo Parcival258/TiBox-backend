@@ -3,6 +3,7 @@ import EquipmentLoan from '#models/equipment_loan'
 import User from '#models/user'
 import AlertService from '#services/alerts/alert_service'
 import AuditService, { type AuditContext } from '#services/audit/audit_service'
+import realtimeService from '#services/realtime/realtime_service'
 import db from '@adonisjs/lucid/services/db'
 import { DateTime } from 'luxon'
 
@@ -137,6 +138,7 @@ export default class EquipmentLoanService {
     })
 
     await this.alertService.createForLoanRequest(requestedLoan.id, payload.audit)
+    this.emitLoanUpdated('requested', requestedLoan)
     return requestedLoan
   }
 
@@ -187,6 +189,7 @@ export default class EquipmentLoanService {
     })
 
     await this.alertService.resolveByKey(`equipment_loan_requested:${approvedLoan.id}`, audit)
+    this.emitLoanUpdated('approved', approvedLoan)
     return approvedLoan
   }
 
@@ -214,13 +217,14 @@ export default class EquipmentLoanService {
       newValues: loan.$attributes,
     })
     await this.alertService.resolveByKey(`equipment_loan_requested:${loan.id}`, audit)
+    this.emitLoanUpdated('rejected', loan)
     return loan
   }
 
   async create(payload: CreateEquipmentLoanPayload) {
     this.ensureBorrower(payload)
 
-    return db.transaction(async (trx) => {
+    const createdLoan = await db.transaction(async (trx) => {
       const [equipment, user] = await Promise.all([
         Equipment.query({ client: trx })
           .where('id', payload.equipmentId)
@@ -287,10 +291,13 @@ export default class EquipmentLoanService {
 
       return loan
     })
+
+    this.emitLoanUpdated('created', createdLoan)
+    return createdLoan
   }
 
   async returnLoan(id: string, payload: ReturnEquipmentLoanPayload) {
-    return db.transaction(async (trx) => {
+    const returnedLoan = await db.transaction(async (trx) => {
       const loan = await EquipmentLoan.query({ client: trx }).where('id', id).first()
 
       if (!loan) {
@@ -335,6 +342,20 @@ export default class EquipmentLoanService {
 
       return loan
     })
+
+    this.emitLoanUpdated('returned', returnedLoan)
+    return returnedLoan
+  }
+
+  private emitLoanUpdated(
+    event: 'approved' | 'created' | 'rejected' | 'requested' | 'returned',
+    loan: EquipmentLoan
+  ) {
+    const participantIds = [loan.userId, loan.createdBy, loan.returnedBy].filter(
+      (value): value is string => Boolean(value)
+    )
+
+    realtimeService.emitEquipmentLoanUpdated({ event, loan: loan.serialize() }, participantIds)
   }
 
   private ensureBorrower(payload: CreateEquipmentLoanPayload) {

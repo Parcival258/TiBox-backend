@@ -13,6 +13,8 @@ export default function chatRoutes() {
       router.get('conversations/:id/messages', [ChatController, 'messages'])
       router.post('conversations/:id/messages', [ChatController, 'createMessage'])
       router.post('conversations/:id/read', [ChatController, 'markRead'])
+      router.delete('conversations/:id/messages', [ChatController, 'clearMessages'])
+      router.delete('conversations/:id', [ChatController, 'deleteConversation'])
     })
     .prefix('chat')
     .use(middleware.auth())

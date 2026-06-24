@@ -88,4 +88,24 @@ export default class ChatController {
 
     return result
   }
+
+  async clearMessages({ auth, params, response }: HttpContext) {
+    const result = await this.chatService.clearMessages(params.id, auth.getUserOrFail().id)
+
+    if (!result) {
+      return response.notFound({ message: 'Conversacion no encontrada' })
+    }
+
+    return result
+  }
+
+  async deleteConversation({ auth, params, response }: HttpContext) {
+    const deleted = await this.chatService.deleteConversation(params.id, auth.getUserOrFail().id)
+
+    if (!deleted) {
+      return response.notFound({ message: 'Conversacion no encontrada' })
+    }
+
+    return response.noContent()
+  }
 }

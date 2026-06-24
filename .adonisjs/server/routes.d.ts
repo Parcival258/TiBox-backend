@@ -25,6 +25,8 @@ export type ScannedRoutes = {
     'chat.chat.messages': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'chat.chat.create_message': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'chat.chat.mark_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'chat.chat.clear_messages': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'chat.chat.delete_conversation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.index': { paramsTuple?: []; params?: {} }
     'realtime.token': { paramsTuple?: []; params?: {} }
     'settings.headquarters.index': { paramsTuple?: []; params?: {} }
@@ -232,15 +234,9 @@ export type ScannedRoutes = {
     'inventory.failure_reports.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.failure_reports.close': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
-  PUT: {
-    'settings.headquarters.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'settings.locations.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'inventory.equipment.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'inventory.maintenance.schedules.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'inventory.maintenance.records.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'inventory.failure_reports.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
   DELETE: {
+    'chat.chat.clear_messages': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'chat.chat.delete_conversation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.headquarters.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.locations.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'system_logs.clear_errors': { paramsTuple?: []; params?: {} }
@@ -249,6 +245,14 @@ export type ScannedRoutes = {
     'inventory.equipment.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
     'inventory.maintenance.records.attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'record_id': ParamValue,'id': ParamValue} }
+  }
+  PUT: {
+    'settings.headquarters.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'settings.locations.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.schedules.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.failure_reports.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

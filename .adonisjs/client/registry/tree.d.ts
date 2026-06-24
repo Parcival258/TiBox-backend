@@ -37,6 +37,8 @@ export interface ApiDefinition {
       messages: typeof routes['chat.chat.messages']
       createMessage: typeof routes['chat.chat.create_message']
       markRead: typeof routes['chat.chat.mark_read']
+      clearMessages: typeof routes['chat.chat.clear_messages']
+      deleteConversation: typeof routes['chat.chat.delete_conversation']
     }
   }
   dashboard: {

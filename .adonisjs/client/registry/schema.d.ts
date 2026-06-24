@@ -259,6 +259,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['markRead']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'chat.chat.clear_messages': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/chat/conversations/:id/messages'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['clearMessages']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['clearMessages']>>>
+    }
+  }
+  'chat.chat.delete_conversation': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/chat/conversations/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['deleteConversation']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['deleteConversation']>>>
+    }
+  }
   'dashboard.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/dashboard'

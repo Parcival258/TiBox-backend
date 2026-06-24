@@ -37,6 +37,11 @@ type ChatReadPayload = {
   userId: string
 }
 
+type EquipmentLoanPayload = {
+  event: 'approved' | 'created' | 'rejected' | 'requested' | 'returned'
+  loan: Record<string, unknown>
+}
+
 const userRoom = (userId: string) => `user:${userId}`
 const alertsManagersRoom = 'alerts:managers'
 const alertsTechniciansRoom = 'alerts:technicians'
@@ -155,6 +160,21 @@ class RealtimeService {
     const uniqueParticipantIds = [...new Set(participantIds)]
     uniqueParticipantIds.forEach((participantId) => {
       this.io?.to(userRoom(participantId)).emit('chat:messages_read', payload)
+    })
+  }
+
+  emitEquipmentLoanUpdated(payload: EquipmentLoanPayload, participantIds: string[], notifyManagers = true) {
+    if (!this.io) {
+      return
+    }
+
+    if (notifyManagers) {
+      this.io.to(loanManagersRoom).emit('equipment_loans:updated', payload)
+    }
+
+    const uniqueParticipantIds = [...new Set(participantIds)]
+    uniqueParticipantIds.forEach((participantId) => {
+      this.io?.to(userRoom(participantId)).emit('equipment_loans:updated', payload)
     })
   }
 
