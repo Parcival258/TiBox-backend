@@ -175,6 +175,90 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alerts/alerts_controller').default['dismiss']>>>
     }
   }
+  'chat.chat.users': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/chat/users'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['users']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['users']>>>
+    }
+  }
+  'chat.chat.conversations': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/chat/conversations'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['conversations']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['conversations']>>>
+    }
+  }
+  'chat.chat.create_direct': {
+    methods: ["POST"]
+    pattern: '/api/v1/chat/conversations/direct'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/chat').createDirectConversationValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/chat').createDirectConversationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['createDirect']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['createDirect']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'chat.chat.create_group': {
+    methods: ["POST"]
+    pattern: '/api/v1/chat/conversations/group'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/chat').createGroupConversationValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/chat').createGroupConversationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['createGroup']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['createGroup']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'chat.chat.messages': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/chat/conversations/:id/messages'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/chat').listChatMessagesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['messages']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['messages']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'chat.chat.create_message': {
+    methods: ["POST"]
+    pattern: '/api/v1/chat/conversations/:id/messages'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/chat').createChatMessageValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/chat').createChatMessageValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['createMessage']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['createMessage']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'chat.chat.mark_read': {
+    methods: ["POST"]
+    pattern: '/api/v1/chat/conversations/:id/read'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/chat').markChatReadValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/chat').markChatReadValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['markRead']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/chat/chat_controller').default['markRead']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'dashboard.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/dashboard'

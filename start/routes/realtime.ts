@@ -10,12 +10,6 @@ export default function realtimeRoutes() {
       router
         .post('token', [RealtimeTokensController, 'store'])
         .use(realtimeTokenThrottle)
-        .use(
-          middleware.permission({
-            mode: 'any',
-            permissions: ['alerts.view', 'failure_reports.view', 'equipment.assign'],
-          })
-        )
         .as('token')
     })
     .prefix('realtime')

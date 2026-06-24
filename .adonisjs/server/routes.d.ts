@@ -18,6 +18,13 @@ export type ScannedRoutes = {
     'alerts.note': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'alerts.resolve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'alerts.dismiss': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'chat.chat.users': { paramsTuple?: []; params?: {} }
+    'chat.chat.conversations': { paramsTuple?: []; params?: {} }
+    'chat.chat.create_direct': { paramsTuple?: []; params?: {} }
+    'chat.chat.create_group': { paramsTuple?: []; params?: {} }
+    'chat.chat.messages': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'chat.chat.create_message': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'chat.chat.mark_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.index': { paramsTuple?: []; params?: {} }
     'realtime.token': { paramsTuple?: []; params?: {} }
     'settings.headquarters.index': { paramsTuple?: []; params?: {} }
@@ -102,6 +109,9 @@ export type ScannedRoutes = {
     'profile.show': { paramsTuple?: []; params?: {} }
     'alerts.catalogs': { paramsTuple?: []; params?: {} }
     'alerts.index': { paramsTuple?: []; params?: {} }
+    'chat.chat.users': { paramsTuple?: []; params?: {} }
+    'chat.chat.conversations': { paramsTuple?: []; params?: {} }
+    'chat.chat.messages': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.index': { paramsTuple?: []; params?: {} }
     'settings.headquarters.index': { paramsTuple?: []; params?: {} }
     'settings.headquarters.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -136,6 +146,9 @@ export type ScannedRoutes = {
     'profile.show': { paramsTuple?: []; params?: {} }
     'alerts.catalogs': { paramsTuple?: []; params?: {} }
     'alerts.index': { paramsTuple?: []; params?: {} }
+    'chat.chat.users': { paramsTuple?: []; params?: {} }
+    'chat.chat.conversations': { paramsTuple?: []; params?: {} }
+    'chat.chat.messages': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.index': { paramsTuple?: []; params?: {} }
     'settings.headquarters.index': { paramsTuple?: []; params?: {} }
     'settings.headquarters.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -170,6 +183,10 @@ export type ScannedRoutes = {
     'auth.session.login': { paramsTuple?: []; params?: {} }
     'auth.session.logout': { paramsTuple?: []; params?: {} }
     'alerts.run': { paramsTuple?: []; params?: {} }
+    'chat.chat.create_direct': { paramsTuple?: []; params?: {} }
+    'chat.chat.create_group': { paramsTuple?: []; params?: {} }
+    'chat.chat.create_message': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'chat.chat.mark_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'realtime.token': { paramsTuple?: []; params?: {} }
     'settings.headquarters.store': { paramsTuple?: []; params?: {} }
     'settings.locations.store': { paramsTuple?: []; params?: {} }

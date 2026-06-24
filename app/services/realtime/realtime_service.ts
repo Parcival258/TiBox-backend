@@ -25,6 +25,18 @@ type AlertPayload = {
   event: AlertEvent
 }
 
+type ChatMessagePayload = {
+  conversation: Record<string, unknown>
+  message: Record<string, unknown>
+}
+
+type ChatReadPayload = {
+  conversationId: string
+  readAt: string | null
+  unreadCount: number
+  userId: string
+}
+
 const userRoom = (userId: string) => `user:${userId}`
 const alertsManagersRoom = 'alerts:managers'
 const alertsTechniciansRoom = 'alerts:technicians'
@@ -50,12 +62,7 @@ class RealtimeService {
     this.io.use((socket, next) => {
       const payload = this.tokenService.verify(this.handshakeToken(socket))
 
-      if (
-        !payload ||
-        (!payload.permissions.includes('alerts.view') &&
-          !payload.permissions.includes('failure_reports.view') &&
-          !payload.permissions.includes('equipment.assign'))
-      ) {
+      if (!payload) {
         next(new Error('Unauthorized realtime connection'))
         return
       }
@@ -116,6 +123,39 @@ class RealtimeService {
     if (alert.type === 'damaged_equipment_reported') {
       this.io.to(alertsTechniciansRoom).emit(event, payload)
     }
+  }
+
+  emitChatConversationUpdated(conversation: Record<string, unknown>, participantIds: string[]) {
+    if (!this.io) {
+      return
+    }
+
+    const uniqueParticipantIds = [...new Set(participantIds)]
+    uniqueParticipantIds.forEach((participantId) => {
+      this.io?.to(userRoom(participantId)).emit('chat:conversation_updated', { conversation })
+    })
+  }
+
+  emitChatMessageCreated(payload: ChatMessagePayload, participantIds: string[]) {
+    if (!this.io) {
+      return
+    }
+
+    const uniqueParticipantIds = [...new Set(participantIds)]
+    uniqueParticipantIds.forEach((participantId) => {
+      this.io?.to(userRoom(participantId)).emit('chat:message_created', payload)
+    })
+  }
+
+  emitChatMessagesRead(payload: ChatReadPayload, participantIds: string[]) {
+    if (!this.io) {
+      return
+    }
+
+    const uniqueParticipantIds = [...new Set(participantIds)]
+    uniqueParticipantIds.forEach((participantId) => {
+      this.io?.to(userRoom(participantId)).emit('chat:messages_read', payload)
+    })
   }
 
   private handshakeToken(socket: Socket) {

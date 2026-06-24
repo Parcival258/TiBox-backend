@@ -12,6 +12,9 @@ export const controllers = {
     Profile: () => import('#controllers/auth/profile_controller'),
     Session: () => import('#controllers/auth/session_controller'),
   },
+  chat: {
+    Chat: () => import('#controllers/chat/chat_controller'),
+  },
   inventory: {
     EquipmentAssignments: () => import('#controllers/inventory/equipment_assignments_controller'),
     EquipmentAttachments: () => import('#controllers/inventory/equipment_attachments_controller'),

@@ -28,6 +28,17 @@ export interface ApiDefinition {
     resolve: typeof routes['alerts.resolve']
     dismiss: typeof routes['alerts.dismiss']
   }
+  chat: {
+    chat: {
+      users: typeof routes['chat.chat.users']
+      conversations: typeof routes['chat.chat.conversations']
+      createDirect: typeof routes['chat.chat.create_direct']
+      createGroup: typeof routes['chat.chat.create_group']
+      messages: typeof routes['chat.chat.messages']
+      createMessage: typeof routes['chat.chat.create_message']
+      markRead: typeof routes['chat.chat.mark_read']
+    }
+  }
   dashboard: {
     index: typeof routes['dashboard.index']
   }

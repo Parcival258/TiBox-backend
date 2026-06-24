@@ -90,6 +90,48 @@ const routes = {
     tokens: [{"old":"/api/v1/alerts/:id/dismiss","type":0,"val":"api","end":""},{"old":"/api/v1/alerts/:id/dismiss","type":0,"val":"v1","end":""},{"old":"/api/v1/alerts/:id/dismiss","type":0,"val":"alerts","end":""},{"old":"/api/v1/alerts/:id/dismiss","type":1,"val":"id","end":""},{"old":"/api/v1/alerts/:id/dismiss","type":0,"val":"dismiss","end":""}],
     types: placeholder as Registry['alerts.dismiss']['types'],
   },
+  'chat.chat.users': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/chat/users',
+    tokens: [{"old":"/api/v1/chat/users","type":0,"val":"api","end":""},{"old":"/api/v1/chat/users","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/users","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/users","type":0,"val":"users","end":""}],
+    types: placeholder as Registry['chat.chat.users']['types'],
+  },
+  'chat.chat.conversations': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/chat/conversations',
+    tokens: [{"old":"/api/v1/chat/conversations","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations","type":0,"val":"conversations","end":""}],
+    types: placeholder as Registry['chat.chat.conversations']['types'],
+  },
+  'chat.chat.create_direct': {
+    methods: ["POST"],
+    pattern: '/api/v1/chat/conversations/direct',
+    tokens: [{"old":"/api/v1/chat/conversations/direct","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations/direct","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations/direct","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations/direct","type":0,"val":"conversations","end":""},{"old":"/api/v1/chat/conversations/direct","type":0,"val":"direct","end":""}],
+    types: placeholder as Registry['chat.chat.create_direct']['types'],
+  },
+  'chat.chat.create_group': {
+    methods: ["POST"],
+    pattern: '/api/v1/chat/conversations/group',
+    tokens: [{"old":"/api/v1/chat/conversations/group","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations/group","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations/group","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations/group","type":0,"val":"conversations","end":""},{"old":"/api/v1/chat/conversations/group","type":0,"val":"group","end":""}],
+    types: placeholder as Registry['chat.chat.create_group']['types'],
+  },
+  'chat.chat.messages': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/chat/conversations/:id/messages',
+    tokens: [{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"conversations","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":1,"val":"id","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"messages","end":""}],
+    types: placeholder as Registry['chat.chat.messages']['types'],
+  },
+  'chat.chat.create_message': {
+    methods: ["POST"],
+    pattern: '/api/v1/chat/conversations/:id/messages',
+    tokens: [{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"conversations","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":1,"val":"id","end":""},{"old":"/api/v1/chat/conversations/:id/messages","type":0,"val":"messages","end":""}],
+    types: placeholder as Registry['chat.chat.create_message']['types'],
+  },
+  'chat.chat.mark_read': {
+    methods: ["POST"],
+    pattern: '/api/v1/chat/conversations/:id/read',
+    tokens: [{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"api","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"v1","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"chat","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"conversations","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":1,"val":"id","end":""},{"old":"/api/v1/chat/conversations/:id/read","type":0,"val":"read","end":""}],
+    types: placeholder as Registry['chat.chat.mark_read']['types'],
+  },
   'dashboard.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/dashboard',

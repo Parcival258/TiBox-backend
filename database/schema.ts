@@ -125,6 +125,86 @@ export class AuditLogSchema extends BaseModel {
   declare userId: string | null
 }
 
+export class ChatConversationSchema extends BaseModel {
+  static $columns = ['createdAt', 'createdBy', 'id', 'lastMessageAt', 'lastMessageId', 'name', 'type', 'updatedAt'] as const
+  $columns = ChatConversationSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare createdBy: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime()
+  declare lastMessageAt: DateTime | null
+  @column()
+  declare lastMessageId: string | null
+  @column()
+  declare name: string | null
+  @column()
+  declare type: any
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+}
+
+export class ChatMessageReadSchema extends BaseModel {
+  static $columns = ['createdAt', 'deliveredAt', 'id', 'messageId', 'readAt', 'updatedAt', 'userId'] as const
+  $columns = ChatMessageReadSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare deliveredAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare messageId: string
+  @column.dateTime()
+  declare readAt: DateTime | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+  @column()
+  declare userId: string
+}
+
+export class ChatMessageSchema extends BaseModel {
+  static $columns = ['body', 'conversationId', 'createdAt', 'deletedAt', 'id', 'senderId', 'updatedAt'] as const
+  $columns = ChatMessageSchema.$columns
+  @column()
+  declare body: string
+  @column()
+  declare conversationId: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare deletedAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare senderId: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+}
+
+export class ChatParticipantSchema extends BaseModel {
+  static $columns = ['conversationId', 'createdAt', 'id', 'joinedAt', 'lastReadAt', 'role', 'updatedAt', 'userId'] as const
+  $columns = ChatParticipantSchema.$columns
+  @column()
+  declare conversationId: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime()
+  declare joinedAt: DateTime
+  @column.dateTime()
+  declare lastReadAt: DateTime | null
+  @column()
+  declare role: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+  @column()
+  declare userId: string
+}
+
 export class EquipmentSchema extends BaseModel {
   static $columns = ['assetTag', 'brand', 'createdAt', 'createdBy', 'currentResponsibleId', 'deletedAt', 'headquarterId', 'id', 'internalCode', 'ipAddresses', 'lastMaintenanceAt', 'leaseContractNumber', 'leaseProvider', 'leaseUntil', 'locationId', 'macAddress', 'model', 'nextMaintenanceAt', 'notes', 'ownershipType', 'processor', 'purchaseDate', 'secondaryResponsibleId', 'serial', 'status', 'storageCapacityGb', 'storageType', 'type', 'updatedAt', 'updatedBy', 'warrantyUntil'] as const
   $columns = EquipmentSchema.$columns
