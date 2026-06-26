@@ -11,6 +11,7 @@ export const maintenanceStatuses = [
   'overdue',
 ] as const
 export const maintenancePriorities = ['low', 'medium', 'high', 'critical'] as const
+export const maintenanceStages = ['reception', 'execution', 'closure'] as const
 
 export const createMaintenanceScheduleValidator = vine.create({
   equipmentId: vine.string().uuid(),
@@ -59,14 +60,24 @@ export const createMaintenanceRecordValidator = vine.create({
   maintenanceType: vine.enum(maintenanceTypes),
   status: vine.enum(maintenanceStatuses).optional(),
   priority: vine.enum(maintenancePriorities).optional(),
+  currentStage: vine.enum(maintenanceStages).optional(),
   scheduledDate: vine.date().optional(),
   performedAt: vine.date().optional(),
   performedBy: vine.string().uuid().optional(),
   description: vine.string().trim().optional(),
+  initialEquipmentState: vine.string().trim().optional(),
+  receptionObservations: vine.string().trim().optional(),
   diagnosis: vine.string().trim().optional(),
   actionsTaken: vine.string().trim().optional(),
+  technicalObservations: vine.string().trim().optional(),
   partsReplaced: vine.string().trim().optional(),
+  componentsUsed: vine.string().trim().optional(),
   cost: vine.number().min(0).optional(),
+  componentsCost: vine.number().min(0).optional(),
+  softwareWork: vine.string().trim().optional(),
+  finalEquipmentState: vine.string().trim().optional(),
+  receivedByName: vine.string().trim().optional(),
+  finalDestination: vine.string().trim().optional(),
   nextMaintenanceAt: vine.date().optional(),
 })
 
@@ -76,14 +87,24 @@ export const updateMaintenanceRecordValidator = vine.create({
   maintenanceType: vine.enum(maintenanceTypes).optional(),
   status: vine.enum(maintenanceStatuses).optional(),
   priority: vine.enum(maintenancePriorities).optional(),
+  currentStage: vine.enum(maintenanceStages).optional(),
   scheduledDate: vine.date().optional(),
   performedAt: vine.date().optional(),
   performedBy: vine.string().uuid().optional(),
   description: vine.string().trim().optional(),
+  initialEquipmentState: vine.string().trim().optional(),
+  receptionObservations: vine.string().trim().optional(),
   diagnosis: vine.string().trim().optional(),
   actionsTaken: vine.string().trim().optional(),
+  technicalObservations: vine.string().trim().optional(),
   partsReplaced: vine.string().trim().optional(),
+  componentsUsed: vine.string().trim().optional(),
   cost: vine.number().min(0).optional(),
+  componentsCost: vine.number().min(0).optional(),
+  softwareWork: vine.string().trim().optional(),
+  finalEquipmentState: vine.string().trim().optional(),
+  receivedByName: vine.string().trim().optional(),
+  finalDestination: vine.string().trim().optional(),
   nextMaintenanceAt: vine.date().optional(),
 })
 
@@ -97,6 +118,32 @@ export const closeMaintenanceRecordValidator = vine.create({
   nextMaintenanceAt: vine.date().optional(),
 })
 
+export const updateMaintenanceReceptionValidator = vine.create({
+  initialEquipmentState: vine.string().trim().optional(),
+  receptionObservations: vine.string().trim().optional(),
+  description: vine.string().trim().optional(),
+})
+
+export const updateMaintenanceExecutionValidator = vine.create({
+  actionsTaken: vine.string().trim().optional(),
+  technicalObservations: vine.string().trim().optional(),
+  componentsUsed: vine.string().trim().optional(),
+  partsReplaced: vine.string().trim().optional(),
+  componentsCost: vine.number().min(0).optional(),
+  cost: vine.number().min(0).optional(),
+  softwareWork: vine.string().trim().optional(),
+  diagnosis: vine.string().trim().optional(),
+})
+
+export const updateMaintenanceClosureValidator = vine.create({
+  finalEquipmentState: vine.string().trim().optional(),
+  receivedByName: vine.string().trim().optional(),
+  finalDestination: vine.string().trim().optional(),
+  performedAt: vine.date().optional(),
+  performedBy: vine.string().uuid().optional(),
+  nextMaintenanceAt: vine.date().optional(),
+})
+
 export const listMaintenanceRecordValidator = vine.create({
   equipmentId: vine.string().uuid().optional(),
   maintenanceScheduleId: vine.string().uuid().optional(),
@@ -104,8 +151,13 @@ export const listMaintenanceRecordValidator = vine.create({
   maintenanceType: vine.enum(maintenanceTypes).optional(),
   status: vine.enum(maintenanceStatuses).optional(),
   priority: vine.enum(maintenancePriorities).optional(),
+  currentStage: vine.enum(maintenanceStages).optional(),
   performedFrom: vine.date().optional(),
   performedTo: vine.date().optional(),
+  scheduledFrom: vine.date().optional(),
+  scheduledTo: vine.date().optional(),
+  headquarterId: vine.string().uuid().optional(),
+  equipmentGroupId: vine.string().uuid().optional(),
   page: vine.number().min(1).optional(),
   perPage: vine.number().min(1).max(100).optional(),
 })

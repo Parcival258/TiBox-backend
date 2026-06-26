@@ -64,6 +64,13 @@ export type ScannedRoutes = {
     'inventory.equipment.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.index': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_groups.store': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.equipment.attach': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.equipment.detach': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'equipment_id': ParamValue} }
     'inventory.equipment.assignments.index': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.assignments.store': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.assignments.return_current': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
@@ -95,6 +102,10 @@ export type ScannedRoutes = {
     'inventory.maintenance.records.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.close': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.reception': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.execution': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.closure': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.history': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.attachments.index': { paramsTuple: [ParamValue]; params: {'record_id': ParamValue} }
     'inventory.maintenance.records.attachments.store': { paramsTuple: [ParamValue]; params: {'record_id': ParamValue} }
     'inventory.maintenance.records.attachments.show': { paramsTuple: [ParamValue,ParamValue]; params: {'record_id': ParamValue,'id': ParamValue} }
@@ -128,6 +139,8 @@ export type ScannedRoutes = {
     'inventory.equipment.index': { paramsTuple?: []; params?: {} }
     'inventory.equipment.life_sheet': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.index': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.assignments.index': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.attachments.index': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.attachments.show': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
@@ -138,6 +151,7 @@ export type ScannedRoutes = {
     'inventory.maintenance.schedules.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.index': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.records.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.history': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.attachments.index': { paramsTuple: [ParamValue]; params: {'record_id': ParamValue} }
     'inventory.maintenance.records.attachments.show': { paramsTuple: [ParamValue,ParamValue]; params: {'record_id': ParamValue,'id': ParamValue} }
     'inventory.failure_reports.index': { paramsTuple?: []; params?: {} }
@@ -165,6 +179,8 @@ export type ScannedRoutes = {
     'inventory.equipment.index': { paramsTuple?: []; params?: {} }
     'inventory.equipment.life_sheet': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.index': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.assignments.index': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.attachments.index': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.attachments.show': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
@@ -175,6 +191,7 @@ export type ScannedRoutes = {
     'inventory.maintenance.schedules.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.index': { paramsTuple?: []; params?: {} }
     'inventory.maintenance.records.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.history': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.attachments.index': { paramsTuple: [ParamValue]; params: {'record_id': ParamValue} }
     'inventory.maintenance.records.attachments.show': { paramsTuple: [ParamValue,ParamValue]; params: {'record_id': ParamValue,'id': ParamValue} }
     'inventory.failure_reports.index': { paramsTuple?: []; params?: {} }
@@ -195,6 +212,8 @@ export type ScannedRoutes = {
     'users.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment_types.store': { paramsTuple?: []; params?: {} }
     'inventory.equipment.store': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_groups.store': { paramsTuple?: []; params?: {} }
+    'inventory.equipment_groups.equipment.attach': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.assignments.store': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment.attachments.store': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment_loans.requests.store': { paramsTuple?: []; params?: {} }
@@ -219,6 +238,7 @@ export type ScannedRoutes = {
     'inventory.equipment_types.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.restore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.assignments.return_current': { paramsTuple: [ParamValue]; params: {'equipment_id': ParamValue} }
     'inventory.equipment_loans.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment_loans.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -231,6 +251,9 @@ export type ScannedRoutes = {
     'inventory.maintenance.schedules.reschedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.maintenance.records.close': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.reception': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.execution': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.maintenance.records.closure': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.failure_reports.patch': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.failure_reports.close': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
@@ -243,6 +266,8 @@ export type ScannedRoutes = {
     'users.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment_types.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'inventory.equipment.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'inventory.equipment_groups.equipment.detach': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'equipment_id': ParamValue} }
     'inventory.equipment.attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'equipment_id': ParamValue,'id': ParamValue} }
     'inventory.maintenance.records.attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'record_id': ParamValue,'id': ParamValue} }
   }

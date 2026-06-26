@@ -108,6 +108,17 @@ export interface ApiDefinition {
       update: typeof routes['inventory.equipment_types.update']
       destroy: typeof routes['inventory.equipment_types.destroy']
     }
+    equipmentGroups: {
+      index: typeof routes['inventory.equipment_groups.index']
+      store: typeof routes['inventory.equipment_groups.store']
+      show: typeof routes['inventory.equipment_groups.show']
+      update: typeof routes['inventory.equipment_groups.update']
+      destroy: typeof routes['inventory.equipment_groups.destroy']
+      equipment: {
+        attach: typeof routes['inventory.equipment_groups.equipment.attach']
+        detach: typeof routes['inventory.equipment_groups.equipment.detach']
+      }
+    }
     equipmentLoans: {
       index: typeof routes['inventory.equipment_loans.index']
       requestableEquipment: typeof routes['inventory.equipment_loans.requestable_equipment']
@@ -140,6 +151,10 @@ export interface ApiDefinition {
         update: typeof routes['inventory.maintenance.records.update']
         patch: typeof routes['inventory.maintenance.records.patch']
         close: typeof routes['inventory.maintenance.records.close']
+        reception: typeof routes['inventory.maintenance.records.reception']
+        execution: typeof routes['inventory.maintenance.records.execution']
+        closure: typeof routes['inventory.maintenance.records.closure']
+        history: typeof routes['inventory.maintenance.records.history']
         attachments: {
           index: typeof routes['inventory.maintenance.records.attachments.index']
           store: typeof routes['inventory.maintenance.records.attachments.store']

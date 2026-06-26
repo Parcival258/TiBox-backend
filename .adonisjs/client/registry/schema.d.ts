@@ -727,6 +727,90 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_controller').default['destroy']>>>
     }
   }
+  'inventory.equipment_groups.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment-groups'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['index']>>>
+    }
+  }
+  'inventory.equipment_groups.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/equipment-groups'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_group').createEquipmentGroupValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_group').createEquipmentGroupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_groups.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/equipment-groups/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['show']>>>
+    }
+  }
+  'inventory.equipment_groups.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/equipment-groups/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_group').updateEquipmentGroupValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_group').updateEquipmentGroupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_groups.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/equipment-groups/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['destroy']>>>
+    }
+  }
+  'inventory.equipment_groups.equipment.attach': {
+    methods: ["POST"]
+    pattern: '/api/v1/equipment-groups/:id/equipment'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/equipment_group').equipmentGroupEquipmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/equipment_group').equipmentGroupEquipmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['attachEquipment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['attachEquipment']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.equipment_groups.equipment.detach': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/equipment-groups/:id/equipment/:equipment_id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; equipment_id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['detachEquipment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/equipment_groups_controller').default['detachEquipment']>>>
+    }
+  }
   'inventory.equipment.assignments.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/equipment/:equipment_id/assignments'
@@ -1097,6 +1181,54 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').closeMaintenanceRecordValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['close']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['close']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.reception': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/records/:id/reception'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').updateMaintenanceReceptionValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').updateMaintenanceReceptionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['updateReception']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['updateReception']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.execution': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/records/:id/execution'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').updateMaintenanceExecutionValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').updateMaintenanceExecutionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['updateExecution']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['updateExecution']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.closure': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/maintenance/records/:id/closure'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/maintenance').updateMaintenanceClosureValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/maintenance').updateMaintenanceClosureValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['updateClosure']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['updateClosure']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'inventory.maintenance.records.history': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/maintenance/records/:id/history'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['history']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_records_controller').default['history']>>>
     }
   }
   'inventory.maintenance.records.attachments.index': {

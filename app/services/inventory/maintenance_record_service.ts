@@ -1,4 +1,5 @@
 import Equipment from '#models/equipment'
+import AuditLog from '#models/audit_log'
 import MaintenanceRecord from '#models/maintenance_record'
 import MaintenanceSchedule from '#models/maintenance_schedule'
 import User from '#models/user'
@@ -7,7 +8,8 @@ import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import db from '@adonisjs/lucid/services/db'
 import { DateTime } from 'luxon'
 
-type MaintenanceRecordPayload = Omit<Partial<MaintenanceRecord>, 'cost'> & {
+type MaintenanceRecordPayload = Omit<Partial<MaintenanceRecord>, 'componentsCost' | 'cost'> & {
+  componentsCost?: number | string | null
   cost?: number | string | null
 }
 
@@ -15,12 +17,17 @@ type ListMaintenanceRecordFilters = {
   equipmentId?: string
   maintenanceScheduleId?: string
   maintenanceType?: string
+  currentStage?: string
+  equipmentGroupId?: string
+  headquarterId?: string
   page?: number
   performedBy?: string
   performedFrom?: DateTime
   performedTo?: DateTime
   perPage?: number
   priority?: string
+  scheduledFrom?: DateTime
+  scheduledTo?: DateTime
   status?: string
 }
 
@@ -37,7 +44,9 @@ export default class MaintenanceRecordService {
 
   list(filters: ListMaintenanceRecordFilters) {
     const query = MaintenanceRecord.query()
-      .preload('equipment')
+      .preload('equipment', (equipmentQuery) => {
+        equipmentQuery.preload('headquarter').preload('location')
+      })
       .preload('maintenanceSchedule')
       .preload('performer')
       .orderBy('performed_at', 'desc')
@@ -67,6 +76,25 @@ export default class MaintenanceRecordService {
       query.where('priority', filters.priority)
     }
 
+    if (filters.currentStage) {
+      query.where('current_stage', filters.currentStage)
+    }
+
+    if (filters.headquarterId) {
+      query.whereHas('equipment', (equipmentQuery) => {
+        equipmentQuery.where('headquarter_id', filters.headquarterId!)
+      })
+    }
+
+    if (filters.equipmentGroupId) {
+      query.whereIn('equipment_id', (builder) => {
+        builder
+          .from('equipment_group_items')
+          .select('equipment_id')
+          .where('equipment_group_id', filters.equipmentGroupId!)
+      })
+    }
+
     if (filters.performedFrom) {
       query.where('performed_at', '>=', filters.performedFrom.toSQL()!)
     }
@@ -75,13 +103,23 @@ export default class MaintenanceRecordService {
       query.where('performed_at', '<=', filters.performedTo.toSQL()!)
     }
 
+    if (filters.scheduledFrom) {
+      query.where('scheduled_date', '>=', filters.scheduledFrom.toSQLDate()!)
+    }
+
+    if (filters.scheduledTo) {
+      query.where('scheduled_date', '<=', filters.scheduledTo.toSQLDate()!)
+    }
+
     return query.paginate(filters.page ?? 1, filters.perPage ?? 20)
   }
 
   find(id: string) {
     return MaintenanceRecord.query()
       .where('id', id)
-      .preload('equipment')
+      .preload('equipment', (equipmentQuery) => {
+        equipmentQuery.preload('headquarter').preload('location')
+      })
       .preload('maintenanceSchedule')
       .preload('performer')
       .first()
@@ -96,6 +134,10 @@ export default class MaintenanceRecordService {
           ...payload,
           status: payload.status ?? 'pending',
           priority: payload.priority ?? 'medium',
+          componentsCost:
+            payload.componentsCost === undefined || payload.componentsCost === null
+              ? null
+              : String(payload.componentsCost),
           cost: payload.cost === undefined || payload.cost === null ? null : String(payload.cost),
           createdBy: audit?.userId ?? payload.createdBy,
           updatedBy: audit?.userId ?? payload.updatedBy,
@@ -135,6 +177,10 @@ export default class MaintenanceRecordService {
       record.useTransaction(trx)
       record.merge({
         ...payload,
+        componentsCost:
+          payload.componentsCost === undefined || payload.componentsCost === null
+            ? record.componentsCost
+            : String(payload.componentsCost),
         cost:
           payload.cost === undefined || payload.cost === null ? record.cost : String(payload.cost),
         updatedBy: audit?.userId ?? payload.updatedBy,
@@ -166,6 +212,94 @@ export default class MaintenanceRecordService {
       },
       audit
     )
+  }
+
+  updateReception(id: string, payload: MaintenanceRecordPayload, audit?: AuditContext) {
+    return this.updateStage(id, 'reception', payload, audit)
+  }
+
+  updateExecution(id: string, payload: MaintenanceRecordPayload, audit?: AuditContext) {
+    return this.updateStage(id, 'execution', payload, audit)
+  }
+
+  updateClosure(id: string, payload: MaintenanceRecordPayload, audit?: AuditContext) {
+    return this.updateStage(
+      id,
+      'closure',
+      {
+        ...payload,
+        status: 'completed',
+        performedAt: payload.performedAt ?? DateTime.local(),
+      },
+      audit
+    )
+  }
+
+  async history(id: string) {
+    await this.ensureRecordExists(id)
+
+    return AuditLog.query()
+      .where('entity_type', 'maintenance_record')
+      .where('entity_id', id)
+      .whereIn('action', [
+        'maintenance_record.created',
+        'maintenance_record.updated',
+        'maintenance_record.reception_updated',
+        'maintenance_record.execution_updated',
+        'maintenance_record.closure_updated',
+      ])
+      .preload('user')
+      .orderBy('created_at', 'desc')
+  }
+
+  private async updateStage(
+    id: string,
+    stage: NonNullable<MaintenanceRecord['currentStage']>,
+    payload: MaintenanceRecordPayload,
+    audit?: AuditContext
+  ) {
+    const record = await MaintenanceRecord.find(id)
+
+    if (!record) {
+      return null
+    }
+
+    await this.validate({
+      ...record.$attributes,
+      ...payload,
+    })
+
+    return db.transaction(async (trx) => {
+      const oldValues = { ...record.$attributes }
+
+      record.useTransaction(trx)
+      record.merge({
+        ...payload,
+        currentStage: stage,
+        status: stage === 'closure' ? 'completed' : 'in_progress',
+        componentsCost:
+          payload.componentsCost === undefined || payload.componentsCost === null
+            ? record.componentsCost
+            : String(payload.componentsCost),
+        cost:
+          payload.cost === undefined || payload.cost === null ? record.cost : String(payload.cost),
+        updatedBy: audit?.userId ?? payload.updatedBy,
+      })
+      await record.save()
+
+      await this.syncOperationalState(record, trx)
+
+      await this.auditService.record({
+        ...audit,
+        action: `maintenance_record.${stage}_updated`,
+        entityType: 'maintenance_record',
+        entityId: record.id,
+        oldValues,
+        newValues: record.$attributes,
+      })
+
+      return this.find(record.id)
+    })
   }
 
   private async syncOperationalState(record: MaintenanceRecord, trx: TransactionClientContract) {
@@ -277,5 +411,13 @@ export default class MaintenanceRecordService {
 
   private addError(errors: MaintenanceValidationErrors, field: string, message: string) {
     errors[field] = [...(errors[field] ?? []), message]
+  }
+
+  private async ensureRecordExists(id: string) {
+    const record = await MaintenanceRecord.query().where('id', id).first()
+
+    if (!record) {
+      throw new MaintenanceRecordValidationError({ id: ['Maintenance record does not exist'] })
+    }
   }
 }

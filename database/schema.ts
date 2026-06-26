@@ -78,7 +78,7 @@ export class AlertSchema extends BaseModel {
 }
 
 export class AttachmentSchema extends BaseModel {
-  static $columns = ['createdAt', 'entityId', 'entityType', 'fileName', 'filePath', 'id', 'mimeType', 'sizeBytes', 'uploadedBy'] as const
+  static $columns = ['createdAt', 'entityId', 'entityType', 'fileName', 'filePath', 'id', 'maintenanceStage', 'mimeType', 'sizeBytes', 'uploadedBy'] as const
   $columns = AttachmentSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -92,6 +92,8 @@ export class AttachmentSchema extends BaseModel {
   declare filePath: string
   @column({ isPrimary: true })
   declare id: string
+  @column()
+  declare maintenanceStage: string | null
   @column()
   declare mimeType: string | null
   @column()
@@ -295,6 +297,36 @@ export class EquipmentAssignmentSchema extends BaseModel {
   declare userId: string
 }
 
+export class EquipmentGroupItemSchema extends BaseModel {
+  static $columns = ['createdAt', 'equipmentGroupId', 'equipmentId'] as const
+  $columns = EquipmentGroupItemSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare equipmentGroupId: string
+  @column()
+  declare equipmentId: string
+}
+
+export class EquipmentGroupSchema extends BaseModel {
+  static $columns = ['createdAt', 'createdBy', 'description', 'id', 'name', 'updatedAt', 'updatedBy'] as const
+  $columns = EquipmentGroupSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare createdBy: string | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare name: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+  @column()
+  declare updatedBy: string | null
+}
+
 export class EquipmentLoanSchema extends BaseModel {
   static $columns = ['borrowerName', 'createdAt', 'createdBy', 'equipmentId', 'estimatedReturnAt', 'id', 'loanedAt', 'notes', 'receivedSignatureImage', 'rejectionReason', 'requestMode', 'requestedAt', 'requestedItem', 'returnedAt', 'returnedBy', 'reviewedAt', 'reviewedBy', 'signatureImage', 'status', 'updatedAt', 'userId'] as const
   $columns = EquipmentLoanSchema.$columns
@@ -431,10 +463,14 @@ export class LocationSchema extends BaseModel {
 }
 
 export class MaintenanceRecordSchema extends BaseModel {
-  static $columns = ['actionsTaken', 'cost', 'createdAt', 'createdBy', 'description', 'diagnosis', 'equipmentId', 'id', 'maintenanceScheduleId', 'maintenanceType', 'nextMaintenanceAt', 'partsReplaced', 'performedAt', 'performedBy', 'priority', 'scheduledDate', 'status', 'updatedAt', 'updatedBy'] as const
+  static $columns = ['actionsTaken', 'componentsCost', 'componentsUsed', 'cost', 'createdAt', 'createdBy', 'currentStage', 'description', 'diagnosis', 'equipmentId', 'finalDestination', 'finalEquipmentState', 'id', 'initialEquipmentState', 'maintenanceScheduleId', 'maintenanceType', 'nextMaintenanceAt', 'partsReplaced', 'performedAt', 'performedBy', 'priority', 'receivedByName', 'receptionObservations', 'scheduledDate', 'softwareWork', 'status', 'technicalObservations', 'updatedAt', 'updatedBy'] as const
   $columns = MaintenanceRecordSchema.$columns
   @column()
   declare actionsTaken: string | null
+  @column()
+  declare componentsCost: string | null
+  @column()
+  declare componentsUsed: string | null
   @column()
   declare cost: string | null
   @column.dateTime({ autoCreate: true })
@@ -442,13 +478,21 @@ export class MaintenanceRecordSchema extends BaseModel {
   @column()
   declare createdBy: string | null
   @column()
+  declare currentStage: string | null
+  @column()
   declare description: string | null
   @column()
   declare diagnosis: string | null
   @column()
   declare equipmentId: string
+  @column()
+  declare finalDestination: string | null
+  @column()
+  declare finalEquipmentState: string | null
   @column({ isPrimary: true })
   declare id: string
+  @column()
+  declare initialEquipmentState: string | null
   @column()
   declare maintenanceScheduleId: string | null
   @column()
@@ -463,10 +507,18 @@ export class MaintenanceRecordSchema extends BaseModel {
   declare performedBy: string | null
   @column()
   declare priority: any
+  @column()
+  declare receivedByName: string | null
+  @column()
+  declare receptionObservations: string | null
   @column.date()
   declare scheduledDate: DateTime | null
   @column()
+  declare softwareWork: string | null
+  @column()
   declare status: any
+  @column()
+  declare technicalObservations: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
   @column()

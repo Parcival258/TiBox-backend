@@ -5,6 +5,9 @@ import {
   closeMaintenanceRecordValidator,
   createMaintenanceRecordValidator,
   listMaintenanceRecordValidator,
+  updateMaintenanceClosureValidator,
+  updateMaintenanceExecutionValidator,
+  updateMaintenanceReceptionValidator,
   updateMaintenanceRecordValidator,
 } from '#validators/maintenance'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -78,6 +81,74 @@ export default class MaintenanceRecordsController {
       }
 
       return record
+    } catch (error) {
+      return this.handleValidationError(error, response)
+    }
+  }
+
+  async updateReception({ auth, params, request, response }: HttpContext) {
+    const payload = await request.validateUsing(updateMaintenanceReceptionValidator)
+
+    try {
+      const record = await this.maintenanceRecordService.updateReception(
+        params.id,
+        payload,
+        this.auditContext({ auth, request })
+      )
+
+      if (!record) {
+        return response.notFound({ message: 'Maintenance record not found' })
+      }
+
+      return record
+    } catch (error) {
+      return this.handleValidationError(error, response)
+    }
+  }
+
+  async updateExecution({ auth, params, request, response }: HttpContext) {
+    const payload = await request.validateUsing(updateMaintenanceExecutionValidator)
+
+    try {
+      const record = await this.maintenanceRecordService.updateExecution(
+        params.id,
+        payload,
+        this.auditContext({ auth, request })
+      )
+
+      if (!record) {
+        return response.notFound({ message: 'Maintenance record not found' })
+      }
+
+      return record
+    } catch (error) {
+      return this.handleValidationError(error, response)
+    }
+  }
+
+  async updateClosure({ auth, params, request, response }: HttpContext) {
+    const payload = await request.validateUsing(updateMaintenanceClosureValidator)
+
+    try {
+      const record = await this.maintenanceRecordService.updateClosure(
+        params.id,
+        payload,
+        this.auditContext({ auth, request })
+      )
+
+      if (!record) {
+        return response.notFound({ message: 'Maintenance record not found' })
+      }
+
+      return record
+    } catch (error) {
+      return this.handleValidationError(error, response)
+    }
+  }
+
+  async history({ params, response }: HttpContext) {
+    try {
+      return await this.maintenanceRecordService.history(params.id)
     } catch (error) {
       return this.handleValidationError(error, response)
     }

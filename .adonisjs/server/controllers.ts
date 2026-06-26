@@ -20,6 +20,7 @@ export const controllers = {
     EquipmentAttachments: () => import('#controllers/inventory/equipment_attachments_controller'),
     EquipmentCatalogs: () => import('#controllers/inventory/equipment_catalogs_controller'),
     Equipment: () => import('#controllers/inventory/equipment_controller'),
+    EquipmentGroups: () => import('#controllers/inventory/equipment_groups_controller'),
     EquipmentLoans: () => import('#controllers/inventory/equipment_loans_controller'),
     EquipmentTypes: () => import('#controllers/inventory/equipment_types_controller'),
     FailureReports: () => import('#controllers/inventory/failure_reports_controller'),

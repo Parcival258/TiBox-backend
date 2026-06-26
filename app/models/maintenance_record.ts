@@ -28,6 +28,9 @@ export default class MaintenanceRecord extends BaseModel {
   @column()
   declare priority: MaintenancePriority
 
+  @column()
+  declare currentStage: 'reception' | 'execution' | 'closure' | null
+
   @column.date()
   declare scheduledDate: DateTime | null
 
@@ -41,16 +44,43 @@ export default class MaintenanceRecord extends BaseModel {
   declare description: string | null
 
   @column()
+  declare initialEquipmentState: string | null
+
+  @column()
+  declare receptionObservations: string | null
+
+  @column()
   declare diagnosis: string | null
 
   @column()
   declare actionsTaken: string | null
 
   @column()
+  declare technicalObservations: string | null
+
+  @column()
   declare partsReplaced: string | null
 
   @column()
+  declare componentsUsed: string | null
+
+  @column()
   declare cost: string | null
+
+  @column()
+  declare componentsCost: string | null
+
+  @column()
+  declare softwareWork: string | null
+
+  @column()
+  declare finalEquipmentState: string | null
+
+  @column()
+  declare receivedByName: string | null
+
+  @column()
+  declare finalDestination: string | null
 
   @column.date()
   declare nextMaintenanceAt: DateTime | null

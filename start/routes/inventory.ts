@@ -9,6 +9,7 @@ const EquipmentAttachmentsController = () =>
 const EquipmentCatalogsController = () =>
   import('#controllers/inventory/equipment_catalogs_controller')
 const EquipmentTypesController = () => import('#controllers/inventory/equipment_types_controller')
+const EquipmentGroupsController = () => import('#controllers/inventory/equipment_groups_controller')
 const EquipmentLoansController = () => import('#controllers/inventory/equipment_loans_controller')
 const FailureReportsController = () => import('#controllers/inventory/failure_reports_controller')
 const MaintenanceRecordsController = () =>
@@ -73,6 +74,37 @@ export default function inventoryRoutes() {
         .delete('equipment/:id', [EquipmentController, 'destroy'])
         .use(middleware.permission({ permissions: ['equipment.delete'] }))
         .as('equipment.destroy')
+      router
+        .get('equipment-groups', [EquipmentGroupsController, 'index'])
+        .use(middleware.permission({ permissions: ['equipment.view'] }))
+        .as('equipment_groups.index')
+      router
+        .post('equipment-groups', [EquipmentGroupsController, 'store'])
+        .use(middleware.permission({ permissions: ['equipment.update'] }))
+        .as('equipment_groups.store')
+      router
+        .get('equipment-groups/:id', [EquipmentGroupsController, 'show'])
+        .use(middleware.permission({ permissions: ['equipment.view'] }))
+        .as('equipment_groups.show')
+      router
+        .patch('equipment-groups/:id', [EquipmentGroupsController, 'update'])
+        .use(middleware.permission({ permissions: ['equipment.update'] }))
+        .as('equipment_groups.update')
+      router
+        .delete('equipment-groups/:id', [EquipmentGroupsController, 'destroy'])
+        .use(middleware.permission({ permissions: ['equipment.update'] }))
+        .as('equipment_groups.destroy')
+      router
+        .post('equipment-groups/:id/equipment', [EquipmentGroupsController, 'attachEquipment'])
+        .use(middleware.permission({ permissions: ['equipment.update'] }))
+        .as('equipment_groups.equipment.attach')
+      router
+        .delete('equipment-groups/:id/equipment/:equipment_id', [
+          EquipmentGroupsController,
+          'detachEquipment',
+        ])
+        .use(middleware.permission({ permissions: ['equipment.update'] }))
+        .as('equipment_groups.equipment.detach')
       router
         .get('equipment/:equipment_id/assignments', [EquipmentAssignmentsController, 'index'])
         .use(middleware.permission({ permissions: ['equipment.view'] }))
@@ -212,6 +244,28 @@ export default function inventoryRoutes() {
         .patch('maintenance/records/:id/close', [MaintenanceRecordsController, 'close'])
         .use(middleware.permission({ permissions: ['maintenance.close'] }))
         .as('maintenance.records.close')
+      router
+        .patch('maintenance/records/:id/reception', [
+          MaintenanceRecordsController,
+          'updateReception',
+        ])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.records.reception')
+      router
+        .patch('maintenance/records/:id/execution', [
+          MaintenanceRecordsController,
+          'updateExecution',
+        ])
+        .use(middleware.permission({ permissions: ['maintenance.update'] }))
+        .as('maintenance.records.execution')
+      router
+        .patch('maintenance/records/:id/closure', [MaintenanceRecordsController, 'updateClosure'])
+        .use(middleware.permission({ permissions: ['maintenance.close'] }))
+        .as('maintenance.records.closure')
+      router
+        .get('maintenance/records/:id/history', [MaintenanceRecordsController, 'history'])
+        .use(middleware.permission({ permissions: ['maintenance.view'] }))
+        .as('maintenance.records.history')
       router
         .get('maintenance/records/:record_id/attachments', [
           MaintenanceRecordAttachmentsController,

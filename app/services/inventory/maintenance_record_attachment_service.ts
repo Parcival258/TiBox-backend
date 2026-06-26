@@ -8,6 +8,7 @@ import type { MultipartFile } from '@adonisjs/bodyparser'
 type UploadMaintenanceRecordAttachmentPayload = {
   audit?: AuditContext
   file: MultipartFile
+  stage?: 'reception' | 'execution' | 'closure'
   uploadedBy?: string | null
 }
 
@@ -47,6 +48,7 @@ export default class MaintenanceRecordAttachmentService {
         fileName: payload.file.clientName,
         filePath: storageKey,
         mimeType: this.getMimeType(payload.file),
+        maintenanceStage: payload.stage ?? null,
         sizeBytes: payload.file.size,
         uploadedBy: payload.uploadedBy ?? null,
       })

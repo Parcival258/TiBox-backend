@@ -23,6 +23,7 @@ export default class MaintenanceRecordAttachmentsController {
       const attachment = await this.attachmentService.upload(params.record_id, {
         audit: this.auditContext({ auth, request }),
         file: payload.file,
+        stage: payload.stage,
         uploadedBy,
       })
 

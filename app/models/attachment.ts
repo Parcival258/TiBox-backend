@@ -4,6 +4,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
 export type AttachmentEntityType = 'equipment' | 'maintenance_record' | 'equipment_assignment'
+export type MaintenanceAttachmentStage = 'reception' | 'execution' | 'closure'
 
 export default class Attachment extends BaseModel {
   @column({ isPrimary: true })
@@ -29,6 +30,9 @@ export default class Attachment extends BaseModel {
 
   @column()
   declare uploadedBy: string | null
+
+  @column()
+  declare maintenanceStage: MaintenanceAttachmentStage | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
