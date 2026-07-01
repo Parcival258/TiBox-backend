@@ -28,4 +28,5 @@ yarn-error.log
 .DS_Store
 
 #error logs
-system-errors.log
+storage/logs/*.log
+!storage/logs/.gitkeep

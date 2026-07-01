@@ -35,7 +35,13 @@ export default class MaintenanceRecord extends BaseModel {
   declare scheduledDate: DateTime | null
 
   @column.dateTime()
+  declare receivedAt: DateTime | null
+
+  @column.dateTime()
   declare performedAt: DateTime | null
+
+  @column.dateTime()
+  declare closedAt: DateTime | null
 
   @column()
   declare performedBy: string | null

@@ -203,19 +203,30 @@ export default class MaintenanceRecordService {
   }
 
   close(id: string, payload: MaintenanceRecordPayload, audit?: AuditContext) {
+    const closedAt = payload.closedAt ?? payload.performedAt ?? DateTime.local()
+
     return this.update(
       id,
       {
         ...payload,
+        closedAt,
         status: 'completed',
-        performedAt: payload.performedAt ?? DateTime.local(),
+        performedAt: payload.performedAt ?? closedAt,
       },
       audit
     )
   }
 
   updateReception(id: string, payload: MaintenanceRecordPayload, audit?: AuditContext) {
-    return this.updateStage(id, 'reception', payload, audit)
+    return this.updateStage(
+      id,
+      'reception',
+      {
+        ...payload,
+        receivedAt: payload.receivedAt ?? DateTime.local(),
+      },
+      audit
+    )
   }
 
   updateExecution(id: string, payload: MaintenanceRecordPayload, audit?: AuditContext) {
@@ -223,13 +234,16 @@ export default class MaintenanceRecordService {
   }
 
   updateClosure(id: string, payload: MaintenanceRecordPayload, audit?: AuditContext) {
+    const closedAt = payload.closedAt ?? payload.performedAt ?? DateTime.local()
+
     return this.updateStage(
       id,
       'closure',
       {
         ...payload,
+        closedAt,
         status: 'completed',
-        performedAt: payload.performedAt ?? DateTime.local(),
+        performedAt: payload.performedAt ?? closedAt,
       },
       audit
     )

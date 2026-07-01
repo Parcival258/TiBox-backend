@@ -6,6 +6,19 @@ const configuredOrigins = env
   .get('CORS_ORIGIN')
   ?.split(',')
   .map((origin) => origin.trim())
+  .filter(Boolean)
+
+function allowedOrigin(origin: string) {
+  if (configuredOrigins?.includes(origin)) {
+    return true
+  }
+
+  if (app.inDev && /^https:\/\/[a-z0-9-]+\.use2\.devtunnels\.ms$/i.test(origin)) {
+    return true
+  }
+
+  return false
+}
 
 /**
  * Configuration options to tweak the CORS policy. The following
@@ -24,7 +37,7 @@ const corsConfig = defineConfig({
    * In production, keep an explicit allowlist (empty by default, so no
    * cross-origin browser access is allowed until configured).
    */
-  origin: configuredOrigins?.length ? configuredOrigins : app.inDev,
+  origin: allowedOrigin,
 
   /**
    * HTTP methods accepted for cross-origin requests.

@@ -64,7 +64,8 @@ export default class EquipmentGroupService {
     const oldValues = { ...group.$attributes }
 
     group.merge({
-      ...payload,
+      ...(payload.description !== undefined ? { description: payload.description } : {}),
+      ...(payload.name !== undefined ? { name: payload.name } : {}),
       updatedBy: audit?.userId ?? group.updatedBy,
     })
     await group.save()

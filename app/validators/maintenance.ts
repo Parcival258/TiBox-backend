@@ -62,7 +62,9 @@ export const createMaintenanceRecordValidator = vine.create({
   priority: vine.enum(maintenancePriorities).optional(),
   currentStage: vine.enum(maintenanceStages).optional(),
   scheduledDate: vine.date().optional(),
+  receivedAt: vine.date().optional(),
   performedAt: vine.date().optional(),
+  closedAt: vine.date().optional(),
   performedBy: vine.string().uuid().optional(),
   description: vine.string().trim().optional(),
   initialEquipmentState: vine.string().trim().optional(),
@@ -89,7 +91,9 @@ export const updateMaintenanceRecordValidator = vine.create({
   priority: vine.enum(maintenancePriorities).optional(),
   currentStage: vine.enum(maintenanceStages).optional(),
   scheduledDate: vine.date().optional(),
+  receivedAt: vine.date().optional(),
   performedAt: vine.date().optional(),
+  closedAt: vine.date().optional(),
   performedBy: vine.string().uuid().optional(),
   description: vine.string().trim().optional(),
   initialEquipmentState: vine.string().trim().optional(),
@@ -110,6 +114,7 @@ export const updateMaintenanceRecordValidator = vine.create({
 
 export const closeMaintenanceRecordValidator = vine.create({
   performedAt: vine.date().optional(),
+  closedAt: vine.date().optional(),
   performedBy: vine.string().uuid().optional(),
   diagnosis: vine.string().trim().optional(),
   actionsTaken: vine.string().trim().optional(),
@@ -119,6 +124,7 @@ export const closeMaintenanceRecordValidator = vine.create({
 })
 
 export const updateMaintenanceReceptionValidator = vine.create({
+  receivedAt: vine.date().optional(),
   initialEquipmentState: vine.string().trim().optional(),
   receptionObservations: vine.string().trim().optional(),
   description: vine.string().trim().optional(),
@@ -140,6 +146,7 @@ export const updateMaintenanceClosureValidator = vine.create({
   receivedByName: vine.string().trim().optional(),
   finalDestination: vine.string().trim().optional(),
   performedAt: vine.date().optional(),
+  closedAt: vine.date().optional(),
   performedBy: vine.string().uuid().optional(),
   nextMaintenanceAt: vine.date().optional(),
 })

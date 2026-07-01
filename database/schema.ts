@@ -463,10 +463,12 @@ export class LocationSchema extends BaseModel {
 }
 
 export class MaintenanceRecordSchema extends BaseModel {
-  static $columns = ['actionsTaken', 'componentsCost', 'componentsUsed', 'cost', 'createdAt', 'createdBy', 'currentStage', 'description', 'diagnosis', 'equipmentId', 'finalDestination', 'finalEquipmentState', 'id', 'initialEquipmentState', 'maintenanceScheduleId', 'maintenanceType', 'nextMaintenanceAt', 'partsReplaced', 'performedAt', 'performedBy', 'priority', 'receivedByName', 'receptionObservations', 'scheduledDate', 'softwareWork', 'status', 'technicalObservations', 'updatedAt', 'updatedBy'] as const
+  static $columns = ['actionsTaken', 'closedAt', 'componentsCost', 'componentsUsed', 'cost', 'createdAt', 'createdBy', 'currentStage', 'description', 'diagnosis', 'equipmentId', 'finalDestination', 'finalEquipmentState', 'id', 'initialEquipmentState', 'maintenanceScheduleId', 'maintenanceType', 'nextMaintenanceAt', 'partsReplaced', 'performedAt', 'performedBy', 'priority', 'receivedAt', 'receivedByName', 'receptionObservations', 'scheduledDate', 'softwareWork', 'status', 'technicalObservations', 'updatedAt', 'updatedBy'] as const
   $columns = MaintenanceRecordSchema.$columns
   @column()
   declare actionsTaken: string | null
+  @column.dateTime()
+  declare closedAt: DateTime | null
   @column()
   declare componentsCost: string | null
   @column()
@@ -507,6 +509,8 @@ export class MaintenanceRecordSchema extends BaseModel {
   declare performedBy: string | null
   @column()
   declare priority: any
+  @column.dateTime()
+  declare receivedAt: DateTime | null
   @column()
   declare receivedByName: string | null
   @column()
