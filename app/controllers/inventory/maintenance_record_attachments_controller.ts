@@ -1,7 +1,7 @@
 import MaintenanceRecordAttachmentService, {
   MaintenanceRecordAttachmentError,
 } from '#services/inventory/maintenance_record_attachment_service'
-import { uploadEquipmentAttachmentValidator } from '#validators/attachment'
+import { uploadMaintenanceRecordAttachmentValidator } from '#validators/attachment'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class MaintenanceRecordAttachmentsController {
@@ -16,7 +16,7 @@ export default class MaintenanceRecordAttachmentsController {
   }
 
   async store({ auth, params, request, response }: HttpContext) {
-    const payload = await request.validateUsing(uploadEquipmentAttachmentValidator)
+    const payload = await request.validateUsing(uploadMaintenanceRecordAttachmentValidator)
     const uploadedBy = auth.isAuthenticated ? auth.getUserOrFail().id : null
 
     try {

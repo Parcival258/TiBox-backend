@@ -361,12 +361,14 @@ test.group('Maintenance and failure modules', (group) => {
     const uploadResponse = await client
       .post(`/api/v1/maintenance/records/${record.id}/attachments`)
       .loginAs(actor)
+      .field('stage', 'execution')
       .file('file', fixturePath)
 
     await rm(fixturePath, { force: true })
 
     uploadResponse.assertCreated()
     uploadResponse.assertBodyContains({
+      maintenanceStage: 'execution',
       uploadedBy: actor.id,
     })
 

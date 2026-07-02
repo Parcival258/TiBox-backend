@@ -1247,10 +1247,10 @@ export interface Registry {
     methods: ["POST"]
     pattern: '/api/v1/maintenance/records/:record_id/attachments'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/attachment').uploadEquipmentAttachmentValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/attachment').uploadMaintenanceRecordAttachmentValidator)>>
       paramsTuple: [ParamValue]
       params: { record_id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/attachment').uploadEquipmentAttachmentValidator)>>
+      query: ExtractQuery<InferInput<(typeof import('#validators/attachment').uploadMaintenanceRecordAttachmentValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['store']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/inventory/maintenance_record_attachments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }

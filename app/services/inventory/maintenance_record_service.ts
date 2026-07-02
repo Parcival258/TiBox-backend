@@ -70,6 +70,8 @@ export default class MaintenanceRecordService {
 
     if (filters.status) {
       query.where('status', filters.status)
+    } else {
+      query.whereNot('status', 'cancelled')
     }
 
     if (filters.priority) {

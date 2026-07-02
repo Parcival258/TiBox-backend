@@ -8,3 +8,11 @@ export const uploadEquipmentAttachmentValidator = vine.create({
   }),
   stage: vine.enum(maintenanceStages).optional(),
 })
+
+export const uploadMaintenanceRecordAttachmentValidator = vine.create({
+  file: vine.file({
+    size: '10mb',
+    extnames: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx'],
+  }),
+  stage: vine.enum(maintenanceStages),
+})

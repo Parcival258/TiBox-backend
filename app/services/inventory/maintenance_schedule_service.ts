@@ -1,7 +1,9 @@
 import Equipment from '#models/equipment'
+import MaintenanceRecord from '#models/maintenance_record'
 import MaintenanceSchedule from '#models/maintenance_schedule'
 import User from '#models/user'
 import AuditService, { type AuditContext } from '#services/audit/audit_service'
+import db from '@adonisjs/lucid/services/db'
 import { DateTime } from 'luxon'
 
 type MaintenanceSchedulePayload = Partial<MaintenanceSchedule>
@@ -105,20 +107,51 @@ export default class MaintenanceScheduleService {
   async create(payload: MaintenanceSchedulePayload, audit?: AuditContext) {
     await this.validate(payload)
 
-    const schedule = await MaintenanceSchedule.create({
-      ...payload,
-      status: payload.status ?? 'scheduled',
-      priority: payload.priority ?? 'medium',
-      createdBy: audit?.userId ?? payload.createdBy,
-      updatedBy: audit?.userId ?? payload.updatedBy,
-    })
+    const schedule = await db.transaction(async (trx) => {
+      const createdSchedule = await MaintenanceSchedule.create(
+        {
+          ...payload,
+          status: payload.status ?? 'scheduled',
+          priority: payload.priority ?? 'medium',
+          createdBy: audit?.userId ?? payload.createdBy,
+          updatedBy: audit?.userId ?? payload.updatedBy,
+        },
+        { client: trx }
+      )
 
-    await this.auditService.record({
-      ...audit,
-      action: 'maintenance_schedule.created',
-      entityType: 'maintenance_schedule',
-      entityId: schedule.id,
-      newValues: schedule.$attributes,
+      const record = await MaintenanceRecord.create(
+        {
+          description: createdSchedule.notes,
+          equipmentId: createdSchedule.equipmentId,
+          maintenanceScheduleId: createdSchedule.id,
+          maintenanceType: createdSchedule.maintenanceType,
+          performedBy: createdSchedule.assignedTechnicianId,
+          priority: createdSchedule.priority,
+          scheduledDate: createdSchedule.scheduledFor,
+          status: createdSchedule.status,
+          createdBy: audit?.userId ?? createdSchedule.createdBy,
+          updatedBy: audit?.userId ?? createdSchedule.updatedBy,
+        },
+        { client: trx }
+      )
+
+      await this.auditService.record({
+        ...audit,
+        action: 'maintenance_schedule.created',
+        entityType: 'maintenance_schedule',
+        entityId: createdSchedule.id,
+        newValues: createdSchedule.$attributes,
+      })
+
+      await this.auditService.record({
+        ...audit,
+        action: 'maintenance_record.created',
+        entityType: 'maintenance_record',
+        entityId: record.id,
+        newValues: record.$attributes,
+      })
+
+      return createdSchedule
     })
 
     return this.find(schedule.id)
@@ -165,6 +198,14 @@ export default class MaintenanceScheduleService {
   }
 
   async start(id: string, audit?: AuditContext) {
+    const schedule = await MaintenanceSchedule.find(id)
+
+    if (!schedule) {
+      return null
+    }
+
+    await this.ensureProcessRecord(schedule, audit)
+
     return this.changeStatus(id, 'in_progress', audit, 'maintenance_schedule.started')
   }
 
@@ -196,6 +237,7 @@ export default class MaintenanceScheduleService {
       updatedBy: audit?.userId ?? schedule.updatedBy,
     })
     await schedule.save()
+    await this.syncProcessRecordFromSchedule(schedule, audit)
 
     await this.auditService.record({
       ...audit,
@@ -226,6 +268,7 @@ export default class MaintenanceScheduleService {
     schedule.status = status
     schedule.updatedBy = audit?.userId ?? schedule.updatedBy
     await schedule.save()
+    await this.syncProcessRecordFromSchedule(schedule, audit)
 
     await this.auditService.record({
       ...audit,
@@ -237,6 +280,107 @@ export default class MaintenanceScheduleService {
     })
 
     return schedule
+  }
+
+  private async syncProcessRecordFromSchedule(schedule: MaintenanceSchedule, audit?: AuditContext) {
+    const record = await MaintenanceRecord.query()
+      .where('maintenance_schedule_id', schedule.id)
+      .first()
+
+    if (!record) {
+      return
+    }
+
+    const oldValues = { ...record.$attributes }
+
+    record.merge({
+      performedBy: record.performedBy ?? schedule.assignedTechnicianId,
+      priority: schedule.priority,
+      scheduledDate: schedule.scheduledFor,
+      status: schedule.status,
+      updatedBy: audit?.userId ?? schedule.updatedBy,
+    })
+    await record.save()
+
+    await this.auditService.record({
+      ...audit,
+      action: 'maintenance_record.updated',
+      entityType: 'maintenance_record',
+      entityId: record.id,
+      oldValues,
+      newValues: record.$attributes,
+    })
+  }
+
+  private async ensureProcessRecord(schedule: MaintenanceSchedule, audit?: AuditContext) {
+    const existingRecord = await MaintenanceRecord.query()
+      .where('maintenance_schedule_id', schedule.id)
+      .first()
+
+    if (existingRecord) {
+      if (existingRecord.status !== 'in_progress') {
+        const oldValues = { ...existingRecord.$attributes }
+
+        existingRecord.merge({
+          currentStage: existingRecord.currentStage ?? 'reception',
+          performedBy: existingRecord.performedBy ?? schedule.assignedTechnicianId,
+          status: 'in_progress',
+          updatedBy: audit?.userId ?? schedule.updatedBy,
+        })
+        await existingRecord.save()
+
+        await this.auditService.record({
+          ...audit,
+          action: 'maintenance_record.updated',
+          entityType: 'maintenance_record',
+          entityId: existingRecord.id,
+          oldValues,
+          newValues: existingRecord.$attributes,
+        })
+      }
+
+      return existingRecord
+    }
+
+    return db.transaction(async (trx) => {
+      const record = await MaintenanceRecord.create(
+        {
+          currentStage: 'reception',
+          description: schedule.notes,
+          equipmentId: schedule.equipmentId,
+          maintenanceScheduleId: schedule.id,
+          maintenanceType: schedule.maintenanceType,
+          performedBy: schedule.assignedTechnicianId,
+          priority: schedule.priority,
+          scheduledDate: schedule.scheduledFor,
+          status: 'in_progress',
+          createdBy: audit?.userId ?? schedule.createdBy,
+          updatedBy: audit?.userId ?? schedule.updatedBy,
+        },
+        { client: trx }
+      )
+
+      const equipment = await Equipment.query({ client: trx })
+        .where('id', schedule.equipmentId)
+        .whereNull('deleted_at')
+        .first()
+
+      if (equipment) {
+        equipment.useTransaction(trx)
+        equipment.status = 'in_maintenance'
+        await equipment.save()
+      }
+
+      await this.auditService.record({
+        ...audit,
+        action: 'maintenance_record.created',
+        entityType: 'maintenance_record',
+        entityId: record.id,
+        newValues: record.$attributes,
+      })
+
+      return record
+    })
   }
 
   private async validate(payload: MaintenanceSchedulePayload) {
