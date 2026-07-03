@@ -5,15 +5,23 @@ import { defineConfig } from '@adonisjs/cors'
 const configuredOrigins = env
   .get('CORS_ORIGIN')
   ?.split(',')
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().replace(/\/$/, ''))
   .filter(Boolean)
 
+const mobileOrigins = new Set(['capacitor://localhost', 'http://localhost', 'https://localhost'])
+
 function allowedOrigin(origin: string) {
-  if (configuredOrigins?.includes(origin)) {
+  const normalizedOrigin = origin.replace(/\/$/, '')
+
+  if (mobileOrigins.has(normalizedOrigin)) {
     return true
   }
 
-  if (app.inDev && /^https:\/\/[a-z0-9-]+\.use2\.devtunnels\.ms$/i.test(origin)) {
+  if (configuredOrigins?.includes(normalizedOrigin)) {
+    return true
+  }
+
+  if (app.inDev && /^https:\/\/[a-z0-9-]+\.use2\.devtunnels\.ms$/i.test(normalizedOrigin)) {
     return true
   }
 

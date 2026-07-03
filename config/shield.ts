@@ -1,5 +1,6 @@
 import { defineConfig } from '@adonisjs/shield'
 import app from '@adonisjs/core/services/app'
+import env from '#start/env'
 
 const shieldConfig = defineConfig({
   /**
@@ -46,8 +47,8 @@ const shieldConfig = defineConfig({
 
     cookieOptions: {
       path: '/',
-      sameSite: 'lax',
-      secure: app.inProduction,
+      sameSite: env.get('SESSION_COOKIE_SAME_SITE') ?? 'lax',
+      secure: env.get('SESSION_COOKIE_SECURE') ?? app.inProduction,
     },
 
     /**

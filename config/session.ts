@@ -43,12 +43,12 @@ const sessionConfig = defineConfig({
     /**
      * Send cookies only over HTTPS in production.
      */
-    secure: app.inProduction,
+    secure: env.get('SESSION_COOKIE_SECURE') ?? app.inProduction,
 
     /**
      * Cross-site policy for cookie sending.
      */
-    sameSite: 'lax',
+    sameSite: env.get('SESSION_COOKIE_SAME_SITE') ?? 'lax',
   },
 
   /**
