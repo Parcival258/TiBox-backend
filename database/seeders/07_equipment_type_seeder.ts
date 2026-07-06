@@ -5,13 +5,13 @@ export default class extends BaseSeeder {
   async run() {
     await EquipmentType.updateOrCreateMany('name', [
       {
-        name: 'Portátil',
-        description: 'Equipo portátil para trabajo móvil.',
+        name: 'Portatil',
+        description: 'Equipo portatil para trabajo movil.',
         isActive: true,
       },
       {
         name: 'Proyector',
-        description: 'Equipo para proyección de contenido audiovisual.',
+        description: 'Equipo para proyeccion de contenido audiovisual.',
         isActive: true,
       },
       {
@@ -21,22 +21,22 @@ export default class extends BaseSeeder {
       },
       {
         name: 'Impresora',
-        description: 'Equipo de impresión para documentos administrativos.',
+        description: 'Equipo de impresion para documentos administrativos.',
         isActive: true,
       },
       {
-        name: 'Escáner',
-        description: 'Equipo de digitalización de documentos.',
+        name: 'Escaner',
+        description: 'Equipo de digitalizacion de documentos.',
         isActive: true,
       },
       {
         name: 'Tablet',
-        description: 'Dispositivo móvil para consulta y registro en campo.',
+        description: 'Dispositivo movil para consulta y registro en campo.',
         isActive: true,
       },
       {
-        name: 'Teléfono',
-        description: 'Equipo telefónico institucional.',
+        name: 'Telefono',
+        description: 'Equipo telefonico institucional.',
         isActive: true,
       },
       {
@@ -46,7 +46,7 @@ export default class extends BaseSeeder {
       },
       {
         name: 'Switch',
-        description: 'Equipo de red para interconexión local.',
+        description: 'Equipo de red para interconexion local.',
         isActive: true,
       },
     ])
